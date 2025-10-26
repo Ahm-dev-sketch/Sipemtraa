@@ -11,13 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('whatsapp_number')->unique();
-            $table->string('password');
-            $table->enum('role', ['user', 'admin'])->default('user');
-            $table->timestamps();
+        Schema::table('bookings', function (Blueprint $table) {
+            $table->date('jadwal_tanggal')->after('seat_number');
+            $table->time('jadwal_jam')->after('jadwal_tanggal');
         });
     }
 
@@ -26,6 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::table('bookings', function (Blueprint $table) {
+            $table->dropColumn(['jadwal_tanggal', 'jadwal_jam']);
+        });
     }
 };

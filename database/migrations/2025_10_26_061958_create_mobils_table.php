@@ -11,12 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('mobils', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('whatsapp_number')->unique();
-            $table->string('password');
-            $table->enum('role', ['user', 'admin'])->default('user');
+            $table->string('nomor_polisi');
+            $table->string('jenis');
+            $table->integer('kapasitas');
+            $table->integer('tahun');
+            $table->string('merk');
+            $table->string('status')->default('Aktif');
             $table->timestamps();
         });
     }
@@ -26,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('mobils');
     }
 };

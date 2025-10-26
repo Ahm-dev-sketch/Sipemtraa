@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('rutes', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('whatsapp_number')->unique();
-            $table->string('password');
-            $table->enum('role', ['user', 'admin'])->default('user');
+            $table->string('kota_asal');
+            $table->string('kota_tujuan');
+            $table->string('jarak_estimasi');
+            $table->string('harga_tiket');
+            $table->string('status_rute')->default('Aktif');
             $table->timestamps();
         });
     }
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('rutes');
     }
 };
