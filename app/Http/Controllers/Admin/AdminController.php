@@ -4,12 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Support\Facades\Log; // Import Log facade
+use Illuminate\Support\Facades\Log;
 use App\Models\Jadwal;
 use App\Models\Booking;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\BookingStatusUpdated;
+use App\Services\WhatsappService;
 
 class AdminController extends Controller
 {
@@ -22,7 +21,7 @@ class AdminController extends Controller
             ->whereYear('created_at', now()->year)
             ->with('jadwal')
             ->get()
-            ->sum(function($booking) {
+            ->sum(function ($booking) {
                 return $booking->jadwal->harga;
             });
 
@@ -50,7 +49,7 @@ class AdminController extends Controller
                 ->whereDate('created_at', $date->format('Y-m-d'))
                 ->with('jadwal')
                 ->get()
-                ->sum(function($booking) {
+                ->sum(function ($booking) {
                     return $booking->jadwal->harga;
                 });
 
@@ -76,14 +75,14 @@ class AdminController extends Controller
         $search = $request->input('search');
 
         $jadwals = Jadwal::with('rute')
-            ->when($search, function($query, $search) {
-                return $query->whereHas('rute', function($q) use ($search) {
+            ->when($search, function ($query, $search) {
+                return $query->whereHas('rute', function ($q) use ($search) {
                     $q->where('kota_asal', 'like', "%{$search}%")
-                      ->orWhere('kota_tujuan', 'like', "%{$search}%");
+                        ->orWhere('kota_tujuan', 'like', "%{$search}%");
                 })
-                ->orWhere('tanggal', 'like', "%{$search}%")
-                ->orWhere('jam', 'like', "%{$search}%")
-                ->orWhere('harga', 'like', "%{$search}%");
+                    ->orWhere('tanggal', 'like', "%{$search}%")
+                    ->orWhere('jam', 'like', "%{$search}%")
+                    ->orWhere('harga', 'like', "%{$search}%");
             })->latest()->paginate(10);
 
         return view('admin.jadwals', compact('jadwals', 'search'));
@@ -148,23 +147,23 @@ class AdminController extends Controller
         $search = $request->input('search');
 
         $bookings = Booking::with(['user', 'jadwal.rute', 'jadwal.mobil'])
-            ->when($search, function($query, $search) {
-                return $query->whereHas('user', function($q) use ($search) {
-                           $q->where('name', 'like', "%{$search}%");
-                       })
-                       ->orWhereHas('jadwal.rute', function($q) use ($search) {
-                           $q->where('kota_asal', 'like', "%{$search}%")
-                             ->orWhere('kota_tujuan', 'like', "%{$search}%");
-                       })
-                       ->orWhereHas('jadwal', function($q) use ($search) {
-                           $q->where('tanggal', 'like', "%{$search}%");
-                       })
-                       ->orWhereHas('jadwal.mobil', function($q) use ($search) {
-                           $q->where('merk', 'like', "%{$search}%")
-                             ->orWhere('nomor_polisi', 'like', "%{$search}%");
-                       })
-                       ->orWhere('seat_number', 'like', "%{$search}%")
-                       ->orWhere('status', 'like', "%{$search}%");
+            ->when($search, function ($query, $search) {
+                return $query->whereHas('user', function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%");
+                })
+                    ->orWhereHas('jadwal.rute', function ($q) use ($search) {
+                        $q->where('kota_asal', 'like', "%{$search}%")
+                            ->orWhere('kota_tujuan', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('jadwal', function ($q) use ($search) {
+                        $q->where('tanggal', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('jadwal.mobil', function ($q) use ($search) {
+                        $q->where('merk', 'like', "%{$search}%")
+                            ->orWhere('nomor_polisi', 'like', "%{$search}%");
+                    })
+                    ->orWhere('seat_number', 'like', "%{$search}%")
+                    ->orWhere('status', 'like', "%{$search}%");
             })->latest()->paginate(10);
 
         return view('admin.bookings', compact('bookings', 'search'));
@@ -175,10 +174,10 @@ class AdminController extends Controller
     {
         $search = $request->input('search');
 
-        $customers = User::when($search, function($query, $search) {
+        $customers = User::when($search, function ($query, $search) {
             return $query->where('name', 'like', "%{$search}%")
-                         ->orWhere('email', 'like', "%{$search}%")
-                         ->orWhere('role', 'like', "%{$search}%");
+                ->orWhere('whatsapp_number', 'like', "%{$search}%")
+                ->orWhere('role', 'like', "%{$search}%");
         })->paginate(10);
 
         return view('admin.pelanggan', compact('customers', 'search'));
@@ -195,11 +194,11 @@ class AdminController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $customer->id,
+            'whatsapp_number' => 'required|string|unique:users,whatsapp_number,' . $customer->id,
             'role' => 'required|in:user,admin'
         ]);
 
-        $customer->update($request->only(['name', 'email', 'role']));
+        $customer->update($request->only(['name', 'whatsapp_number', 'role']));
 
         return redirect()->route('admin.pelanggan')->with('success', 'Data pelanggan berhasil diperbarui');
     }
@@ -215,12 +214,12 @@ class AdminController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
+            'whatsapp_number' => 'required|string|unique:users,whatsapp_number',
             'password' => 'required|min:6',
             'role' => 'required|in:user,admin'
         ]);
 
-        $userData = $request->only(['name', 'email', 'role']);
+        $userData = $request->only(['name', 'whatsapp_number', 'role']);
         $userData['password'] = bcrypt($request->password);
 
         User::create($userData);
@@ -239,7 +238,7 @@ class AdminController extends Controller
     public function laporan()
     {
         // Hitung total pendapatan
-        $totalPendapatan = Booking::where('status', 'setuju')->with('jadwal')->get()->sum(function($booking) {
+        $totalPendapatan = Booking::where('status', 'setuju')->with('jadwal')->get()->sum(function ($booking) {
             return $booking->jadwal->harga;
         });
 
@@ -249,7 +248,7 @@ class AdminController extends Controller
             ->whereYear('created_at', now()->year)
             ->with('jadwal')
             ->get()
-            ->sum(function($booking) {
+            ->sum(function ($booking) {
                 return $booking->jadwal->harga;
             });
 
@@ -268,7 +267,7 @@ class AdminController extends Controller
                 ->whereDate('created_at', $date->format('Y-m-d'))
                 ->with('jadwal')
                 ->get()
-                ->sum(function($booking) {
+                ->sum(function ($booking) {
                     return $booking->jadwal->harga;
                 });
 
@@ -293,10 +292,10 @@ class AdminController extends Controller
 
         if ($search) {
             $query->where('kota_asal', 'like', "%{$search}%")
-                  ->orWhere('kota_tujuan', 'like', "%{$search}%")
-                  ->orWhere('jarak_estimasi', 'like', "%{$search}%")
-                  ->orWhere('harga_tiket', 'like', "%{$search}%")
-                  ->orWhere('status_rute', 'like', "%{$search}%");
+                ->orWhere('kota_tujuan', 'like', "%{$search}%")
+                ->orWhere('jarak_estimasi', 'like', "%{$search}%")
+                ->orWhere('harga_tiket', 'like', "%{$search}%")
+                ->orWhere('status_rute', 'like', "%{$search}%");
         }
 
         $rutes = $query->latest()->paginate(10);
@@ -376,9 +375,9 @@ class AdminController extends Controller
 
         if ($search) {
             $query->where('nomor_polisi', 'like', "%{$search}%")
-                  ->orWhere('jenis', 'like', "%{$search}%")
-                  ->orWhere('merk', 'like', "%{$search}%")
-                  ->orWhere('status', 'like', "%{$search}%");
+                ->orWhere('jenis', 'like', "%{$search}%")
+                ->orWhere('merk', 'like', "%{$search}%")
+                ->orWhere('status', 'like', "%{$search}%");
         }
 
         $mobils = $query->latest()->paginate(10);
@@ -462,11 +461,11 @@ class AdminController extends Controller
 
         if ($search) {
             $query->where('nama', 'like', "%{$search}%")
-                  ->orWhere('telepon', 'like', "%{$search}%")
-                  ->orWhereHas('mobil', function($q) use ($search) {
-                      $q->where('merk', 'like', "%{$search}%")
+                ->orWhere('telepon', 'like', "%{$search}%")
+                ->orWhereHas('mobil', function ($q) use ($search) {
+                    $q->where('merk', 'like', "%{$search}%")
                         ->orWhere('nomor_polisi', 'like', "%{$search}%");
-                  });
+                });
         }
 
         $supirs = $query->with('mobil')->latest()->paginate(10);
@@ -543,13 +542,14 @@ class AdminController extends Controller
         $oldStatus = $booking->status;
         $booking->update(['status' => $request->status]);
 
-        // Kirim notifikasi email jika status berubah
+        // Kirim notifikasi whatsapp jika status berubah
         if ($oldStatus !== $request->status) {
             try {
-                Mail::to($booking->user->email)->send(new BookingStatusUpdated($booking));
+                $whatsappService = new WhatsappService();
+                $whatsappService->notifyBookingStatusUpdate($booking);
             } catch (\Exception $e) {
-                // Log error jika email gagal dikirim, tapi tetap lanjutkan proses
-                Log::error('Gagal mengirim email notifikasi: ' . $e->getMessage());
+                // Log error jika whatsapp gagal dikirim, tapi tetap lanjutkan proses
+                Log::error('Gagal mengirim whatsapp notifikasi: ' . $e->getMessage());
             }
         }
 
