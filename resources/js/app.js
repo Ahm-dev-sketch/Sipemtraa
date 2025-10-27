@@ -45,6 +45,20 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ======================
+    // Navbar scroll effect
+    // ======================
+    const navbar = document.getElementById("navbar");
+    if (navbar) {
+        window.addEventListener("scroll", () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add("bg-opacity-80", "backdrop-blur-md");
+            } else {
+                navbar.classList.remove("bg-opacity-80", "backdrop-blur-md");
+            }
+        });
+    }
+
+    // ======================
     // Greeting berdasarkan jam
     // ======================
     const updateGreeting = () => {
@@ -269,37 +283,277 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ======================
-// Counter animation
+// Page-specific JavaScript
 // ======================
-function animateCounter(el) {
-    const target = +el.getAttribute("data-target");
-    const suffix = el.getAttribute("data-suffix") || "";
-    let current = 0;
-    const increment = Math.ceil(target / 100);
-    const timer = setInterval(() => {
-        current += increment;
-        if (current >= target) {
-            el.textContent = target + suffix;
-            clearInterval(timer);
-        } else {
-            el.textContent = current + suffix;
-        }
-    }, 30);
+
+// Function to get current page path
+function getCurrentPage() {
+    return window.location.pathname;
 }
 
-const statsSection = document.getElementById("stats-section");
-if (statsSection) {
-    const counters = statsSection.querySelectorAll(".counter");
-    let started = false;
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting && !started) {
-                counters.forEach(counter => animateCounter(counter));
-                started = true;
+// Function to check if element exists
+function elementExists(selector) {
+    return document.querySelector(selector) !== null;
+}
+
+// ======================
+// Optimize AOS for home page
+// ======================
+if (getCurrentPage() === '/' || getCurrentPage().includes('home')) {
+    // Delay AOS initialization to improve initial load
+    setTimeout(() => {
+        AOS.refresh();
+    }, 100);
+}
+
+// ======================
+// Booking Step 1: City validation
+// ======================
+if (getCurrentPage().includes('/booking/step1')) {
+    const kotaAwal = document.getElementById('kota_awal');
+    const kotaTujuan = document.getElementById('kota_tujuan');
+
+    if (kotaAwal && kotaTujuan) {
+        function validateCities() {
+            if (kotaAwal.value && kotaTujuan.value && kotaAwal.value === kotaTujuan.value) {
+                alert('Kota awal dan tujuan tidak boleh sama');
+                kotaTujuan.value = '';
             }
+        }
+
+        kotaAwal.addEventListener('change', validateCities);
+        kotaTujuan.addEventListener('change', validateCities);
+    }
+}
+
+// ======================
+// Admin Rute Create: Price formatting and form confirmation
+// ======================
+if (getCurrentPage().includes('/admin/rute/create')) {
+    // Function to format number with Indonesian format (dots as thousands separator)
+    function formatNumber(num) {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    // Function to unformat number (remove dots)
+    function unformatNumber(str) {
+        return str.replace(/\./g, '');
+    }
+
+    const hargaInput = document.getElementById('harga_tiket');
+    if (hargaInput) {
+        hargaInput.addEventListener('input', function (e) {
+            let value = e.target.value;
+
+            // Remove any non-numeric characters except dots
+            value = value.replace(/[^\d.]/g, '');
+
+            // Remove existing dots to reformat
+            value = unformatNumber(value);
+
+            // Format with dots
+            if (value) {
+                value = formatNumber(value);
+            }
+
+            e.target.value = value;
         });
-    }, { threshold: 0.3 });
-    observer.observe(statsSection);
+    }
+
+    const formRute = document.getElementById('formRute');
+    if (formRute) {
+        formRute.addEventListener('submit', function (e) {
+            e.preventDefault(); // stop submit dulu
+
+            // Remove formatting before submit
+            if (hargaInput) {
+                hargaInput.value = unformatNumber(hargaInput.value);
+            }
+
+            Swal.fire({
+                title: 'Apakah kamu yakin?',
+                text: "Data rute akan ditambahkan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#16a34a',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Iya, simpan!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    e.target.submit();
+                }
+            });
+        });
+    }
+}
+
+// ======================
+// Admin Supir Create: Form confirmation
+// ======================
+if (getCurrentPage().includes('/admin/supir/create')) {
+    const formSupir = document.getElementById('formSupir');
+    if (formSupir) {
+        formSupir.addEventListener('submit', function (e) {
+            e.preventDefault(); // stop submit dulu
+            Swal.fire({
+                title: 'Apakah kamu yakin?',
+                text: "Data supir akan ditambahkan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#16a34a',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Iya, simpan!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    e.target.submit();
+                }
+            });
+        });
+    }
+}
+
+// ======================
+// Admin Mobil Create: Form confirmation
+// ======================
+if (getCurrentPage().includes('/admin/mobil/create')) {
+    const formMobil = document.getElementById('formMobil');
+    if (formMobil) {
+        formMobil.addEventListener('submit', function (e) {
+            e.preventDefault(); // stop submit dulu
+            Swal.fire({
+                title: 'Apakah kamu yakin?',
+                text: "Data mobil akan ditambahkan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#16a34a',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Iya, simpan!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    e.target.submit();
+                }
+            });
+        });
+    }
+}
+
+// ======================
+// Admin Pelanggan Create: Form confirmation
+// ======================
+if (getCurrentPage().includes('/admin/pelanggan/create')) {
+    const formPelanggan = document.getElementById('formPelanggan');
+    if (formPelanggan) {
+        formPelanggan.addEventListener('submit', function (e) {
+            e.preventDefault(); // stop submit dulu
+            Swal.fire({
+                title: 'Apakah kamu yakin?',
+                text: "Data pelanggan akan ditambahkan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#16a34a',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Iya, simpan!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    e.target.submit();
+                }
+            });
+        });
+    }
+}
+
+// ======================
+// Admin Jadwals Create: Form confirmation
+// ======================
+if (getCurrentPage().includes('/admin/jadwals/create')) {
+    const formJadwal = document.getElementById('formJadwal');
+    if (formJadwal) {
+        formJadwal.addEventListener('submit', function (e) {
+            e.preventDefault();
+            Swal.fire({
+                title: 'Apakah kamu yakin?',
+                text: "Jadwal baru akan ditambahkan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#16a34a',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Iya, simpan!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    e.target.submit();
+                }
+            });
+        });
+    }
+}
+
+// ======================
+// Counter animation (optimized for home page only)
+// ======================
+if (getCurrentPage() === '/' || getCurrentPage().includes('home')) {
+    function animateCounter(el) {
+        const target = +el.getAttribute("data-target");
+        const suffix = el.getAttribute("data-suffix") || "";
+        let current = 0;
+        const increment = Math.ceil(target / 100);
+        const timer = setInterval(() => {
+            current += increment;
+            if (current >= target) {
+                el.textContent = target + suffix;
+                clearInterval(timer);
+            } else {
+                el.textContent = current + suffix;
+            }
+        }, 30);
+    }
+
+    const statsSection = document.getElementById("stats-section");
+    if (statsSection) {
+        const counters = statsSection.querySelectorAll(".counter");
+        let started = false;
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !started) {
+                    counters.forEach(counter => animateCounter(counter));
+                    started = true;
+                }
+            });
+        }, { threshold: 0.3 });
+        observer.observe(statsSection);
+    }
+}
+
+// ======================
+// Lazy loading Google Maps
+// ======================
+if (getCurrentPage() === '/' || getCurrentPage().includes('home')) {
+    const mapContainers = document.querySelectorAll('.map-container');
+    mapContainers.forEach(container => {
+        const placeholder = container.querySelector('.map-placeholder');
+        if (placeholder) {
+            placeholder.addEventListener('click', function () {
+                const mapSrc = container.getAttribute('data-map-src');
+                if (mapSrc) {
+                    const iframe = document.createElement('iframe');
+                    iframe.src = mapSrc;
+                    iframe.width = '600';
+                    iframe.height = '450';
+                    iframe.style.border = '0';
+                    iframe.allowFullscreen = true;
+                    iframe.loading = 'lazy';
+                    iframe.referrerPolicy = 'no-referrer-when-downgrade';
+
+                    container.innerHTML = '';
+                    container.appendChild(iframe);
+                }
+            });
+        }
+    });
 }
 
 // ======================
@@ -317,21 +571,22 @@ document.querySelectorAll('form[action*="bookings"]').forEach(form => {
         // ambil detail booking dari tabel
         const row = this.closest('tr');
         const userName = row.querySelector('td:nth-child(1)').textContent.trim();
-        const destination = row.querySelector('td:nth-child(2)').textContent.trim();
-        const date = row.querySelector('td:nth-child(3)').textContent.trim();
+        const origin = row.querySelector('td:nth-child(2)').textContent.trim();
+        const destination = row.querySelector('td:nth-child(3)').textContent.trim();
+        const date = row.querySelector('td:nth-child(4)').textContent.trim();
 
         let confirmMessage = '';
         let confirmTitle = '';
 
         if (newStatus === 'setuju') {
             confirmTitle = 'Konfirmasi Persetujuan';
-            confirmMessage = `Apakah Anda yakin ingin menyetujui pemesanan untuk:\n\nUser: ${userName}\nTujuan: ${destination}\nTanggal: ${date}\nStatus: ${statusText}?`;
+            confirmMessage = `Apakah Anda yakin ingin menyetujui pemesanan untuk:\n\nUser: ${userName}\nTujuan: ${origin} - ${destination}\nTanggal: ${date}\nStatus: ${statusText}?`;
         } else if (newStatus === 'batal') {
             confirmTitle = 'Konfirmasi Pembatalan';
-            confirmMessage = `Apakah Anda yakin ingin membatalkan pemesanan untuk:\n\nUser: ${userName}\nTujuan: ${destination}\nTanggal: ${date}\nStatus: ${statusText}?`;
+            confirmMessage = `Apakah Anda yakin ingin membatalkan pemesanan untuk:\n\nUser: ${userName}\nTujuan: ${origin} - ${destination}\nTanggal: ${date}\nStatus: ${statusText}?`;
         } else {
             confirmTitle = 'Konfirmasi Perubahan Status';
-            confirmMessage = `Apakah Anda yakin ingin mengubah status pemesanan untuk:\n\nUser: ${userName}\nTujuan: ${destination}\nTanggal: ${date}\nStatus: ${statusText}?`;
+            confirmMessage = `Apakah Anda yakin ingin mengubah status pemesanan untuk:\n\nUser: ${userName}\nTujuan: ${origin} - ${destination}\nTanggal: ${date}\nStatus: ${statusText}?`;
         }
 
         Swal.fire({

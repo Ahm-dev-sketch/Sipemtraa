@@ -1,21 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-    @if(session('success'))
-        <script>
-            document.addEventListener("DOMContentLoaded", () => {
-                Swal.fire({
-                    icon: "success",
-                    title: "Berhasil",
-                    text: "{{ session('success') }}",
-                    confirmButtonText: "OK",
-                    showConfirmButton: true,
-                    timer: null
-                });
-            });
-        </script>
-    @endif
-
     <div class="flex items-center justify-between mb-6">
         <h1 class="text-2xl font-bold flex items-center gap-2" data-aos="fade-right">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24"
@@ -92,12 +77,14 @@
                         <td class="px-4 py-2 border border-white">
                             <div class="flex justify-center gap-3">
                                 {{-- Edit --}}
-                                <a href="{{ route('admin.supir.edit', $supir) }}" class="text-blue-600 hover:text-blue-800 flex items-center gap-1">
+                                <a href="{{ route('admin.supir.edit', $supir) }}"
+                                    class="text-blue-600 hover:text-blue-800 flex items-center gap-1">
                                     <i class="fa fa-edit"></i> Edit
                                 </a>
 
                                 {{-- Hapus --}}
-                                <form action="{{ route('admin.supir.destroy', $supir) }}" method="POST" class="delete-form">
+                                <form action="{{ route('admin.supir.destroy', $supir) }}" method="POST"
+                                    class="delete-form">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="text-red-600 hover:text-red-800 flex items-center gap-1">

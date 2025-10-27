@@ -9,12 +9,11 @@
     @if (app()->environment() !== 'testing')
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @endif
-    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
     @if (auth()->check() && auth()->user()->role === 'admin')
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
     @endif
 </head>
 
@@ -45,7 +44,7 @@
                        md:translate-x-0 transition-transform duration-300 md:static fixed z-50">
                 <div class="p-4 text-xl font-bold border-b border-blue-700 flex items-center gap-2">
                     <img src="{{ asset('logo.png') }}" alt="Logo" class="h-10 w-10 rounded-full object-cover">
-                    PT. PELITA TRANSPORT
+                    PT. PELITA TRAN PRIMA
                 </div>
 
                 <nav class="flex-1 p-4 space-y-2">
@@ -110,13 +109,14 @@
         </div>
     @else
         <!-- User Layout -->
-        <nav class="bg-blue-900 text-white shadow-md relative">
+        <nav id="navbar"
+            class="bg-[#062B72] text-white shadow-md fixed top-0 left-0 w-full z-50 transition-all duration-300">
             <div class="container mx-auto flex justify-between items-center px-4 py-3 md:px-6">
 
                 {{-- Logo --}}
                 <a href="{{ route('home') }}" class="flex items-center space-x-2 text-lg md:text-xl font-bold">
                     <img src="{{ asset('logo.png') }}" alt="Logo" class="h-10 w-10 rounded-full object-cover">
-                    <span>PT. PELITA TRANSPORT</span>
+                    <span>PT. PELITA TRAN PRIMA</span>
                 </a>
 
                 {{-- Hamburger mobile --}}
@@ -152,7 +152,8 @@
                     </a>
 
                     @guest
-                        <a href="{{ route('login') }}" class="px-4 py-2 bg-blue-500 rounded hover:bg-blue-600 transition">
+                        <a href="{{ route('login') }}"
+                            class="px-4 py-2 bg-[#FF6B2C] rounded hover:bg-[#E55A1F] transition">
                             Login
                         </a>
                     @else
@@ -186,7 +187,7 @@
             </div>
 
             {{-- Mobile Menu --}}
-            <div id="menu" class="hidden flex-col bg-blue-800 md:hidden px-6 py-4 space-y-2">
+            <div id="menu" class="hidden flex-col bg-[#062B72] md:hidden px-6 py-4 space-y-2">
                 <a href="{{ route('home') }}" class="block hover:text-blue-300">Home</a>
                 <a href="{{ route('jadwal') }}" class="block hover:text-blue-300">Jadwal Keberangkatan</a>
                 <a href="{{ auth()->check() ? route('pesan') : route('login') }}"
@@ -197,7 +198,7 @@
 
                 @guest
                     <a href="{{ route('login') }}"
-                        class="block px-4 py-2 bg-blue-500 rounded hover:bg-blue-600 transition">
+                        class="block px-4 py-2 bg-[#FF6B2C] rounded hover:bg-[#E55A1F] transition">
                         Login
                     </a>
                 @else
@@ -213,7 +214,7 @@
             </div>
         </nav>
 
-        <main class="min-h-screen">
+        <main class="min-h-screen pt-16">
             <div class="container mx-auto p-6">
                 @yield('content')
             </div>
