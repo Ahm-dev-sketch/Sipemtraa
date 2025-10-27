@@ -5,35 +5,37 @@
 
         {{-- Left side: Text --}}
         <div class="md:w-1/2 space-y-6 px-6" data-aos="fade-right">
-            <h1 class="text-4xl md:text-5xl font-bold leading-tight">
-                Travel Nyaman, Aman <br>
-                Dan Terpercaya Bersama <br>
-                <span class="text-blue-600">PT. Pelita Transport </span>
+            <h1 class="text-4xl md:text-5xl font-bold leading-relaxed">
+                <span class="text-[#062B72]">Travel Nyaman, Aman <br>
+                    Dan Terpercaya Bersama</span> <br>
+                <span class="text-[#FF6B2C]">PT. Pelita Tran Prima </span>
             </h1>
-            <p class="text-gray-600">
-                Pesan tiket travel dengan mudah dan cepat.
-                Cek jadwal keberangkatan, pilih rute, dan pesan tiket Anda secara online.
-                Kami siap melayani perjalanan Anda dengan armada yang nyaman dan aman.
-            </p>
+            <div class="mt-8">
+                <p class="text-gray-600">
+                    Pesan tiket travel dengan mudah dan cepat.
+                    Cek jadwal keberangkatan, pilih rute, dan pesan tiket Anda secara online.
+                    Kami siap melayani perjalanan Anda dengan armada yang nyaman dan aman.
+                </p>
+            </div>
             <div class="flex gap-4">
                 <a href="{{ route('pesan') }}"
-                    class="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition">
+                    class="px-6 py-3 bg-[#FF6B2C] text-white rounded-lg shadow hover:bg-[#E55A1F] transition">
                     Pesan Sekarang
                 </a>
                 <a href="{{ route('jadwal') }}"
                     class="px-6 py-3 border border-gray-400 rounded-lg hover:bg-gray-100 transition">
-                    Cek Jadwal & Tarif
+                    Lihat Jadwal
                 </a>
             </div>
         </div>
 
         {{-- Right side: Illustration --}}
         <div class="md:w-1/2 mt-10 md:mt-0 flex flex-col items-center" data-aos="fade-left">
-            <img src="{{ asset('home.jpg') }}" alt="Ilustrasi pemesanan tiket"
-                class="w-full max-w-lg rounded-2xl shadow-xl object-contain" />
+            <img src="{{ asset('asset/home.png') }}" alt="Ilustrasi pemesanan tiket"
+                class="w-full max-w-lg rounded-2xl shadow-xl object-contain" loading="lazy" />
 
             <div class="mt-6 mb-12 text-center">
-                <h3 class="font-bold text-xl md:text-2xl">PT. Pelita Transport</h3>
+                <h3 class="font-bold text-xl md:text-2xl">PT. Pelita Tran Prima</h3>
                 <p class="text-gray-500 text-base md:text-lg">Travel Terbaik Untuk Anda</p>
             </div>
         </div>
@@ -128,10 +130,15 @@
                 <div data-aos="fade-left">
                     <h3 class="text-2xl font-semibold mb-6 text-gray-800">Lokasi Kami</h3>
                     <div class="rounded-lg overflow-hidden shadow-lg">
-                        <iframe
-                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.692873287629!2d101.3479711!3d0.454352!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31d5a9de27931077%3A0xcd486083af3b9367!2sPelita%20Transport!5e0!3m2!1sen!2sid!4v1756371798177!5m2!1sen!2sid"
-                            width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
-                            referrerpolicy="no-referrer-when-downgrade"></iframe>
+                        <div class="map-container"
+                            data-map-src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.692873287629!2d101.3479711!3d0.454352!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31d5a9de27931077%3A0xcd486083af3b9367!2sPelita%20Transport!5e0!3m2!1sen!2sid!4v1756371798177!5m2!1sen!2sid">
+                            <div class="map-placeholder bg-gray-200 h-96 flex items-center justify-center">
+                                <div class="text-center">
+                                    <i class="fas fa-map-marked-alt text-4xl text-gray-400 mb-2"></i>
+                                    <p class="text-gray-500">Klik untuk memuat peta</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="mt-6">
@@ -233,7 +240,7 @@
             </div>
 
             <div class="border-t border-gray-700 mt-8 pt-8 text-center">
-                <p class="text-gray-300">&copy; 2024 PT. Pelita Transport. Semua hak dilindungi.</p>
+                <p class="text-gray-300">&copy; 2024 PT. Pelita Tran Prima. Semua hak dilindungi.</p>
             </div>
         </div>
     </footer>

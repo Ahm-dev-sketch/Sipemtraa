@@ -33,7 +33,8 @@
                     <option value="" disabled selected>Pilih Mobil</option>
                     @foreach ($mobils as $mobil)
                         <option value="{{ $mobil->id }}">{{ $mobil->merk }} - {{ $mobil->nomor_polisi }}
-                            ({{ $mobil->kapasitas }} kursi)</option>
+                            ({{ $mobil->kapasitas }} kursi)
+                        </option>
                     @endforeach
                 </select>
             </div>
@@ -76,25 +77,3 @@
         </form>
     </div>
 @endsection
-
-@push('scripts')
-    <script>
-        document.getElementById('formJadwal').addEventListener('submit', function(e) {
-            e.preventDefault();
-            Swal.fire({
-                title: 'Apakah kamu yakin?',
-                text: "Jadwal baru akan ditambahkan!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#16a34a',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Iya, simpan!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    e.target.submit();
-                }
-            });
-        });
-    </script>
-@endpush

@@ -124,8 +124,8 @@ class BookingController extends Controller
             ->pluck('seat_number')
             ->toArray();
 
-        // Layout kursi minibus (7 kursi)
-        $seats = ['A1', 'A2', 'A3', 'A4', 'B1', 'B2', 'B3'];
+        // Layout kursi minibus (13 kursi penumpang)
+        $seats = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'A9', 'A10', 'A11', 'A12', 'A13'];
 
         return view('booking.step3', compact('jadwal', 'seats', 'bookedSeats', 'step1Data', 'step2Data'));
     }
@@ -203,8 +203,8 @@ class BookingController extends Controller
             ->pluck('seat_number')
             ->toArray();
 
-        // Layout kursi minibus (7 kursi)
-        $seats = ['A1', 'A2', 'A3', 'A4', 'B1', 'B2', 'B3'];
+        // Layout kursi minibus (13 kursi penumpang)
+        $seats = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'A9', 'A10', 'A11', 'A12', 'A13'];
 
         return view('booking.kursi', compact('jadwal', 'seats', 'bookedSeats'));
     }
