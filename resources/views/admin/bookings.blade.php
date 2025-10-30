@@ -148,7 +148,7 @@
     </div>
 
     {{-- Pagination --}}
-    <div class="mt-6 flex justify-center" data-aos="fade-up" data-aos-delay="300">
+    <div class="mt-6 flex justify-end">
         {{ $bookings->links() }}
     </div>
 @endsection
