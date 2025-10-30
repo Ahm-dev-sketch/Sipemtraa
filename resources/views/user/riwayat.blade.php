@@ -57,29 +57,75 @@
                         </div>
                     </div>
 
-                    <div class="flex justify-between items-center">
-                        <div class="font-semibold text-lg text-gray-900">
-                            Total: Rp {{ number_format($booking->jadwal->harga ?? 0, 0, ',', '.') }}
-                        </div>
-                        @if ($booking->status == 'setuju' && $booking->payment_status == 'sudah_bayar')
-                            <a href="{{ route('booking.download.ticket', $booking) }}" target="_blank"
-                                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
-                                </svg>
-                                Download E-Ticket
-                            </a>
-                        @endif
-                    </div>
+                    {{-- <a href="{{ route('booking.download', $booking->id) }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
+                            </svg>
+                            Download E-Ticket
+                        </a> --}}
+                    {{-- Tombol Cancel hanya muncul jika status masih pending --}}
+                    @if ($booking->status === 'pending')
+                        <form action="{{ route('booking.cancel', $booking->id) }}" method="POST"
+                            onsubmit="return confirm('Yakin ingin membatalkan pesanan ini?')">
+                            @csrf
+                            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm">
+                                Batalkan
+                            </button>
+                        </form>
+                        >>>>>>> 905d5d13f7c0eef15dbcd37622f1675212b1ad34
+                    @endif
                 </div>
-            @endforeach
+                =======
+                <div class="flex justify-between items-center">
+                    <div class="font-semibold text-lg text-gray-900">
+                        Total: Rp {{ number_format($booking->jadwal->harga ?? 0, 0, ',', '.') }}
+                    </div>
+                    @if ($booking->status == 'setuju' && $booking->payment_status == 'sudah_bayar')
+                        <a href="{{ route('booking.download.ticket', $booking) }}" target="_blank"
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
+                            </svg>
+                            Download E-Ticket
+                        </a>
+                    @elseif($booking->status === 'pending')
+                        <form action="{{ route('booking.cancel', $booking->id) }}" method="POST"
+                            onsubmit="return confirm('Yakin ingin membatalkan pesanan ini?')">
+                            @csrf
+                            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm">
+                                Batalkan
+                            </button>
+                        </form>
+                    @endif
+                </div>
+                =======
+                {{-- <a href="{{ route('booking.download', $booking->id) }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
+                            </svg>
+                            Download E-Ticket
+                        </a> --}}
+                {{-- Tombol Cancel hanya muncul jika status masih pending --}}
+                @if ($booking->status === 'pending')
+                    <form action="{{ route('booking.cancel', $booking->id) }}" method="POST"
+                        onsubmit="return confirm('Yakin ingin membatalkan pesanan ini?')">
+                        @csrf
+                        <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm">
+                            Batalkan
+                        </button>
+                    </form>
+                    >>>>>>> 905d5d13f7c0eef15dbcd37622f1675212b1ad34
+                @endif
         </div>
+        </div>
+    @endforeach
+    </div>
 
-        {{-- Pagination --}}
-        <div class="mt-6 flex justify-end w-full pr-4" data-aos="fade-up" data-aos-delay="400">
-            {{ $bookings->links() }}
-        </div>
+    {{-- Pagination --}}
+    <div class="mt-6 flex justify-end w-full pr-4" data-aos="fade-up" data-aos-delay="400">
+        {{ $bookings->links() }}
+    </div>
     @endif
 @endsection

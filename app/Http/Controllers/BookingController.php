@@ -315,6 +315,29 @@ class BookingController extends Controller
         return response()->json($bookedSeats);
     }
 
+    // Batal pesanan
+    public function cancel($id)
+    {
+        $booking = Booking::findOrFail($id);
+
+        // Pastikan hanya pemilik booking yang bisa membatalkan
+        if ($booking->user_id !== Auth::id()) {
+            return back()->with('error', 'Anda tidak memiliki izin untuk membatalkan booking ini.');
+        }
+
+        // Hanya bisa dibatalkan jika masih pending
+        if ($booking->status !== 'pending') {
+            return back()->with('error', 'Booking tidak dapat dibatalkan karena sudah diproses.');
+        }
+
+        // Update status ke batal
+        $booking->update(['status' => 'batal']);
+
+        return back()->with('success', 'Booking berhasil dibatalkan.');
+    }
+
+>>>>>>> 905d5d13f7c0eef15dbcd37622f1675212b1ad34
+=======
     public function downloadTicket(Booking $booking)
     {
         // Pastikan user hanya bisa download tiketnya sendiri atau admin
@@ -348,4 +371,48 @@ class BookingController extends Controller
 
         return view('booking.ticket', compact('booking'));
     }
+
+    // Batal pesanan
+    public function cancel($id)
+    {
+        $booking = Booking::findOrFail($id);
+
+        // Pastikan hanya pemilik booking yang bisa membatalkan
+        if ($booking->user_id !== Auth::id()) {
+            return back()->with('error', 'Anda tidak memiliki izin untuk membatalkan booking ini.');
+        }
+
+        // Hanya bisa dibatalkan jika masih pending
+        if ($booking->status !== 'pending') {
+            return back()->with('error', 'Booking tidak dapat dibatalkan karena sudah diproses.');
+        }
+
+        // Update status ke batal
+        $booking->update(['status' => 'batal']);
+
+        return back()->with('success', 'Booking berhasil dibatalkan.');
+    }
+=======
+    // Batal pesanan
+    public function cancel($id)
+    {
+        $booking = Booking::findOrFail($id);
+
+        // Pastikan hanya pemilik booking yang bisa membatalkan
+        if ($booking->user_id !== Auth::id()) {
+            return back()->with('error', 'Anda tidak memiliki izin untuk membatalkan booking ini.');
+        }
+
+        // Hanya bisa dibatalkan jika masih pending
+        if ($booking->status !== 'pending') {
+            return back()->with('error', 'Booking tidak dapat dibatalkan karena sudah diproses.');
+        }
+
+        // Update status ke batal
+        $booking->update(['status' => 'batal']);
+
+        return back()->with('success', 'Booking berhasil dibatalkan.');
+    }
+
+>>>>>>> 905d5d13f7c0eef15dbcd37622f1675212b1ad34
 }
