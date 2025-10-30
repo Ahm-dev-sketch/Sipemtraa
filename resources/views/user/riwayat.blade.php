@@ -59,6 +59,15 @@
                             </svg>
                             Download E-Ticket
                         </a> --}}
+                        {{-- Tombol Cancel hanya muncul jika status masih pending --}}
+                        @if($booking->status === 'pending')
+                        <form action="{{ route('booking.cancel', $booking->id) }}" method="POST"
+                            onsubmit="return confirm('Yakin ingin membatalkan pesanan ini?')">
+                            @csrf
+                            <button type="submit"
+                                class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm">
+                                Batalkan
+                            </button>
                     </div>
                 </div>
             @endforeach
