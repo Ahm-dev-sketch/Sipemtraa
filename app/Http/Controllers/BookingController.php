@@ -9,9 +9,19 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use App\Services\WhatsappService;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class BookingController extends Controller
 {
+    private function generateTicketNumber()
+    {
+        do {
+            $ticketNumber = 'TKT-' . strtoupper(uniqid());
+        } while (Booking::where('ticket_number', $ticketNumber)->exists());
+
+        return $ticketNumber;
+    }
+
     public function index()
     {
         $bookings = Booking::with(['jadwal.rute'])
@@ -173,6 +183,8 @@ class BookingController extends Controller
                 'jadwal_id' => $jadwal->id,
                 'seat_number' => $seat,
                 'status' => 'pending',
+                'payment_status' => 'belum_bayar',
+                'ticket_number' => $this->generateTicketNumber(),
                 'jadwal_tanggal' => $jadwal->tanggal,
                 'jadwal_jam' => $jadwal->jam,
             ]);
@@ -261,6 +273,8 @@ class BookingController extends Controller
                 'jadwal_id'     => $jadwal->id,
                 'seat_number'   => $seat,
                 'status'        => 'pending',
+                'payment_status' => 'belum_bayar',
+                'ticket_number' => $this->generateTicketNumber(),
                 'jadwal_tanggal' => $jadwal->tanggal,
                 'jadwal_jam'    => $jadwal->jam,
             ]);
@@ -299,5 +313,39 @@ class BookingController extends Controller
             ->toArray();
 
         return response()->json($bookedSeats);
+    }
+
+    public function downloadTicket(Booking $booking)
+    {
+        // Pastikan user hanya bisa download tiketnya sendiri atau admin
+        if (Auth::id() !== $booking->user_id && Auth::user()->role !== 'admin') {
+            abort(403);
+        }
+
+        // Pastikan booking sudah disetujui dan sudah bayar
+        if ($booking->status !== 'setuju' || $booking->payment_status !== 'sudah_bayar') {
+            abort(403, 'Tiket belum dapat didownload');
+        }
+
+        $pdf = Pdf::loadView('booking.ticket', compact('booking'));
+
+        return $pdf->download('e-ticket-' . $booking->ticket_number . '.pdf');
+    }
+
+    public function viewTicket($ticketNumber)
+    {
+        $booking = Booking::where('ticket_number', $ticketNumber)->firstOrFail();
+
+        // Pastikan user hanya bisa lihat tiketnya sendiri atau admin
+        if (Auth::id() !== $booking->user_id && Auth::user()->role !== 'admin') {
+            abort(403);
+        }
+
+        // Pastikan booking sudah disetujui dan sudah bayar
+        if ($booking->status !== 'setuju' || $booking->payment_status !== 'sudah_bayar') {
+            abort(403, 'Tiket belum dapat dilihat');
+        }
+
+        return view('booking.ticket', compact('booking'));
     }
 }

@@ -3,8 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>PT. PELITA TRANSPORT</title>
-    <link rel="icon" type="image/png" href="{{ asset('logo.png') }}">
+    <title>PT. PELITA TRAN PRIMA</title>
+    <link rel="icon" type="image/png" href="{{ asset('asset/logo.png') }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     @if (app()->environment() !== 'testing')
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -43,7 +43,7 @@
                 class="w-64 min-h-screen bg-blue-900 text-white flex flex-col transform -translate-x-full
                        md:translate-x-0 transition-transform duration-300 md:static fixed z-50">
                 <div class="p-4 text-xl font-bold border-b border-blue-700 flex items-center gap-2">
-                    <img src="{{ asset('logo.png') }}" alt="Logo" class="h-10 w-10 rounded-full object-cover">
+                    <img src="{{ asset('asset/logo.png') }}" alt="Logo" class="h-10 w-10 rounded-full object-cover">
                     PT. PELITA TRAN PRIMA
                 </div>
 
@@ -89,6 +89,11 @@
                               {{ request()->routeIs('admin.supir') ? 'bg-blue-800' : '' }}">
                         <i class="fa fa-user"></i> Data Supir
                     </a>
+                    <a href="{{ route('admin.pembayaran') }}"
+                        class="flex items-center gap-2 py-2 px-3 rounded hover:bg-blue-700
+                              {{ request()->routeIs('admin.pembayaran') ? 'bg-blue-800' : '' }}">
+                        <i class="fa fa-money-bill-wave"></i> Kelola Pembayaran
+                    </a>
                 </nav>
 
                 <div class="p-4 border-t border-blue-700">
@@ -115,7 +120,8 @@
 
                 {{-- Logo --}}
                 <a href="{{ route('home') }}" class="flex items-center space-x-2 text-lg md:text-xl font-bold">
-                    <img src="{{ asset('logo.png') }}" alt="Logo" class="h-10 w-10 rounded-full object-cover">
+                    <img src="{{ asset('asset/logo.png') }}" alt="Logo"
+                        class="h-10 w-10 rounded-full object-cover">
                     <span>PT. PELITA TRAN PRIMA</span>
                 </a>
 

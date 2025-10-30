@@ -447,7 +447,7 @@ if (getCurrentPage().includes('/admin/pelanggan/create')) {
     const formPelanggan = document.getElementById('formPelanggan');
     if (formPelanggan) {
         formPelanggan.addEventListener('submit', function (e) {
-            e.preventDefault(); // stop submit dulu
+            e.preventDefault();
             Swal.fire({
                 title: 'Apakah kamu yakin?',
                 text: "Data pelanggan akan ditambahkan!",
@@ -563,10 +563,8 @@ document.querySelectorAll('form[action*="bookings"]').forEach(form => {
     form.addEventListener('submit', function (e) {
         e.preventDefault();
 
-        const select = this.querySelector('select[name="status"]');
-        const selectedOption = select.options[select.selectedIndex];
-        const newStatus = selectedOption.value;
-        const statusText = selectedOption.text;
+        const status = e.submitter.value;
+        const statusText = status === 'setuju' ? 'Setuju' : 'Batal';
 
         // ambil detail booking dari tabel
         const row = this.closest('tr');
@@ -578,15 +576,15 @@ document.querySelectorAll('form[action*="bookings"]').forEach(form => {
         let confirmMessage = '';
         let confirmTitle = '';
 
-        if (newStatus === 'setuju') {
+        if (status === 'setuju') {
             confirmTitle = 'Konfirmasi Persetujuan';
-            confirmMessage = `Apakah Anda yakin ingin menyetujui pemesanan untuk:\n\nUser: ${userName}\nTujuan: ${origin} - ${destination}\nTanggal: ${date}\nStatus: ${statusText}?`;
-        } else if (newStatus === 'batal') {
+            confirmMessage = `Apakah Anda yakin ingin menyetujui pemesanan untuk:\n\nPelanggan: ${userName}\nTujuan: ${origin} - ${destination}\nTanggal: ${date}\nStatus: ${statusText}?`;
+        } else if (status === 'batal') {
             confirmTitle = 'Konfirmasi Pembatalan';
-            confirmMessage = `Apakah Anda yakin ingin membatalkan pemesanan untuk:\n\nUser: ${userName}\nTujuan: ${origin} - ${destination}\nTanggal: ${date}\nStatus: ${statusText}?`;
+            confirmMessage = `Apakah Anda yakin ingin membatalkan pemesanan untuk:\n\nPelanggan: ${userName}\nTujuan: ${origin} - ${destination}\nTanggal: ${date}\nStatus: ${statusText}?`;
         } else {
             confirmTitle = 'Konfirmasi Perubahan Status';
-            confirmMessage = `Apakah Anda yakin ingin mengubah status pemesanan untuk:\n\nUser: ${userName}\nTujuan: ${origin} - ${destination}\nTanggal: ${date}\nStatus: ${statusText}?`;
+            confirmMessage = `Apakah Anda yakin ingin mengubah status pemesanan untuk:\n\nPelanggan: ${userName}\nTujuan: ${origin} - ${destination}\nTanggal: ${date}\nStatus: ${statusText}?`;
         }
 
         Swal.fire({

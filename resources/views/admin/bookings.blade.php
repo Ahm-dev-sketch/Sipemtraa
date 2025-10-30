@@ -29,11 +29,16 @@
                 @foreach ($bookings as $booking)
                     <tr class="hover:bg-gray-50 transition">
                         <td class="px-6 py-3 text-center border border-white">{{ $booking->user->name }}</td>
-                        <td class="px-6 py-3 text-center border border-white">{{ $booking->jadwal->rute ? $booking->jadwal->rute->kota_asal : '-' }}</td>
-                        <td class="px-6 py-3 text-center border border-white">{{ $booking->jadwal->rute ? $booking->jadwal->rute->kota_tujuan : '-' }}</td>
+                        <td class="px-6 py-3 text-center border border-white">
+                            {{ $booking->jadwal->rute ? $booking->jadwal->rute->kota_asal : '-' }}</td>
+                        <td class="px-6 py-3 text-center border border-white">
+                            {{ $booking->jadwal->rute ? $booking->jadwal->rute->kota_tujuan : '-' }}</td>
                         <td class="px-6 py-3 text-center border border-white">{{ $booking->jadwal_tanggal }}</td>
-                        <td class="px-6 py-3 text-center border border-white">{{ $booking->jadwal ? $booking->jadwal->jam : '-' }}</td>
-                        <td class="px-6 py-3 text-center border border-white">{{ $booking->jadwal->mobil ? $booking->jadwal->mobil->merk . ' (' . $booking->jadwal->mobil->nomor_polisi . ')' : '-' }}</td>
+                        <td class="px-6 py-3 text-center border border-white">
+                            {{ $booking->jadwal ? $booking->jadwal->jam : '-' }}</td>
+                        <td class="px-6 py-3 text-center border border-white">
+                            {{ $booking->jadwal->mobil ? $booking->jadwal->mobil->merk . ' (' . $booking->jadwal->mobil->nomor_polisi . ')' : '-' }}
+                        </td>
                         <td class="px-6 py-3 text-center border border-white">{{ $booking->seat_number }}</td>
                         <td class="px-6 py-3 text-center border border-white">
                             <span
@@ -50,19 +55,23 @@
                             <form action="{{ route('admin.bookings.update', $booking->id) }}" method="POST"
                                 class="flex items-center justify-center gap-2">
                                 @csrf @method('PUT')
-                                <select name="status"
-                                    class="border rounded px-2 py-1 text-sm focus:ring focus:ring-blue-300">
-                                    <option value="pending" {{ $booking->status == 'pending' ? 'selected' : '' }}>Pending
-                                    </option>
-                                    <option value="setuju" {{ $booking->status == 'setuju' ? 'selected' : '' }}>Setuju
-                                    </option>
-                                    <option value="batal" {{ $booking->status == 'batal' ? 'selected' : '' }}>Batal
-                                    </option>
-                                </select>
-                                <button type="submit"
-                                    class="bg-blue-600 text-white text-sm px-3 py-1 rounded hover:bg-blue-700 transition">
-                                    Simpan
-                                </button>
+                                <input type="hidden" name="status" id="status_{{ $booking->id }}" value="">
+                                @if ($booking->status !== 'batal')
+                                    <button type="submit"
+                                        onclick="document.getElementById('status_{{ $booking->id }}').value='setuju'"
+                                        class="bg-green-600 text-white text-sm px-3 py-1 rounded hover:bg-green-700 transition">
+                                        Setuju
+                                    </button>
+                                @endif
+                                @if ($booking->status !== 'batal')
+                                    <button type="submit"
+                                        onclick="document.getElementById('status_{{ $booking->id }}').value='batal'"
+                                        class="bg-red-600 text-white text-sm px-3 py-1 rounded hover:bg-red-700 transition">
+                                        Batalkan
+                                    </button>
+                                @else
+                                    <span class="text-gray-500 text-sm">No Action</span>
+                                @endif
                             </form>
                         </td>
                     </tr>

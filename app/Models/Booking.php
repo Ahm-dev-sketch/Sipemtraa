@@ -14,6 +14,8 @@ class Booking extends Model
         'jadwal_id',
         'seat_number',
         'status',
+        'payment_status',
+        'ticket_number',
         'jadwal_tanggal',
         'jadwal_jam',
     ];

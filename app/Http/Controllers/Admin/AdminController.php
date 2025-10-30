@@ -535,12 +535,39 @@ class AdminController extends Controller
     // Update status booking
     public function updateBooking(Request $request, Booking $booking)
     {
+        Log::info('Update booking called', [
+            'booking_id' => $booking->id,
+            'current_status' => $booking->status,
+            'requested_status' => $request->input('status')
+        ]);
+
         $request->validate([
             'status' => 'required|in:pending,setuju,batal'
         ]);
 
         $oldStatus = $booking->status;
-        $booking->update(['status' => $request->status]);
+
+        try {
+            // Update status untuk semua kasus (setuju, pending, atau batal)
+            $booking->update(['status' => $request->status]);
+
+            // Jika status diubah menjadi setuju, ubah payment_status menjadi belum_bayar (default)
+            if ($request->status === 'setuju') {
+                $booking->update(['payment_status' => 'belum_bayar']);
+            }
+
+            Log::info('Booking status updated successfully', [
+                'booking_id' => $booking->id,
+                'old_status' => $oldStatus,
+                'new_status' => $booking->status
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to update booking status', [
+                'booking_id' => $booking->id,
+                'error' => $e->getMessage()
+            ]);
+            return back()->with('error', 'Gagal memperbarui status booking: ' . $e->getMessage());
+        }
 
         // Kirim notifikasi whatsapp jika status berubah
         if ($oldStatus !== $request->status) {
@@ -554,5 +581,42 @@ class AdminController extends Controller
         }
 
         return back()->with('success', 'Status booking diperbarui!');
+    }
+
+    // Kelola Pembayaran
+    public function pembayaran(Request $request)
+    {
+        $search = $request->input('search');
+
+        $bookings = Booking::with(['user', 'jadwal.rute', 'jadwal.mobil'])
+            ->where('status', 'setuju')
+            ->when($search, function ($query, $search) {
+                return $query->whereHas('user', function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%");
+                })
+                    ->orWhereHas('jadwal.rute', function ($q) use ($search) {
+                        $q->where('kota_asal', 'like', "%{$search}%")
+                            ->orWhere('kota_tujuan', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('jadwal', function ($q) use ($search) {
+                        $q->where('tanggal', 'like', "%{$search}%");
+                    })
+                    ->orWhere('ticket_number', 'like', "%{$search}%")
+                    ->orWhere('payment_status', 'like', "%{$search}%");
+            })->latest()->paginate(10);
+
+        return view('admin.pembayaran', compact('bookings', 'search'));
+    }
+
+    // Update status pembayaran
+    public function updatePembayaran(Request $request, Booking $booking)
+    {
+        $request->validate([
+            'payment_status' => 'required|in:belum_bayar,sudah_bayar'
+        ]);
+
+        $booking->update(['payment_status' => $request->payment_status]);
+
+        return back()->with('success', 'Status pembayaran diperbarui!');
     }
 }
