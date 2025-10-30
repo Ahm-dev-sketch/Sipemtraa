@@ -111,7 +111,7 @@
     </div>
 
     {{-- Pagination --}}
-    <div class="mt-4 flex justify-end w-full pr-4" data-aos="fade-up" data-aos-delay="400">
+    <div class="mt-4 flex justify-end w-full pr-4">
         {{ $jadwals->links() }}
     </div>
 @endsection
