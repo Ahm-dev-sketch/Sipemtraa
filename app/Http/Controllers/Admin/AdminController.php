@@ -303,12 +303,35 @@ class AdminController extends Controller
             $pendapatan7Hari[] = $pendapatanHari;
         }
 
+        // Hitung pendapatan bulan ini per hari untuk pie chart
+        $pendapatanBulanIniPerHari = [];
+        $labelsBulanIni = [];
+
+        $daysInMonth = now()->daysInMonth;
+        for ($day = 1; $day <= $daysInMonth; $day++) {
+            $date = now()->setDay($day);
+            $labelsBulanIni[] = $date->format('d');
+
+            $pendapatanHari = Booking::where('status', 'setuju')
+                ->where('payment_status', 'sudah_bayar')
+                ->whereDate('created_at', $date->format('Y-m-d'))
+                ->with('jadwal')
+                ->get()
+                ->sum(function ($booking) {
+                    return $booking->jadwal->harga;
+                });
+
+            $pendapatanBulanIniPerHari[] = $pendapatanHari;
+        }
+
         return view('admin.laporan', [
             'totalPendapatan' => $totalPendapatan,
             'pendapatanBulanIni' => $pendapatanBulanIni,
             'transaksiSelesai' => $transaksiSelesai,
             'pendapatan7Hari' => $pendapatan7Hari,
             'labels7Hari' => $labels7Hari,
+            'pendapatanBulanIniPerHari' => $pendapatanBulanIniPerHari,
+            'labelsBulanIni' => $labelsBulanIni,
         ]);
     }
 

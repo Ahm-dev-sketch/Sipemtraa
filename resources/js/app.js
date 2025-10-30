@@ -739,24 +739,47 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Dashboard chart initialization
-    const dashboardChartCanvas = document.getElementById('chartPendapatan');
-    if (dashboardChartCanvas && dashboardChartCanvas.dataset.labels && dashboardChartCanvas.dataset.dashboard) {
-        const labels = JSON.parse(dashboardChartCanvas.dataset.labels);
-        const data = JSON.parse(dashboardChartCanvas.dataset.data);
+    // Dashboard chart initialization - Line Chart
+    const dashboardChartCanvasLine = document.getElementById('chartPendapatanLineDashboard');
+    if (dashboardChartCanvasLine && dashboardChartCanvasLine.dataset.labels && dashboardChartCanvasLine.dataset.dashboard) {
+        const labels = JSON.parse(dashboardChartCanvasLine.dataset.labels);
+        const data = JSON.parse(dashboardChartCanvasLine.dataset.data);
 
-        new Chart(dashboardChartCanvas, {
+        new Chart(dashboardChartCanvasLine, {
             type: 'line',
             data: {
                 labels: labels,
                 datasets: [{
                     label: 'Pendapatan',
                     data: data,
-                    borderColor: '#2563eb',
-                    backgroundColor: '#3b82f6',
-                    fill: false,
-                    tension: 0.3
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
                 }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function (value) {
+                                return 'Rp ' + value.toLocaleString('id-ID');
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                return 'Rp ' + context.parsed.y.toLocaleString('id-ID');
+                            }
+                        }
+                    }
+                }
             }
         });
     }
@@ -818,21 +841,141 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Laporan chart initialization
-    const laporanChartCanvas = document.getElementById('chartPendapatan');
-    if (laporanChartCanvas && laporanChartCanvas.dataset.labels && !laporanChartCanvas.dataset.dashboard) {
-        const labels = JSON.parse(laporanChartCanvas.dataset.labels);
-        const data = JSON.parse(laporanChartCanvas.dataset.data);
+    // Laporan chart initialization - Bar Chart
+    const laporanChartCanvasBar = document.getElementById('chartPendapatanBar');
+    if (laporanChartCanvasBar && laporanChartCanvasBar.dataset.labels) {
+        const labels = JSON.parse(laporanChartCanvasBar.dataset.labels);
+        const data = JSON.parse(laporanChartCanvasBar.dataset.data);
 
-        new Chart(laporanChartCanvas, {
+        new Chart(laporanChartCanvasBar, {
             type: 'bar',
             data: {
                 labels: labels,
                 datasets: [{
                     label: 'Pendapatan',
                     data: data,
-                    backgroundColor: '#3b82f6'
+                    backgroundColor: '#3b82f6',
+                    borderColor: '#2563eb',
+                    borderWidth: 1
                 }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function (value) {
+                                return 'Rp ' + value.toLocaleString('id-ID');
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                return 'Rp ' + context.parsed.y.toLocaleString('id-ID');
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Laporan chart initialization - Line Chart
+    const laporanChartCanvasLine = document.getElementById('chartPendapatanLine');
+    if (laporanChartCanvasLine && laporanChartCanvasLine.dataset.labels) {
+        const labels = JSON.parse(laporanChartCanvasLine.dataset.labels);
+        const data = JSON.parse(laporanChartCanvasLine.dataset.data);
+
+        new Chart(laporanChartCanvasLine, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Pendapatan',
+                    data: data,
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function (value) {
+                                return 'Rp ' + value.toLocaleString('id-ID');
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                return 'Rp ' + context.parsed.y.toLocaleString('id-ID');
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Laporan chart initialization - Pie Chart
+    const laporanChartCanvasPie = document.getElementById('chartPendapatanPie');
+    if (laporanChartCanvasPie && laporanChartCanvasPie.dataset.labels) {
+        const labels = JSON.parse(laporanChartCanvasPie.dataset.labels);
+        const data = JSON.parse(laporanChartCanvasPie.dataset.data);
+
+        new Chart(laporanChartCanvasPie, {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Pendapatan',
+                    data: data,
+                    backgroundColor: [
+                        '#3b82f6', // blue
+                        '#10b981', // green
+                        '#f59e0b', // yellow
+                        '#ef4444', // red
+                        '#8b5cf6', // purple
+                        '#06b6d4', // cyan
+                        '#f97316', // orange
+                        '#84cc16', // lime
+                        '#ec4899', // pink
+                        '#6b7280'  // gray
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false // Hide legend to reduce clutter
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                const label = context.label || '';
+                                const value = context.parsed;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = ((value / total) * 100).toFixed(1);
+                                return 'Tanggal ' + label + ': Rp ' + value.toLocaleString('id-ID') + ' (' + percentage + '%)';
+                            }
+                        }
+                    }
+                }
             }
         });
     }
