@@ -22,12 +22,36 @@ class BookingController extends Controller
         return $ticketNumber;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $bookings = Booking::with(['jadwal.rute'])
-            ->where('user_id', Auth::id())
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+        $query = Booking::with(['jadwal.rute', 'jadwal.mobil.supir', 'user'])
+            ->where('user_id', Auth::id());
+
+        // Search by ticket number or route
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('ticket_number', 'like', '%' . $search . '%')
+                    ->orWhereHas('jadwal.rute', function ($ruteQuery) use ($search) {
+                        $ruteQuery->where('kota_asal', 'like', '%' . $search . '%')
+                            ->orWhere('kota_tujuan', 'like', '%' . $search . '%');
+                    });
+            });
+        }
+
+        // Filter by status
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Filter by payment status
+        if ($request->filled('payment_status')) {
+            $query->where('payment_status', $request->payment_status);
+        }
+
+
+
+        $bookings = $query->orderBy('created_at', 'desc')->paginate(10)->appends($request->query());
 
         return view('user.riwayat', compact('bookings'));
     }
@@ -128,9 +152,16 @@ class BookingController extends Controller
 
         $jadwal = \App\Models\Jadwal::with('mobil.supir')->find($step2Data['jadwal']->id);
 
-        // Kursi yang sudah dibooking dengan status setuju (approved)
+        // Kursi yang sudah dibooking dengan status setuju (approved) atau pending yang belum expired (30 menit)
+        $threshold = \Carbon\Carbon::now()->subMinutes(30);
         $bookedSeats = Booking::where('jadwal_id', $jadwal->id)
-            ->where('status', 'setuju')
+            ->where(function ($query) use ($threshold) {
+                $query->where('status', 'setuju')
+                    ->orWhere(function ($q) use ($threshold) {
+                        $q->where('status', 'pending')
+                            ->where('created_at', '>=', $threshold);
+                    });
+            })
             ->pluck('seat_number')
             ->toArray();
 
@@ -315,29 +346,6 @@ class BookingController extends Controller
         return response()->json($bookedSeats);
     }
 
-    // Batal pesanan
-    public function cancel($id)
-    {
-        $booking = Booking::findOrFail($id);
-
-        // Pastikan hanya pemilik booking yang bisa membatalkan
-        if ($booking->user_id !== Auth::id()) {
-            return back()->with('error', 'Anda tidak memiliki izin untuk membatalkan booking ini.');
-        }
-
-        // Hanya bisa dibatalkan jika masih pending
-        if ($booking->status !== 'pending') {
-            return back()->with('error', 'Booking tidak dapat dibatalkan karena sudah diproses.');
-        }
-
-        // Update status ke batal
-        $booking->update(['status' => 'batal']);
-
-        return back()->with('success', 'Booking berhasil dibatalkan.');
-    }
-
->>>>>>> 905d5d13f7c0eef15dbcd37622f1675212b1ad34
-=======
     public function downloadTicket(Booking $booking)
     {
         // Pastikan user hanya bisa download tiketnya sendiri atau admin
@@ -379,40 +387,17 @@ class BookingController extends Controller
 
         // Pastikan hanya pemilik booking yang bisa membatalkan
         if ($booking->user_id !== Auth::id()) {
-            return back()->with('error', 'Anda tidak memiliki izin untuk membatalkan booking ini.');
+            return back()->with('error', 'Anda tidak memiliki izin untuk membatalkan pesanan ini.');
         }
 
         // Hanya bisa dibatalkan jika masih pending
         if ($booking->status !== 'pending') {
-            return back()->with('error', 'Booking tidak dapat dibatalkan karena sudah diproses.');
+            return back()->with('error', 'Pesanan tidak dapat dibatalkan karena sudah diproses.');
         }
 
         // Update status ke batal
         $booking->update(['status' => 'batal']);
 
-        return back()->with('success', 'Booking berhasil dibatalkan.');
+        return back()->with('success', 'Pesanan berhasil dibatalkan.');
     }
-=======
-    // Batal pesanan
-    public function cancel($id)
-    {
-        $booking = Booking::findOrFail($id);
-
-        // Pastikan hanya pemilik booking yang bisa membatalkan
-        if ($booking->user_id !== Auth::id()) {
-            return back()->with('error', 'Anda tidak memiliki izin untuk membatalkan booking ini.');
-        }
-
-        // Hanya bisa dibatalkan jika masih pending
-        if ($booking->status !== 'pending') {
-            return back()->with('error', 'Booking tidak dapat dibatalkan karena sudah diproses.');
-        }
-
-        // Update status ke batal
-        $booking->update(['status' => 'batal']);
-
-        return back()->with('success', 'Booking berhasil dibatalkan.');
-    }
-
->>>>>>> 905d5d13f7c0eef15dbcd37622f1675212b1ad34
 }

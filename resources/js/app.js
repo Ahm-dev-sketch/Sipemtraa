@@ -291,6 +291,32 @@ function getCurrentPage() {
     return window.location.pathname;
 }
 
+// ======================
+// Riwayat: Cancel booking confirmation
+// ======================
+if (getCurrentPage().includes('/riwayat')) {
+    const cancelForms = document.querySelectorAll('.cancel-booking-form');
+    cancelForms.forEach(form => {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: 'Yakin ingin membatalkan pesanan ini?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, batalkan!',
+                cancelButtonText: 'Tidak'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+    });
+}
+
 // Function to check if element exists
 function elementExists(selector) {
     return document.querySelector(selector) !== null;
@@ -559,58 +585,62 @@ if (getCurrentPage() === '/' || getCurrentPage().includes('home')) {
 // ======================
 // BOOKING: Konfirmasi update status di admin
 // ======================
-document.querySelectorAll('form[action*="bookings"]').forEach(form => {
-    form.addEventListener('submit', function (e) {
-        e.preventDefault();
+// Hanya target form yang memiliki input hidden 'status' (untuk update status booking)
+document.querySelectorAll('form[action*="bookings"] input[name="status"]').forEach(input => {
+    const form = input.closest('form');
+    if (form) {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
 
-        const status = e.submitter.value;
-        const statusText = status === 'setuju' ? 'Setuju' : 'Batal';
+            const status = e.submitter.value;
+            const statusText = status === 'setuju' ? 'Setuju' : 'Batal';
 
-        // ambil detail booking dari tabel
-        const row = this.closest('tr');
-        const userName = row.querySelector('td:nth-child(1)').textContent.trim();
-        const origin = row.querySelector('td:nth-child(2)').textContent.trim();
-        const destination = row.querySelector('td:nth-child(3)').textContent.trim();
-        const date = row.querySelector('td:nth-child(4)').textContent.trim();
+            // ambil detail booking dari tabel
+            const row = this.closest('tr');
+            const userName = row.querySelector('td:nth-child(1)').textContent.trim();
+            const origin = row.querySelector('td:nth-child(2)').textContent.trim();
+            const destination = row.querySelector('td:nth-child(3)').textContent.trim();
+            const date = row.querySelector('td:nth-child(4)').textContent.trim();
 
-        let confirmMessage = '';
-        let confirmTitle = '';
+            let confirmMessage = '';
+            let confirmTitle = '';
 
-        if (status === 'setuju') {
-            confirmTitle = 'Konfirmasi Persetujuan';
-            confirmMessage = `Apakah Anda yakin ingin menyetujui pemesanan untuk:\n\nPelanggan: ${userName}\nTujuan: ${origin} - ${destination}\nTanggal: ${date}\nStatus: ${statusText}?`;
-        } else if (status === 'batal') {
-            confirmTitle = 'Konfirmasi Pembatalan';
-            confirmMessage = `Apakah Anda yakin ingin membatalkan pemesanan untuk:\n\nPelanggan: ${userName}\nTujuan: ${origin} - ${destination}\nTanggal: ${date}\nStatus: ${statusText}?`;
-        } else {
-            confirmTitle = 'Konfirmasi Perubahan Status';
-            confirmMessage = `Apakah Anda yakin ingin mengubah status pemesanan untuk:\n\nPelanggan: ${userName}\nTujuan: ${origin} - ${destination}\nTanggal: ${date}\nStatus: ${statusText}?`;
-        }
-
-        Swal.fire({
-            title: confirmTitle,
-            text: confirmMessage,
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Ya, Lanjutkan',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    title: 'Memproses...',
-                    text: 'Mohon tunggu sebentar',
-                    allowOutsideClick: false,
-                    showConfirmButton: false,
-                    willOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
-                this.submit();
+            if (status === 'setuju') {
+                confirmTitle = 'Konfirmasi Persetujuan';
+                confirmMessage = `Apakah Anda yakin ingin menyetujui pemesanan untuk:\n\nPelanggan: ${userName}\nTujuan: ${origin} - ${destination}\nTanggal: ${date}\nStatus: ${statusText}?`;
+            } else if (status === 'batal') {
+                confirmTitle = 'Konfirmasi Pembatalan';
+                confirmMessage = `Apakah Anda yakin ingin membatalkan pemesanan untuk:\n\nPelanggan: ${userName}\nTujuan: ${origin} - ${destination}\nTanggal: ${date}\nStatus: ${statusText}?`;
+            } else {
+                confirmTitle = 'Konfirmasi Perubahan Status';
+                confirmMessage = `Apakah Anda yakin ingin mengubah status pemesanan untuk:\n\nPelanggan: ${userName}\nTujuan: ${origin} - ${destination}\nTanggal: ${date}\nStatus: ${statusText}?`;
             }
+
+            Swal.fire({
+                title: confirmTitle,
+                text: confirmMessage,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, Lanjutkan',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Memproses...',
+                        text: 'Mohon tunggu sebentar',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        willOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                    this.submit();
+                }
+            });
         });
-    });
+    }
 });
 
 // ======================
