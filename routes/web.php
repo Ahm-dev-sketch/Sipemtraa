@@ -24,6 +24,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/bookings', [AdminController::class, 'bookings'])->name('bookings');
     Route::put('/bookings/{booking}', [AdminController::class, 'updateBooking'])->name('bookings.update');
 
+    // Kelola Pembayaran
+    Route::get('/pembayaran', [AdminController::class, 'pembayaran'])->name('pembayaran');
+    Route::put('/pembayaran/{booking}', [AdminController::class, 'updatePembayaran'])->name('pembayaran.update');
+
     // AJAX untuk kursi realtime
     Route::get('/jadwal/{id}/seats', [BookingController::class, 'getSeats'])->name('jadwal.seats');
 
@@ -108,6 +112,12 @@ Route::middleware('auth')->group(function () {
 
     // Update booking status
     Route::patch('/booking/{booking}/status', [BookingController::class, 'updateStatus'])->name('booking.update.status');
+
+    // Download e-ticket
+    Route::get('/booking/{booking}/download-ticket', [BookingController::class, 'downloadTicket'])->name('booking.download.ticket');
+
+    // View e-ticket
+    Route::get('/booking/{ticketNumber}/ticket', [BookingController::class, 'viewTicket'])->name('booking.ticket');
 
     // Added route for fetching booked seats dynamically
     Route::get('/jadwal/{jadwal}/seats', [JadwalController::class, 'getBookedSeats']);

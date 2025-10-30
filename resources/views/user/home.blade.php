@@ -18,12 +18,8 @@
                 </p>
             </div>
             <div class="flex gap-4">
-                <a href="{{ route('pesan') }}"
-                    class="px-6 py-3 bg-[#FF6B2C] text-white rounded-lg shadow hover:bg-[#E55A1F] transition">
-                    Pesan Sekarang
-                </a>
                 <a href="{{ route('jadwal') }}"
-                    class="px-6 py-3 border border-gray-400 rounded-lg hover:bg-gray-100 transition">
+                    class="px-6 py-3 bg-[#FF6B2C] text-white rounded-lg shadow hover:bg-[#E55A1F] transition">
                     Lihat Jadwal
                 </a>
             </div>

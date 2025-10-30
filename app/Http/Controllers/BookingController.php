@@ -9,9 +9,19 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use App\Services\WhatsappService;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class BookingController extends Controller
 {
+    private function generateTicketNumber()
+    {
+        do {
+            $ticketNumber = 'TKT-' . strtoupper(uniqid());
+        } while (Booking::where('ticket_number', $ticketNumber)->exists());
+
+        return $ticketNumber;
+    }
+
     public function index()
     {
         $bookings = Booking::with(['jadwal.rute'])
@@ -173,6 +183,8 @@ class BookingController extends Controller
                 'jadwal_id' => $jadwal->id,
                 'seat_number' => $seat,
                 'status' => 'pending',
+                'payment_status' => 'belum_bayar',
+                'ticket_number' => $this->generateTicketNumber(),
                 'jadwal_tanggal' => $jadwal->tanggal,
                 'jadwal_jam' => $jadwal->jam,
             ]);
@@ -261,6 +273,8 @@ class BookingController extends Controller
                 'jadwal_id'     => $jadwal->id,
                 'seat_number'   => $seat,
                 'status'        => 'pending',
+                'payment_status' => 'belum_bayar',
+                'ticket_number' => $this->generateTicketNumber(),
                 'jadwal_tanggal' => $jadwal->tanggal,
                 'jadwal_jam'    => $jadwal->jam,
             ]);
@@ -322,4 +336,83 @@ class BookingController extends Controller
         return back()->with('success', 'Booking berhasil dibatalkan.');
     }
 
+>>>>>>> 905d5d13f7c0eef15dbcd37622f1675212b1ad34
+=======
+    public function downloadTicket(Booking $booking)
+    {
+        // Pastikan user hanya bisa download tiketnya sendiri atau admin
+        if (Auth::id() !== $booking->user_id && Auth::user()->role !== 'admin') {
+            abort(403);
+        }
+
+        // Pastikan booking sudah disetujui dan sudah bayar
+        if ($booking->status !== 'setuju' || $booking->payment_status !== 'sudah_bayar') {
+            abort(403, 'Tiket belum dapat didownload');
+        }
+
+        $pdf = Pdf::loadView('booking.ticket', compact('booking'));
+
+        return $pdf->download('e-ticket-' . $booking->ticket_number . '.pdf');
+    }
+
+    public function viewTicket($ticketNumber)
+    {
+        $booking = Booking::where('ticket_number', $ticketNumber)->firstOrFail();
+
+        // Pastikan user hanya bisa lihat tiketnya sendiri atau admin
+        if (Auth::id() !== $booking->user_id && Auth::user()->role !== 'admin') {
+            abort(403);
+        }
+
+        // Pastikan booking sudah disetujui dan sudah bayar
+        if ($booking->status !== 'setuju' || $booking->payment_status !== 'sudah_bayar') {
+            abort(403, 'Tiket belum dapat dilihat');
+        }
+
+        return view('booking.ticket', compact('booking'));
+    }
+
+    // Batal pesanan
+    public function cancel($id)
+    {
+        $booking = Booking::findOrFail($id);
+
+        // Pastikan hanya pemilik booking yang bisa membatalkan
+        if ($booking->user_id !== Auth::id()) {
+            return back()->with('error', 'Anda tidak memiliki izin untuk membatalkan booking ini.');
+        }
+
+        // Hanya bisa dibatalkan jika masih pending
+        if ($booking->status !== 'pending') {
+            return back()->with('error', 'Booking tidak dapat dibatalkan karena sudah diproses.');
+        }
+
+        // Update status ke batal
+        $booking->update(['status' => 'batal']);
+
+        return back()->with('success', 'Booking berhasil dibatalkan.');
+    }
+=======
+    // Batal pesanan
+    public function cancel($id)
+    {
+        $booking = Booking::findOrFail($id);
+
+        // Pastikan hanya pemilik booking yang bisa membatalkan
+        if ($booking->user_id !== Auth::id()) {
+            return back()->with('error', 'Anda tidak memiliki izin untuk membatalkan booking ini.');
+        }
+
+        // Hanya bisa dibatalkan jika masih pending
+        if ($booking->status !== 'pending') {
+            return back()->with('error', 'Booking tidak dapat dibatalkan karena sudah diproses.');
+        }
+
+        // Update status ke batal
+        $booking->update(['status' => 'batal']);
+
+        return back()->with('success', 'Booking berhasil dibatalkan.');
+    }
+
+>>>>>>> 905d5d13f7c0eef15dbcd37622f1675212b1ad34
 }
