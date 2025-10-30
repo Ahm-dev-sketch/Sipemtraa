@@ -12,3 +12,8 @@ Artisan::command('inspire', function () {
 Schedule::command('schedules:generate-daily --days=7')
     ->dailyAt('02:00') // Run every day at 2 AM
     ->withoutOverlapping(); // Prevent overlapping executions
+
+// Schedule to cancel expired pending bookings every 5 minutes
+Schedule::command('bookings:cancel-expired')
+    ->everyFiveMinutes()
+    ->withoutOverlapping();

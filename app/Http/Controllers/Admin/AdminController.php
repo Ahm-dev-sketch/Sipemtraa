@@ -15,8 +15,9 @@ class AdminController extends Controller
     // Dashboard
     public function dashboard()
     {
-        // Hitung total pendapatan bulan ini dari booking yang disetujui
+        // Hitung total pendapatan bulan ini dari booking yang disetujui dan sudah bayar
         $totalPendapatanBulanIni = Booking::where('status', 'setuju')
+            ->where('payment_status', 'sudah_bayar')
             ->whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)
             ->with('jadwal')
@@ -37,7 +38,7 @@ class AdminController extends Controller
         // Hitung total semua pelanggan
         $totalPelanggan = User::count();
 
-        // Hitung pendapatan 7 hari terakhir untuk chart
+        // Hitung pendapatan 7 hari terakhir untuk chart (hanya yang sudah bayar)
         $pendapatan7Hari = [];
         $labels7Hari = [];
 
@@ -46,6 +47,7 @@ class AdminController extends Controller
             $labels7Hari[] = $date->format('d M');
 
             $pendapatanHari = Booking::where('status', 'setuju')
+                ->where('payment_status', 'sudah_bayar')
                 ->whereDate('created_at', $date->format('Y-m-d'))
                 ->with('jadwal')
                 ->get()
@@ -141,32 +143,51 @@ class AdminController extends Controller
         return back()->with('success', 'Jadwal berhasil dihapus');
     }
 
-    // Kelola Booking
     public function bookings(Request $request)
     {
-        $search = $request->input('search');
+        $search  = $request->input('search');
+        $status  = $request->input('status');
+        $rute_id = $request->input('rute_id');
 
         $bookings = Booking::with(['user', 'jadwal.rute', 'jadwal.mobil'])
-            ->when($search, function ($query, $search) {
-                return $query->whereHas('user', function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%");
-                })
-                    ->orWhereHas('jadwal.rute', function ($q) use ($search) {
-                        $q->where('kota_asal', 'like', "%{$search}%")
-                            ->orWhere('kota_tujuan', 'like', "%{$search}%");
-                    })
-                    ->orWhereHas('jadwal', function ($q) use ($search) {
-                        $q->where('tanggal', 'like', "%{$search}%");
-                    })
-                    ->orWhereHas('jadwal.mobil', function ($q) use ($search) {
-                        $q->where('merk', 'like', "%{$search}%")
-                            ->orWhere('nomor_polisi', 'like', "%{$search}%");
-                    })
-                    ->orWhere('seat_number', 'like', "%{$search}%")
-                    ->orWhere('status', 'like', "%{$search}%");
-            })->latest()->paginate(10);
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->whereHas(
+                        'user',
+                        fn($subQ) =>
+                        $subQ->where('name', 'like', "%{$search}%")
+                    )
+                        ->orWhereHas(
+                            'jadwal.rute',
+                            fn($subQ) =>
+                            $subQ->where('kota_asal', 'like', "%{$search}%")
+                                ->orWhere('kota_tujuan', 'like', "%{$search}%")
+                        )
+                        ->orWhereHas(
+                            'jadwal.mobil',
+                            fn($subQ) =>
+                            $subQ->where('merk', 'like', "%{$search}%")
+                                ->orWhere('nomor_polisi', 'like', "%{$search}%")
+                        )
+                        // gunakan kolom dari tabel bookings
+                        ->orWhere('jadwal_tanggal', 'like', "%{$search}%")
+                        ->orWhere('jadwal_jam', 'like', "%{$search}%")
+                        ->orWhere('seat_number', 'like', "%{$search}%")
+                        ->orWhere('status', 'like', "%{$search}%")
+                        ->orWhere('ticket_number', 'like', "%{$search}%");
+                });
+            })
+            ->when($status, fn($query, $status) => $query->where('status', $status))
+            ->when($rute_id, function ($query, $rute_id) {
+                $query->whereHas('jadwal', fn($q) => $q->where('rute_id', $rute_id));
+            })
+            ->latest()
+            ->paginate(10)
+            ->appends(request()->query());
 
-        return view('admin.bookings', compact('bookings', 'search'));
+        $rutes = \App\Models\Rute::select('id', 'kota_asal', 'kota_tujuan')->get();
+
+        return view('admin.bookings', compact('bookings', 'search', 'status', 'rute_id', 'rutes'));
     }
 
     // Kelola Pelanggan
@@ -237,13 +258,18 @@ class AdminController extends Controller
     // Laporan pendapatan
     public function laporan()
     {
-        // Hitung total pendapatan
-        $totalPendapatan = Booking::where('status', 'setuju')->with('jadwal')->get()->sum(function ($booking) {
-            return $booking->jadwal->harga;
-        });
+        // Hitung total pendapatan (hanya yang sudah bayar)
+        $totalPendapatan = Booking::where('status', 'setuju')
+            ->where('payment_status', 'sudah_bayar')
+            ->with('jadwal')
+            ->get()
+            ->sum(function ($booking) {
+                return $booking->jadwal->harga;
+            });
 
-        // Hitung pendapatan bulan ini
+        // Hitung pendapatan bulan ini (hanya yang sudah bayar)
         $pendapatanBulanIni = Booking::where('status', 'setuju')
+            ->where('payment_status', 'sudah_bayar')
             ->whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)
             ->with('jadwal')
@@ -252,10 +278,12 @@ class AdminController extends Controller
                 return $booking->jadwal->harga;
             });
 
-        // Hitung transaksi selesai
-        $transaksiSelesai = Booking::where('status', 'setuju')->count();
+        // Hitung transaksi selesai (hanya yang sudah bayar)
+        $transaksiSelesai = Booking::where('status', 'setuju')
+            ->where('payment_status', 'sudah_bayar')
+            ->count();
 
-        // Hitung pendapatan 7 hari terakhir untuk chart
+        // Hitung pendapatan 7 hari terakhir untuk chart (hanya yang sudah bayar)
         $pendapatan7Hari = [];
         $labels7Hari = [];
 
@@ -264,6 +292,7 @@ class AdminController extends Controller
             $labels7Hari[] = $date->format('d M');
 
             $pendapatanHari = Booking::where('status', 'setuju')
+                ->where('payment_status', 'sudah_bayar')
                 ->whereDate('created_at', $date->format('Y-m-d'))
                 ->with('jadwal')
                 ->get()
@@ -587,6 +616,7 @@ class AdminController extends Controller
     public function pembayaran(Request $request)
     {
         $search = $request->input('search');
+        $payment_status = $request->input('payment_status');
 
         $bookings = Booking::with(['user', 'jadwal.rute', 'jadwal.mobil'])
             ->where('status', 'setuju')
@@ -603,9 +633,13 @@ class AdminController extends Controller
                     })
                     ->orWhere('ticket_number', 'like', "%{$search}%")
                     ->orWhere('payment_status', 'like', "%{$search}%");
-            })->latest()->paginate(10);
+            })
+            ->when($payment_status, function ($query, $payment_status) {
+                return $query->where('payment_status', $payment_status);
+            })
+            ->latest()->paginate(10);
 
-        return view('admin.pembayaran', compact('bookings', 'search'));
+        return view('admin.pembayaran', compact('bookings', 'search', 'payment_status'));
     }
 
     // Update status pembayaran
