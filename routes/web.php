@@ -100,6 +100,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/riwayat', [BookingController::class, 'index'])->name('riwayat');
 
+    Route::post('/booking/{id}/cancel', [BookingController::class, 'cancel'])->name('booking.cancel');
+
+
     // Legacy route for backward compatibility
     Route::post('/pesan-tiket', [BookingController::class, 'store'])->name('booking.store');
 
