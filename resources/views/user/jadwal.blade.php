@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
 @section('content')
-    <h2 class="text-2xl font-bold mb-4" data-aos="fade-down">
+    <h2 class="text-2xl font-bold mb-4 fade-down animate-on-scroll">
         Jadwal Keberangkatan
     </h2>
 
     {{-- Search Form --}}
     <form method="GET" action="{{ route('jadwal') }}"
-        class="mb-6 flex flex-col sm:flex-row items-stretch sm:items-center gap-2" data-aos="fade-right">
+        class="mb-6 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 fade-right animate-on-scroll">
 
         <!-- Input dengan Icon -->
         <div class="relative flex-1">
@@ -37,10 +37,10 @@
     </form>
 
     @if ($jadwals->isEmpty())
-        <p class="text-gray-500" data-aos="fade-up">Tidak ada jadwal ditemukan.</p>
+        <p class="text-gray-500 fade-up animate-on-scroll">Tidak ada jadwal ditemukan.</p>
     @else
         {{-- Card Table --}}
-        <div class="bg-white rounded shadow overflow-x-auto" data-aos="fade-up" data-aos-delay="200">
+        <div class="bg-white rounded shadow overflow-x-auto fade-up animate-on-scroll">
             <table class="w-full border border-gray-200">
                 <thead class="bg-blue-600 text-white">
                     <tr>
@@ -53,7 +53,7 @@
                 </thead>
                 <tbody class="text-center">
                     @foreach ($jadwals as $index => $jadwal)
-                        <tr class="hover:bg-gray-50" data-aos="fade-up" data-aos-delay="{{ $index * 100 }}">
+                        <tr class="hover:bg-gray-50 fade-up animate-on-scroll">
                             <td class="px-4 py-2 border">{{ $jadwal->rute->kota_asal ?? '-' }}</td>
                             <td class="px-4 py-2 border">{{ $jadwal->rute->kota_tujuan ?? '-' }}</td>
                             <td class="px-4 py-2 border">

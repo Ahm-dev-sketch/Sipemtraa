@@ -4,7 +4,7 @@
     <div class="min-h-screen bg-gray-50 py-8">
         <div class="max-w-4xl mx-auto px-4">
             <!-- Progress Bar -->
-            <div class="mb-8" data-aos="fade-down" data-aos-duration="800">
+            <div class="mb-8 fade-down animate-on-scroll">
                 <div class="flex items-center justify-center">
                     <div class="flex items-center space-x-4">
                         <!-- Step 1 -->
@@ -44,14 +44,14 @@
             </div>
 
             <!-- Main Content -->
-            <div class="bg-white rounded-lg shadow-lg p-8" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200">
-                <div class="text-center mb-8" data-aos="zoom-in" data-aos-duration="800" data-aos-delay="400">
+            <div class="bg-white rounded-lg shadow-lg p-8 fade-up animate-on-scroll">
+                <div class="text-center mb-8 zoom-in animate-on-scroll">
                     <h1 class="text-3xl font-bold text-gray-900 mb-2">Pilih Perjalanan Anda</h1>
                     <p class="text-gray-600">Tentukan kota asal, tujuan, dan tanggal perjalanan</p>
                 </div>
 
-                <form action="{{ route('booking.step1') }}" method="POST" class="max-w-2xl mx-auto" data-aos="fade-up"
-                    data-aos-duration="1000" data-aos-delay="600">
+                <form action="{{ route('booking.step1') }}" method="POST"
+                    class="max-w-2xl mx-auto fade-up animate-on-scroll">
                     @csrf
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">

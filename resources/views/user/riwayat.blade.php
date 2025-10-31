@@ -71,9 +71,9 @@
     </div>
 
     @if ($bookings->isEmpty())
-        <p class="text-gray-500" data-aos="fade-up">Belum ada data pesanan.</p>
+        <p class="text-gray-500 fade-up animate-on-scroll">Belum ada data pesanan.</p>
     @else
-        <div class="space-y-6" data-aos="fade-up" data-aos-delay="200">
+        <div class="space-y-6 fade-up animate-on-scroll">
             @foreach ($bookings as $booking)
                 <div class="bg-white rounded shadow p-6 border border-gray-200">
                     <div class="flex justify-between items-start mb-2">

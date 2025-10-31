@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <h2 class="text-2xl font-bold mb-4 flex items-center gap-2" data-aos="fade-down">
+    <h2 class="text-2xl font-bold mb-4 flex items-center gap-2 fade-down animate-on-scroll">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24"
             stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -11,7 +11,7 @@
     </h2>
 
     <!-- Search and Filter Bar -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6" data-aos="fade-right">
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6 fade-right animate-on-scroll">
         <form method="GET" action="{{ route('admin.pembayaran') }}" class="flex flex-col md:flex-row gap-3">
             <!-- Search Input -->
             <div class="flex-1">
@@ -68,7 +68,7 @@
         </form>
     </div>
 
-    <div class="overflow-x-auto bg-white p-6 rounded-lg shadow" data-aos="fade-up" data-aos-delay="200">
+    <div class="overflow-x-auto bg-white p-6 rounded-lg shadow fade-up animate-on-scroll">
         <table class="w-full border-collapse">
             <thead>
                 <tr class="bg-blue-600 text-white">

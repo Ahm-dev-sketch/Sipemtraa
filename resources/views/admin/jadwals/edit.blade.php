@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1 class="text-2xl font-bold mb-6 flex items-center gap-2" data-aos="fade-down">
+    <h1 class="text-2xl font-bold mb-6 flex items-center gap-2 fade-down animate-on-scroll">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-blue-600" fill="none" viewBox="0 0 24 24"
             stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -10,7 +10,7 @@
         Edit Jadwal
     </h1>
 
-    <div class="bg-white p-6 rounded shadow" data-aos="fade-up">
+    <div class="bg-white p-6 rounded shadow fade-up animate-on-scroll">
 
 
 

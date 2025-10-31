@@ -4,7 +4,7 @@
     <div class="flex flex-col md:flex-row items-center mt-10">
 
         {{-- Left side: Text --}}
-        <div class="md:w-1/2 space-y-6 px-6" data-aos="fade-right">
+        <div class="md:w-1/2 space-y-6 px-6 fade-right animate-on-scroll">
             <h1 class="text-4xl md:text-5xl font-bold leading-relaxed">
                 <span class="text-[#062B72]">Travel Nyaman, Aman <br>
                     Dan Terpercaya Bersama</span> <br>
@@ -26,7 +26,7 @@
         </div>
 
         {{-- Right side: Illustration --}}
-        <div class="md:w-1/2 mt-10 md:mt-0 flex flex-col items-center" data-aos="fade-left">
+        <div class="md:w-1/2 mt-10 md:mt-0 flex flex-col items-center fade-left animate-on-scroll">
             <img src="{{ asset('asset/home.png') }}" alt="Ilustrasi pemesanan tiket"
                 class="w-full max-w-lg rounded-2xl shadow-xl object-contain" loading="lazy" />
 
@@ -40,26 +40,24 @@
     <!-- Services Section -->
     <section class="py-16 bg-white -mx-6">
         <div class="container mx-auto px-6">
-            <h2 class="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-12" data-aos="fade-up">Layanan Kami</h2>
+            <h2 class="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-12 fade-up animate-on-scroll">Layanan
+                Kami</h2>
             <div class="grid md:grid-cols-3 gap-8">
-                <div class="text-center p-6 rounded-lg hover:shadow-lg transition duration-300" data-aos="fade-up"
-                    data-aos-delay="100">
+                <div class="text-center p-6 rounded-lg hover:shadow-lg transition duration-300 fade-up animate-on-scroll">
                     <div class="bg-blue-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
                         <i class="fas fa-bus text-3xl text-blue-600"></i>
                     </div>
                     <h3 class="text-xl font-semibold mb-3">Bus Nyaman</h3>
                     <p class="text-gray-600">Armada bus dengan fasilitas lengkap dan nyaman untuk perjalanan jarak jauh</p>
                 </div>
-                <div class="text-center p-6 rounded-lg hover:shadow-lg transition duration-300" data-aos="fade-up"
-                    data-aos-delay="200">
+                <div class="text-center p-6 rounded-lg hover:shadow-lg transition duration-300 fade-up animate-on-scroll">
                     <div class="bg-green-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
                         <i class="fas fa-shield-alt text-3xl text-green-600"></i>
                     </div>
                     <h3 class="text-xl font-semibold mb-3">Keamanan Terjamin</h3>
                     <p class="text-gray-600">Sopir berpengalaman dan sistem keamanan terdepan untuk perjalanan yang aman</p>
                 </div>
-                <div class="text-center p-6 rounded-lg hover:shadow-lg transition duration-300" data-aos="fade-up"
-                    data-aos-delay="300">
+                <div class="text-center p-6 rounded-lg hover:shadow-lg transition duration-300 fade-up animate-on-scroll">
                     <div class="bg-yellow-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
                         <i class="fas fa-clock text-3xl text-yellow-600"></i>
                     </div>
@@ -73,11 +71,12 @@
     <!-- Contact & Location Section -->
     <section class="py-16 bg-gray-50 -mx-6">
         <div class="container mx-auto px-6">
-            <h2 class="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-12" data-aos="fade-up">Hubungi Kami</h2>
+            <h2 class="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-12 fade-up animate-on-scroll">Hubungi
+                Kami</h2>
 
             <div class="grid lg:grid-cols-2 gap-12">
                 <!-- Contact Info -->
-                <div data-aos="fade-right">
+                <div class="fade-right animate-on-scroll">
                     <h3 class="text-2xl font-semibold mb-6 text-gray-800">Informasi Kontak</h3>
                     <div class="space-y-4">
                         <div class="flex items-center">
@@ -123,7 +122,7 @@
                 </div>
 
                 <!-- Map -->
-                <div data-aos="fade-left">
+                <div class="fade-left animate-on-scroll">
                     <h3 class="text-2xl font-semibold mb-6 text-gray-800">Lokasi Kami</h3>
                     <div class="rounded-lg overflow-hidden shadow-lg">
                         <div class="map-container"
@@ -153,19 +152,19 @@
     <section class="py-16 bg-blue-900 text-white -mx-6" id="stats-section">
         <div class="container mx-auto px-6">
             <div class="grid md:grid-cols-4 gap-8 text-center">
-                <div data-aos="fade-up" data-aos-delay="100">
+                <div class="fade-up animate-on-scroll">
                     <div class="text-4xl font-bold mb-2 counter" data-target="500">0</div>
                     <p class="text-blue-200">Perjalanan per Bulan</p>
                 </div>
-                <div data-aos="fade-up" data-aos-delay="200">
+                <div class="fade-up animate-on-scroll">
                     <div class="text-4xl font-bold mb-2 counter" data-target="50">0</div>
                     <p class="text-blue-200">Armada Bus</p>
                 </div>
-                <div data-aos="fade-up" data-aos-delay="300">
+                <div class="fade-up animate-on-scroll">
                     <div class="text-4xl font-bold mb-2 counter" data-target="25">0</div>
                     <p class="text-blue-200">Rute Tujuan</p>
                 </div>
-                <div data-aos="fade-up" data-aos-delay="400">
+                <div class="fade-up animate-on-scroll">
                     <div class="text-4xl font-bold mb-2 counter" data-target="99" data-suffix="%">0%</div>
                     <p class="text-blue-200">Kepuasan Pelanggan</p>
                 </div>
