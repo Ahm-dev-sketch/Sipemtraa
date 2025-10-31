@@ -2,7 +2,8 @@
 
 @section('content')
     <div class="flex justify-center items-center min-h-screen bg-gray-100">
-        <div class="bg-white shadow-lg rounded-lg flex flex-col md:flex-row overflow-hidden w-full max-w-4xl zoom-in hidden">
+        <div
+            class="bg-white shadow-lg rounded-lg flex flex-col md:flex-row overflow-hidden w-full max-w-4xl zoom-in animate-on-scroll">
 
             {{-- Left side: Form --}}
             <div class="md:w-1/2 p-8 fade-right animate-on-scroll">

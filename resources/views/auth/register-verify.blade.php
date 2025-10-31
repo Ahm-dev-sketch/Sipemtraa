@@ -2,10 +2,11 @@
 
 @section('content')
     <div class="flex justify-center items-center min-h-screen bg-gray-100">
-        <div class="bg-white shadow-lg rounded-lg flex flex-col md:flex-row overflow-hidden w-full max-w-4xl zoom-in animate-on-scroll">
+        <div
+            class="bg-white shadow-lg rounded-lg flex flex-col md:flex-row overflow-hidden w-full max-w-4xl zoom-in animate-on-scroll">
 
             {{-- Left side: Form --}}
-            <div class="md:w-1/2 p-8 fade-right hidden">
+            <div class="md:w-1/2 p-8 fade-right animate-on-scroll">
                 <h2 class="text-2xl font-bold mb-4">Verifikasi OTP</h2>
                 <p class="mb-6">Kode OTP telah dikirim ke WhatsApp: <strong>{{ $whatsapp_number }}</strong></p>
 
