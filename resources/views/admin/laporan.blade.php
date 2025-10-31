@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1 class="text-2xl font-bold mb-6 flex items-center gap-2" data-aos="fade-down">
+    <h1 class="text-2xl font-bold mb-6 flex items-center gap-2 fade-down animate-on-scroll">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-blue-600" fill="none" viewBox="0 0 24 24"
             stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -12,7 +12,7 @@
 
     <!-- Cards ringkasan -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div class="bg-white p-6 rounded shadow flex items-center gap-4" data-aos="zoom-in">
+        <div class="bg-white p-6 rounded shadow flex items-center gap-4 zoom-in animate-on-scroll">
             <div class="bg-green-100 p-3 rounded-full">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
@@ -38,7 +38,7 @@
             </div>
         </div>
 
-        <div class="bg-white p-6 rounded shadow flex items-center gap-4" data-aos="zoom-in" data-aos-delay="100">
+        <div class="bg-white p-6 rounded shadow flex items-center gap-4 zoom-in animate-on-scroll">
             <div class="bg-blue-100 p-3 rounded-full">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
@@ -63,7 +63,7 @@
             </div>
         </div>
 
-        <div class="bg-white p-6 rounded shadow flex items-center gap-4" data-aos="zoom-in" data-aos-delay="200">
+        <div class="bg-white p-6 rounded shadow flex items-center gap-4 zoom-in animate-on-scroll">
             <div class="bg-yellow-100 p-3 rounded-full">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-yellow-600" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
@@ -81,7 +81,7 @@
     <!-- Grafik pendapatan -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <!-- Grafik Batang -->
-        <div class="bg-white p-6 rounded shadow" data-aos="fade-up">
+        <div class="bg-white p-6 rounded shadow fade-up animate-on-scroll">
             <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
@@ -95,10 +95,10 @@
         </div>
 
         <!-- Grafik Garis -->
-        <div class="bg-white p-6 rounded shadow" data-aos="fade-up" data-aos-delay="200">
+        <div class="bg-white p-6 rounded shadow fade-up animate-on-scroll">
             <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none"
-                    viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4" />
                 </svg>
                 Grafik Garis Pendapatan (7 Hari Terakhir)
@@ -110,7 +110,7 @@
 
     <!-- Grafik Pie -->
     <div class="flex justify-center mb-6">
-        <div class="bg-white p-6 rounded shadow w-full max-w-md" data-aos="fade-up" data-aos-delay="400">
+        <div class="bg-white p-6 rounded shadow w-full max-w-md fade-up animate-on-scroll">
             <h3 class="text-lg font-bold mb-4 flex items-center justify-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600" fill="none"
                     viewBox="0 0 24 24" stroke="currentColor">

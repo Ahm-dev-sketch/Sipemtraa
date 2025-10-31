@@ -1,7 +1,28 @@
-import AOS from "aos";
-import "aos/dist/aos.css";
+// Intersection Observer untuk animasi scroll
+document.addEventListener('DOMContentLoaded', () => {
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('show');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
 
-AOS.init();
+    // Tunggu sebentar untuk memastikan DOM sudah siap
+    setTimeout(() => {
+        document.querySelectorAll('.animate-on-scroll').forEach(el => {
+            // Cek jika elemen sudah terlihat saat load
+            const rect = el.getBoundingClientRect();
+            const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+            if (isVisible) {
+                el.classList.add('show');
+            } else {
+                observer.observe(el);
+            }
+        });
+    }, 100);
+});
 
 // ======================
 // Session flash messages
@@ -323,13 +344,11 @@ function elementExists(selector) {
 }
 
 // ======================
-// Optimize AOS for home page
+// Optimize animations for home page
 // ======================
 if (getCurrentPage() === '/' || getCurrentPage().includes('home')) {
-    // Delay AOS initialization to improve initial load
-    setTimeout(() => {
-        AOS.refresh();
-    }, 100);
+    // Animasi sudah ditangani oleh Intersection Observer
+    // Tidak perlu inisialisasi tambahan
 }
 
 // ======================

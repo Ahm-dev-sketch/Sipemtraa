@@ -4,7 +4,7 @@
     <div class="min-h-screen bg-gray-50 py-8">
         <div class="max-w-6xl mx-auto px-4">
             <!-- Progress Bar -->
-            <div class="mb-8" data-aos="fade-down" data-aos-duration="800">
+            <div class="mb-8 fade-down animate-on-scroll">
                 <div class="flex items-center justify-center">
                     <div class="flex items-center space-x-4">
                         <!-- Step 1 -->
@@ -44,8 +44,7 @@
             </div>
 
             <!-- Step 1 Summary -->
-            <div class="bg-white rounded-lg shadow mb-6 p-4" data-aos="fade-right" data-aos-duration="1000"
-                data-aos-delay="200">
+            <div class="bg-white rounded-lg shadow mb-6 p-4 fade-right animate-on-scroll">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-4">
                         <div class="text-sm text-gray-600">
@@ -64,8 +63,8 @@
             </div>
 
             <!-- Main Content -->
-            <div class="bg-white rounded-lg shadow-lg p-8" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="400">
-                <div class="text-center mb-8" data-aos="zoom-in" data-aos-duration="800" data-aos-delay="600">
+            <div class="bg-white rounded-lg shadow-lg p-8 fade-up animate-on-scroll">
+                <div class="text-center mb-8 zoom-in animate-on-scroll">
                     <h1 class="text-3xl font-bold text-gray-900 mb-2">Pilih Rute Perjalanan</h1>
                     <p class="text-gray-600">Pilih jadwal keberangkatan yang tersedia</p>
                 </div>

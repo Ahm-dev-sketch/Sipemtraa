@@ -16,7 +16,5 @@
         "tailwindcss": "^4.1.16",
         "vite": "^7.0.7"
     },
-    "dependencies": {
-        "aos": "^2.3.4"
-    }
+    "dependencies": {}
 }

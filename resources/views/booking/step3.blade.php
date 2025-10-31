@@ -4,7 +4,7 @@
     <div class="min-h-screen bg-gray-50 py-8">
         <div class="max-w-4xl mx-auto px-4">
             <!-- Progress Bar -->
-            <div class="mb-8" data-aos="fade-down" data-aos-duration="800">
+            <div class="mb-8 fade-down animate-on-scroll">
                 <div class="flex items-center justify-center">
                     <div class="flex items-center space-x-4">
                         <!-- Step 1 -->
@@ -44,8 +44,7 @@
             </div>
 
             <!-- Booking Summary -->
-            <div class="bg-white rounded-lg shadow mb-6 p-6" data-aos="fade-right" data-aos-duration="1000"
-                data-aos-delay="200">
+            <div class="bg-white rounded-lg shadow mb-6 p-6 fade-right animate-on-scroll">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Detail Pemesanan</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -78,14 +77,14 @@
             </div>
 
             <!-- Main Content -->
-            <div class="bg-white rounded-lg shadow-lg p-8" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="400">
-                <div class="text-center mb-8" data-aos="zoom-in" data-aos-duration="800" data-aos-delay="600">
+            <div class="bg-white rounded-lg shadow-lg p-8 fade-up animate-on-scroll">
+                <div class="text-center mb-8 zoom-in animate-on-scroll">
                     <h1 class="text-3xl font-bold text-gray-900 mb-2">Pilih Kursi Anda</h1>
                     <p class="text-gray-600">Pilih kursi yang ingin dipesan (maksimal 7 kursi)</p>
                 </div>
 
                 <!-- Seat Layout -->
-                <div class="mb-8" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="800">
+                <div class="mb-8 fade-up animate-on-scroll">
                     <div class="text-center mb-6">
                         <h3 class="text-lg font-semibold text-gray-900 mb-2">Layout Kursi Mobil</h3>
                         <div class="flex justify-center items-center space-x-6 text-sm text-gray-600">
