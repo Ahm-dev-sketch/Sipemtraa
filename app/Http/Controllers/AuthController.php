@@ -126,7 +126,7 @@ class AuthController extends Controller
     // === FORGOT PASSWORD ===
     public function showForgotPasswordForm()
     {
-        return view('auth.passwords.email');
+        return view('auth.passwords.wa');
     }
 
     public function sendResetLink(Request $request)
@@ -192,4 +192,3 @@ class AuthController extends Controller
         return redirect()->route('login')->with('success', 'Password berhasil direset! Silakan login dengan password baru Anda.');
     }
 }
-

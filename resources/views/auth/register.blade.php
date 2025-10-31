@@ -69,7 +69,7 @@
             </div>
 
             {{-- Right side: Illustration --}}
-            <div class="md:w-1/2 bg-green-50 flex justify-center items-center p-6 fade-left hidden">
+            <div class="md:w-1/2 bg-green-50 flex justify-center items-center p-6 fade-left animate-on-scroll">
                 <div class="text-center">
                     <img src="{{ asset('register.jpg') }}" alt="Travel" class="max-w-sm mx-auto">
                     <h3 class="mt-4 font-bold text-lg">PT. Pelita Transport </h3>
