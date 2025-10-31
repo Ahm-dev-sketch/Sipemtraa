@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="flex justify-center items-center min-h-screen bg-gray-100">
-        <div class="bg-white shadow-lg rounded-lg flex flex-col md:flex-row overflow-hidden w-full max-w-4xl zoom-in hidden">
+        <div class="bg-white shadow-lg rounded-lg flex flex-col md:flex-row overflow-hidden w-full max-w-4xl zoom-in animate-on-scroll">
 
             {{-- Left side: Form --}}
             <div class="md:w-1/2 p-8 fade-right hidden">
@@ -62,7 +62,7 @@
             </div>
 
             {{-- Right side: Illustration --}}
-            <div class="md:w-1/2 bg-green-50 flex justify-center items-center p-6 fade-left hidden">
+            <div class="md:w-1/2 bg-green-50 flex justify-center items-center p-6 fade-left animate-on-scroll">
                 <div class="text-center">
                     <img src="https://img.freepik.com/free-vector/otp-security-concept-illustration_114360-7896.jpg"
                         alt="OTP Verification" class="max-w-sm mx-auto">
