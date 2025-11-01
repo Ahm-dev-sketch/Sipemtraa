@@ -218,6 +218,7 @@ class BookingController extends Controller
                 'ticket_number' => $this->generateTicketNumber(),
                 'jadwal_tanggal' => $jadwal->tanggal,
                 'jadwal_jam' => $jadwal->jam,
+                'booking_time' => Carbon::now(),
             ]);
 
             if (!$firstBooking) {
@@ -273,7 +274,8 @@ class BookingController extends Controller
             'waktu_sekarang' => $waktuSekarang->format('Y-m-d H:i:s'),
             'jadwal_id' => $jadwal->id,
             'jadwal_tanggal' => $jadwal->tanggal,
-            'jadwal_jam' => $jadwal->jam
+            'jadwal_jam' => $jadwal->jam,
+            'booking_time' => Carbon::now() //mencatat kapan user pesan
         ]);
 
         if ($waktuSekarang->greaterThanOrEqualTo($batasPesan)) {
@@ -308,6 +310,7 @@ class BookingController extends Controller
                 'ticket_number' => $this->generateTicketNumber(),
                 'jadwal_tanggal' => $jadwal->tanggal,
                 'jadwal_jam'    => $jadwal->jam,
+                'booking_time' => Carbon::now(), //mencatat kapan user pesan
             ]);
 
             if (!$firstBooking) {
