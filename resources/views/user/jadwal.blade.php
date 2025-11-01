@@ -59,6 +59,9 @@
                             <td class="px-4 py-2 border">
                                 {{ \Carbon\Carbon::parse($jadwal->tanggal)->format('d M Y') }}
                             </td>
+                            <td class="px-4 py-2 border">
+                                {{ \Carbon\Carbon::parse($jadwal->tanggal . ' ' . $jadwal->jam)->format('H:i') }}
+                            </td>
                             <td class="px-4 py-2 border">{{ $jadwal->jam }}</td>
                             <td class="px-4 py-2 border">Rp {{ number_format($jadwal->harga, 0, ',', '.') }}</td>
                         </tr>
