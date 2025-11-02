@@ -107,6 +107,11 @@
         }
 
         .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-cancelled {
             background: #fee2e2;
             color: #991b1b;
         }
@@ -195,7 +200,20 @@
             {{-- Status Booking --}}
             <div class="info-line">
                 <strong>Status Booking:</strong>
-                <span class="status-badge {{ $booking->status == 'setuju' ? 'status-approved' : 'status-pending' }}">
+                <span class="status-badge {{ $booking->status == 'setuju' ? 'status-approved' : ($booking->status == 'batal' ? 'status-cancelled' : 'status-pending') }}" style="display: inline-flex; align-items: center; gap: 4px;">
+                    @if($booking->status == 'setuju')
+                        <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    @elseif($booking->status == 'pending')
+                        <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    @else
+                        <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    @endif
                     {{ ucfirst($booking->status) }}
                 </span>
             </div>

@@ -97,13 +97,25 @@
                         <td class="px-6 py-3 text-center border border-white">{{ $booking->jadwal->jam }}</td>
                         <td class="px-6 py-3 text-center border border-white">{{ $booking->seat_number }}</td>
                         <td class="px-6 py-3 text-center border border-white">
-                            <span
-                                class="px-3 py-1 rounded-full text-xs font-semibold
+                            <span class="px-3 py-1 rounded-full text-xs font-semibold inline-flex items-center justify-center gap-1
                                 {{ $booking->status == 'setuju'
                                     ? 'bg-green-100 text-green-700'
                                     : ($booking->status == 'batal'
                                         ? 'bg-red-100 text-red-700'
                                         : 'bg-yellow-100 text-yellow-700') }}">
+                                @if($booking->status == 'setuju')
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                @elseif($booking->status == 'pending')
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                @else
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                @endif
                                 {{ ucfirst($booking->status) }}
                             </span>
                         </td>
