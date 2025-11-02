@@ -36,9 +36,11 @@
             {{-- Right side: Illustration --}}
             <div class="md:w-1/2 bg-blue-50 flex justify-center items-center p-6 fade-left animate-on-scroll">
                 <div class="text-center">
-                    <img src="{{ asset('forget.jpg') }}" alt="Forgot Password" class="max-w-sm mx-auto">
+                    <div class="bg-blue-100 w-64 h-64 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-key text-blue-600 text-8xl"></i>
+                    </div>
                     <h3 class="mt-4 font-bold text-lg">Lupa Kata Sandi?</h3>
-                    <p class="text-gray-500">Kami akan mengirim kode OTP ke WhatsApp Anda.</p>
+                    <p class="text-gray-500">Kami akan mengirim kode OTP ke WhatsApp Anda</p>
                 </div>
             </div>
         </div>

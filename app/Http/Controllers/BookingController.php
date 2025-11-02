@@ -15,6 +15,16 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class BookingController extends Controller
 {
+    /**
+     * Check if user is authorized to access booking
+     */
+    private function authorizeBooking(Booking $booking): void
+    {
+        if (Auth::id() !== $booking->user_id && Auth::user()->role !== 'admin') {
+            abort(403, 'Anda tidak memiliki izin untuk mengakses booking ini.');
+        }
+    }
+
     private function generateTicketNumber(): string
     {
         do {
@@ -215,6 +225,17 @@ class BookingController extends Controller
 
                 $threshold = \Carbon\Carbon::now()->subMinutes(30);
                 $firstBooking = null;
+
+                // CRITICAL FIX: Cek apakah user sudah punya booking pending untuk jadwal ini
+                // User tetap bisa booking lagi jika booking sebelumnya sudah disetujui
+                $existingPendingBooking = Booking::where('user_id', \Illuminate\Support\Facades\Auth::id())
+                    ->where('jadwal_id', $jadwal->id)
+                    ->where('status', 'pending')
+                    ->exists();
+
+                if ($existingPendingBooking) {
+                    throw new \Exception('Anda masih memiliki booking yang menunggu persetujuan admin untuk jadwal ini. Silakan tunggu konfirmasi atau batalkan booking sebelumnya.');
+                }
 
                 // Validasi total kapasitas
                 $existingBookingsCount = Booking::where('jadwal_id', $jadwal->id)
@@ -445,14 +466,12 @@ class BookingController extends Controller
 
     public function downloadTicket(Booking $booking)
     {
-        // Pastikan user hanya bisa download tiketnya sendiri atau admin
-        if (Auth::id() !== $booking->user_id && Auth::user()->role !== 'admin') {
-            abort(403);
-        }
+        // Authorization check
+        $this->authorizeBooking($booking);
 
         // Pastikan booking sudah disetujui dan sudah bayar
         if ($booking->status !== 'setuju' || $booking->payment_status !== 'sudah_bayar') {
-            abort(403, 'Tiket belum dapat didownload');
+            abort(403, 'Tiket belum dapat didownload. Status harus disetujui dan sudah dibayar.');
         }
 
         $pdf = Pdf::loadView('booking.ticket', compact('booking'));
@@ -464,14 +483,12 @@ class BookingController extends Controller
     {
         $booking = Booking::where('ticket_number', $ticketNumber)->firstOrFail();
 
-        // Pastikan user hanya bisa lihat tiketnya sendiri atau admin
-        if (Auth::id() !== $booking->user_id && Auth::user()->role !== 'admin') {
-            abort(403);
-        }
+        // Authorization check
+        $this->authorizeBooking($booking);
 
         // Pastikan booking sudah disetujui dan sudah bayar
         if ($booking->status !== 'setuju' || $booking->payment_status !== 'sudah_bayar') {
-            abort(403, 'Tiket belum dapat dilihat');
+            abort(403, 'Tiket belum dapat dilihat. Status harus disetujui dan sudah dibayar.');
         }
 
         return view('booking.ticket', compact('booking'));
@@ -482,14 +499,21 @@ class BookingController extends Controller
     {
         $booking = Booking::findOrFail($id);
 
-        // Pastikan hanya pemilik booking yang bisa membatalkan
-        if ($booking->user_id !== Auth::id()) {
-            return back()->with('error', 'Anda tidak memiliki izin untuk membatalkan pesanan ini.');
-        }
+        // Authorization check
+        $this->authorizeBooking($booking);
 
         // Hanya bisa dibatalkan jika masih pending
         if ($booking->status !== 'pending') {
             return back()->with('error', 'Pesanan tidak dapat dibatalkan karena sudah diproses.');
+        }
+
+        // CRITICAL FIX: Validasi batas waktu cancel (minimal 2 jam sebelum keberangkatan)
+        $waktuKeberangkatan = \Carbon\Carbon::parse($booking->jadwal_tanggal . ' ' . $booking->jadwal_jam);
+        $batasCancel = $waktuKeberangkatan->copy()->subHours(2);
+        $waktuSekarang = \Carbon\Carbon::now();
+
+        if ($waktuSekarang->greaterThanOrEqualTo($batasCancel)) {
+            return back()->with('error', 'Tidak dapat membatalkan booking. Minimal 2 jam sebelum keberangkatan.');
         }
 
         // Update status ke batal

@@ -80,16 +80,16 @@ Route::get('/jadwal', [JadwalController::class, 'index'])->name('jadwal');
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:5,1');
+Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:3,10'); // Max 3x dalam 10 menit (karena kirim OTP)
 Route::get('/register/verify', [AuthController::class, 'showRegisterVerify'])->name('register.verify');
-Route::post('/register/verify', [AuthController::class, 'verifyRegisterOtp'])->name('register.verify.submit')->middleware('throttle:10,1');
+Route::post('/register/verify', [AuthController::class, 'verifyRegisterOtp'])->name('register.verify.submit')->middleware('throttle:5,1'); // Max 5x per menit
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Forgot & Reset Password
 Route::get('password/reset', [AuthController::class, 'showForgotPasswordForm'])->name('password.request');
-Route::post('password/email', [AuthController::class, 'sendResetLink'])->name('password.email')->middleware('throttle:5,1');
+Route::post('password/email', [AuthController::class, 'sendResetLink'])->name('password.email')->middleware('throttle:3,10'); // Max 3x dalam 10 menit (karena kirim OTP)
 Route::get('password/reset/confirm', [AuthController::class, 'showResetPasswordForm'])->name('password.reset');
-Route::post('password/reset/confirm', [AuthController::class, 'resetPassword'])->name('password.update')->middleware('throttle:10,1');
+Route::post('password/reset/confirm', [AuthController::class, 'resetPassword'])->name('password.update')->middleware('throttle:5,1'); // Max 5x per menit
 
 // Protected pages
 Route::middleware('auth')->group(function () {

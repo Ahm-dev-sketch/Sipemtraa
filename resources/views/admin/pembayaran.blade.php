@@ -68,7 +68,8 @@
         </form>
     </div>
 
-    <div class="overflow-x-auto bg-white p-6 rounded-lg shadow fade-up animate-on-scroll">
+    {{-- Desktop View - Table --}}
+    <div class="hidden lg:block overflow-x-auto bg-white p-6 rounded-lg shadow fade-up animate-on-scroll">
         <table class="w-full border-collapse">
             <thead>
                 <tr class="bg-blue-600 text-white">
@@ -97,23 +98,27 @@
                         <td class="px-6 py-3 text-center border border-white">{{ $booking->jadwal->jam }}</td>
                         <td class="px-6 py-3 text-center border border-white">{{ $booking->seat_number }}</td>
                         <td class="px-6 py-3 text-center border border-white">
-                            <span class="px-3 py-1 rounded-full text-xs font-semibold inline-flex items-center justify-center gap-1
+                            <span
+                                class="px-3 py-1 rounded-full text-xs font-semibold inline-flex items-center justify-center gap-1
                                 {{ $booking->status == 'setuju'
                                     ? 'bg-green-100 text-green-700'
                                     : ($booking->status == 'batal'
                                         ? 'bg-red-100 text-red-700'
                                         : 'bg-yellow-100 text-yellow-700') }}">
-                                @if($booking->status == 'setuju')
+                                @if ($booking->status == 'setuju')
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M5 13l4 4L19 7"></path>
                                     </svg>
                                 @elseif($booking->status == 'pending')
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
                                 @else
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M6 18L18 6M6 6l12 12"></path>
                                     </svg>
                                 @endif
                                 {{ ucfirst($booking->status) }}
@@ -160,6 +165,146 @@
                 @endforelse
             </tbody>
         </table>
+    </div>
+
+    {{-- Mobile View - Cards --}}
+    <div class="lg:hidden space-y-4 fade-up animate-on-scroll">
+        @forelse($bookings as $booking)
+            <div class="bg-white rounded-lg shadow-md border border-gray-200 p-4">
+                {{-- Header with Ticket Number --}}
+                <div class="flex items-center justify-between mb-3 pb-3 border-b border-gray-200">
+                    <div>
+                        <div class="text-xs text-gray-500">Ticket Number</div>
+                        <div class="font-semibold text-blue-600">{{ $booking->ticket_number ?? 'N/A' }}</div>
+                    </div>
+                    <div class="flex flex-col gap-1 items-end">
+                        <span
+                            class="px-2 py-1 rounded-full text-xs font-semibold inline-flex items-center gap-1
+                            {{ $booking->status == 'setuju' ? 'bg-green-100 text-green-700' : ($booking->status == 'batal' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700') }}">
+                            @if ($booking->status == 'setuju')
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            @elseif($booking->status == 'pending')
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            @else
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            @endif
+                            {{ ucfirst($booking->status) }}
+                        </span>
+                        <span
+                            class="px-2 py-1 rounded-full text-xs font-semibold
+                            {{ $booking->payment_status == 'sudah_bayar' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
+                            {{ $booking->payment_status == 'sudah_bayar' ? 'Sudah Bayar' : 'Belum Bayar' }}
+                        </span>
+                    </div>
+                </div>
+
+                {{-- Customer Info --}}
+                <div class="space-y-2 mb-3">
+                    <div class="flex items-center gap-2 text-sm">
+                        <svg class="w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                        <span class="text-gray-600">Pelanggan:</span>
+                        <span class="font-medium text-gray-900">{{ $booking->user->name }}</span>
+                    </div>
+
+                    <div class="flex items-center gap-2 text-sm">
+                        <svg class="w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
+                            </path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        <span class="text-gray-600">Rute:</span>
+                        <span class="font-medium text-gray-900 text-xs">
+                            {{ $booking->jadwal->rute->kota_asal }} → {{ $booking->jadwal->rute->kota_tujuan }}
+                        </span>
+                    </div>
+
+                    <div class="flex items-center gap-2 text-sm">
+                        <svg class="w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                            </path>
+                        </svg>
+                        <span class="text-gray-600">Tanggal:</span>
+                        <span class="font-medium text-gray-900">
+                            {{ \Carbon\Carbon::parse($booking->jadwal->tanggal)->format('d M Y') }}
+                        </span>
+                    </div>
+
+                    <div class="flex items-center gap-2 text-sm">
+                        <svg class="w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span class="text-gray-600">Jam:</span>
+                        <span class="font-medium text-gray-900">{{ $booking->jadwal->jam }}</span>
+                    </div>
+
+                    <div class="flex items-center gap-2 text-sm">
+                        <svg class="w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
+                            </path>
+                        </svg>
+                        <span class="text-gray-600">Kursi:</span>
+                        <span class="font-medium text-gray-900">{{ $booking->seat_number }}</span>
+                    </div>
+                </div>
+
+                {{-- Actions --}}
+                <div class="pt-3 border-t border-gray-100">
+                    <form action="{{ route('admin.pembayaran.update', $booking) }}" method="POST"
+                        class="flex items-center justify-center gap-2">
+                        @csrf @method('PUT')
+                        <input type="hidden" name="payment_status" id="payment_status_mobile_{{ $booking->id }}"
+                            value="">
+                        @if ($booking->payment_status !== 'sudah_bayar')
+                            <button type="submit"
+                                onclick="document.getElementById('payment_status_mobile_{{ $booking->id }}').value='sudah_bayar'"
+                                class="flex-1 bg-green-600 text-white text-sm px-3 py-2 rounded hover:bg-green-700 transition inline-flex items-center justify-center gap-1">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Sudah Bayar
+                            </button>
+                        @else
+                            <a href="{{ route('booking.download.ticket', $booking) }}"
+                                class="flex-1 bg-blue-600 text-white text-sm px-3 py-2 rounded hover:bg-blue-700 transition inline-flex items-center justify-center gap-1">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                    </path>
+                                </svg>
+                                Download Tiket
+                            </a>
+                        @endif
+                    </form>
+                </div>
+            </div>
+        @empty
+            <div class="bg-white rounded-lg shadow-md border border-gray-200 p-6 text-center text-gray-500">
+                Tidak ada data pembayaran ditemukan.
+            </div>
+        @endforelse
     </div>
 
     {{-- Pagination --}}

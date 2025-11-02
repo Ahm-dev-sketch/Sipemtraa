@@ -73,9 +73,11 @@
             {{-- Right side: Illustration --}}
             <div class="md:w-1/2 bg-green-50 flex justify-center items-center p-6 fade-left animate-on-scroll">
                 <div class="text-center">
-                    <img src="{{ asset('register.jpg') }}" alt="Travel" class="max-w-sm mx-auto">
-                    <h3 class="mt-4 font-bold text-lg">PT. Pelita Transport </h3>
-                    <p class="text-gray-500">Travel Terbaik Untuk Anda </p>
+                    <div class="bg-green-100 w-64 h-64 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-user-plus text-green-600 text-8xl"></i>
+                    </div>
+                    <h3 class="mt-4 font-bold text-lg">PT. Pelita Transport</h3>
+                    <p class="text-gray-500">Daftar untuk booking tiket</p>
                 </div>
             </div>
         </div>

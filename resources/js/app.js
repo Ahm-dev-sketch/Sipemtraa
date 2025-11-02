@@ -57,12 +57,41 @@ document.addEventListener('DOMContentLoaded', function () {
 
 document.addEventListener("DOMContentLoaded", () => {
     // ======================
-    // Toggle menu hamburger
+    // Toggle menu hamburger untuk User
     // ======================
     const toggle = document.getElementById("menu-toggle");
     const menu = document.getElementById("menu");
-    if (toggle && menu) {
+    const sidebar = document.getElementById("sidebar");
+    const sidebarOverlay = document.getElementById("sidebar-overlay");
+
+    // Toggle untuk user menu (mobile)
+    if (toggle && menu && !sidebar) {
         toggle.addEventListener("click", () => menu.classList.toggle("hidden"));
+    }
+
+    // Toggle untuk admin sidebar (mobile)
+    if (toggle && sidebar && sidebarOverlay) {
+        toggle.addEventListener("click", () => {
+            sidebar.classList.toggle("-translate-x-full");
+            sidebarOverlay.classList.toggle("hidden");
+        });
+
+        // Close sidebar saat klik overlay
+        sidebarOverlay.addEventListener("click", () => {
+            sidebar.classList.add("-translate-x-full");
+            sidebarOverlay.classList.add("hidden");
+        });
+
+        // Close sidebar saat klik link di dalam sidebar (mobile)
+        const sidebarLinks = sidebar.querySelectorAll("a");
+        sidebarLinks.forEach(link => {
+            link.addEventListener("click", () => {
+                if (window.innerWidth < 768) {
+                    sidebar.classList.add("-translate-x-full");
+                    sidebarOverlay.classList.add("hidden");
+                }
+            });
+        });
     }
 
     // ======================

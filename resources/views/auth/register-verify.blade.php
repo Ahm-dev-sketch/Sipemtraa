@@ -65,8 +65,9 @@
             {{-- Right side: Illustration --}}
             <div class="md:w-1/2 bg-green-50 flex justify-center items-center p-6 fade-left animate-on-scroll">
                 <div class="text-center">
-                    <img src="https://img.freepik.com/free-vector/otp-security-concept-illustration_114360-7896.jpg"
-                        alt="OTP Verification" class="max-w-sm mx-auto">
+                    <div class="bg-green-100 w-64 h-64 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-shield-alt text-green-600 text-8xl"></i>
+                    </div>
                     <h3 class="mt-4 font-bold text-lg">Verifikasi Keamanan</h3>
                     <p class="text-gray-500">Masukkan kode OTP yang dikirim ke WhatsApp Anda</p>
                 </div>

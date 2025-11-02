@@ -86,7 +86,7 @@
                             </div>
                             <div>
                                 <h4 class="font-semibold">Alamat</h4>
-                                <p class="text-gray-600">Jl. Sudirman No. 123, Pekanbaru, Riau 28112</p>
+                                <p class="text-gray-600">Jl. Raya Pekanbaru–Bangkinang, Rimba Panjang, Tambang, Kampar, Riau 28293</p>
                             </div>
                         </div>
 
@@ -106,7 +106,7 @@
                             </div>
                             <div>
                                 <h4 class="font-semibold">Email</h4>
-                                <p class="text-gray-600">info@pelitatransport.com</p>
+                                <p class="text-gray-600">info@pelitatranprima.com</p>
                             </div>
                         </div>
 
@@ -180,7 +180,7 @@
         <div class="max-w-7xl mx-auto px-6">
             <div class="grid md:grid-cols-4 gap-8">
                 <div>
-                    <h3 class="text-xl font-bold mb-4">PT. Pelita Transport</h3>
+                    <h3 class="text-xl font-bold mb-4">PT. Pelita Tran Prima</h3>
                     <p class="text-gray-300 mb-4">
                         Melayani perjalanan Anda dengan aman, nyaman, dan terpercaya sejak 1995.
                     </p>
@@ -215,13 +215,13 @@
                     <h4 class="text-lg font-semibold mb-4">Rute Populer</h4>
                     <ul class="space-y-2">
                         <li><a href="#" class="text-gray-300 hover:text-white transition duration-300">Pekanbaru -
-                                Jakarta</a></li>
+                                Padang</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition duration-300">Pekanbaru -
+                                Rohul</a></li>
                         <li><a href="#" class="text-gray-300 hover:text-white transition duration-300">Pekanbaru -
                                 Medan</a></li>
                         <li><a href="#" class="text-gray-300 hover:text-white transition duration-300">Pekanbaru -
-                                Padang</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white transition duration-300">Pekanbaru -
-                                Batam</a></li>
+                                Rohil</a></li>
                     </ul>
                 </div>
 
@@ -229,7 +229,7 @@
                     <h4 class="text-lg font-semibold mb-4">Kontak Cepat</h4>
                     <ul class="space-y-2 text-gray-300">
                         <li><i class="fas fa-phone mr-2"></i>+62 761 123456</li>
-                        <li><i class="fas fa-envelope mr-2"></i>info@pelitatransport.com</li>
+                        <li><i class="fas fa-envelope mr-2"></i>info@pelitatranprima.com</li>
                         <li><i class="fab fa-whatsapp mr-2"></i>+62 812 3456 7890</li>
                     </ul>
                 </div>
