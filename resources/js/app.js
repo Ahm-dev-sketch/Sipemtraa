@@ -273,12 +273,16 @@ document.addEventListener("DOMContentLoaded", () => {
     seatCheckboxes.forEach(cb => {
         cb.addEventListener('change', function () {
             updateDisplay();
-            // tambahan highlight ring kuning
+            // Ubah background jadi hijau ketika dipilih
             const seatDiv = this.nextElementSibling;
             if (this.checked) {
-                seatDiv.classList.add("ring-4", "ring-yellow-400");
+                // Kursi terpilih: background hijau dengan efek glow
+                seatDiv.classList.remove("bg-gradient-to-br", "from-blue-400", "to-blue-500", "border-blue-600", "hover:from-blue-500", "hover:to-blue-600", "hover:shadow-blue-500/50");
+                seatDiv.classList.add("bg-gradient-to-br", "from-green-400", "to-green-500", "border-green-600", "shadow-xl", "shadow-green-500/50");
             } else {
-                seatDiv.classList.remove("ring-4", "ring-yellow-400");
+                // Kursi tidak dipilih: kembali ke biru
+                seatDiv.classList.remove("bg-gradient-to-br", "from-green-400", "to-green-500", "border-green-600", "shadow-xl", "shadow-green-500/50");
+                seatDiv.classList.add("bg-gradient-to-br", "from-blue-400", "to-blue-500", "border-blue-600", "hover:from-blue-500", "hover:to-blue-600", "hover:shadow-blue-500/50");
             }
         });
     });
