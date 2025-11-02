@@ -14,7 +14,7 @@ Schedule::command('jadwal:update-dates')
     ->withoutOverlapping()
     ->timezone('Asia/Jakarta');
 
-// Schedule to cancel expired pending bookings every 5 minutes
+// Schedule to cancel expired pending bookings every minute
 Schedule::command('bookings:cancel-expired')
-    ->everyFiveMinutes()
+    ->everyMinute()
     ->withoutOverlapping();

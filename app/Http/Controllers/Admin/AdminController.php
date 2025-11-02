@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Jadwal;
 use App\Models\Booking;
 use Illuminate\Http\Request;
@@ -150,7 +151,8 @@ class AdminController extends Controller
     public function editJadwal(Jadwal $jadwal)
     {
         $rutes = \App\Models\Rute::all();
-        return view('admin.jadwals.edit', compact('jadwal', 'rutes'));
+        $mobils = \App\Models\Mobil::all();
+        return view('admin.jadwals.edit', compact('jadwal', 'rutes', 'mobils'));
     }
 
     // Update jadwal
@@ -697,12 +699,23 @@ class AdminController extends Controller
         Log::info('Update booking called', [
             'booking_id' => $booking->id,
             'current_status' => $booking->status,
-            'requested_status' => $request->input('status')
+            'current_payment_status' => $booking->payment_status,
+            'requested_status' => $request->input('status'),
+            'admin_id' => Auth::id()
         ]);
 
         $request->validate([
             'status' => 'required|in:pending,setuju,batal'
         ]);
+
+        // CRITICAL FIX: Prevent status change if payment already processed
+        if ($booking->payment_status === 'sudah_bayar') {
+            Log::warning('Attempt to modify paid booking blocked', [
+                'booking_id' => $booking->id,
+                'admin_id' => Auth::id()
+            ]);
+            return back()->with('error', 'Tidak dapat mengubah status booking yang sudah dibayar. Kelola di menu Pembayaran.');
+        }
 
         $oldStatus = $booking->status;
 
@@ -718,12 +731,15 @@ class AdminController extends Controller
             Log::info('Booking status updated successfully', [
                 'booking_id' => $booking->id,
                 'old_status' => $oldStatus,
-                'new_status' => $booking->status
+                'new_status' => $booking->status,
+                'admin_id' => Auth::id(),
+                'timestamp' => now()
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to update booking status', [
                 'booking_id' => $booking->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
+                'admin_id' => Auth::id()
             ]);
             return back()->with('error', 'Gagal memperbarui status booking: ' . $e->getMessage());
         }
