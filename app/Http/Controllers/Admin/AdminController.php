@@ -107,9 +107,13 @@ class AdminController extends Controller
             'tanggal' => 'required|date|after_or_equal:today',
             'jam' => 'required',
             'harga' => 'required|integer|min:0',
+            'day_offset' => 'nullable|integer|min:0|max:7',
+            'is_active' => 'nullable|boolean',
+            'notes' => 'nullable|string|max:500',
         ], [
             'tanggal.after_or_equal' => 'Tanggal jadwal harus hari ini atau setelahnya.',
             'harga.min' => 'Harga tidak boleh negatif.',
+            'day_offset.max' => 'Offset maksimal 7 hari ke depan.',
         ]);
 
         // CRITICAL FIX: Validasi status mobil
@@ -128,7 +132,16 @@ class AdminController extends Controller
             return back()->withErrors(['mobil_id' => 'Mobil sudah dijadwalkan di waktu yang sama.']);
         }
 
-        Jadwal::create($request->only(['rute_id', 'mobil_id', 'tanggal', 'jam', 'harga']));
+        Jadwal::create([
+            'rute_id' => $request->rute_id,
+            'mobil_id' => $request->mobil_id,
+            'tanggal' => $request->tanggal,
+            'jam' => $request->jam,
+            'harga' => $request->harga,
+            'day_offset' => $request->day_offset ?? 0,
+            'is_active' => $request->has('is_active') ? true : false,
+            'notes' => $request->notes,
+        ]);
 
         return redirect()->route('admin.jadwals')->with('success', 'Jadwal berhasil ditambahkan');
     }
@@ -149,9 +162,13 @@ class AdminController extends Controller
             'tanggal' => 'required|date|after_or_equal:today',
             'jam' => 'required',
             'harga' => 'required|integer|min:0',
+            'day_offset' => 'nullable|integer|min:0|max:7',
+            'is_active' => 'nullable|boolean',
+            'notes' => 'nullable|string|max:500',
         ], [
             'tanggal.after_or_equal' => 'Tanggal jadwal harus hari ini atau setelahnya.',
             'harga.min' => 'Harga tidak boleh negatif.',
+            'day_offset.max' => 'Offset maksimal 7 hari ke depan.',
         ]);
 
         // CRITICAL FIX: Validasi status mobil jika mobil_id berubah
@@ -173,7 +190,16 @@ class AdminController extends Controller
             }
         }
 
-        $jadwal->update($request->only(['rute_id', 'mobil_id', 'tanggal', 'jam', 'harga']));
+        $jadwal->update([
+            'rute_id' => $request->rute_id,
+            'mobil_id' => $request->mobil_id,
+            'tanggal' => $request->tanggal,
+            'jam' => $request->jam,
+            'harga' => $request->harga,
+            'day_offset' => $request->day_offset ?? 0,
+            'is_active' => $request->has('is_active') ? true : false,
+            'notes' => $request->notes,
+        ]);
 
         return redirect()->route('admin.jadwals')->with('success', 'Jadwal berhasil diperbarui');
     }

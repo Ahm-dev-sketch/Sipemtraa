@@ -8,10 +8,11 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-// Schedule the daily schedule generation
-Schedule::command('schedules:generate-daily --days=7')
-    ->dailyAt('02:00') // Run every day at 2 AM
-    ->withoutOverlapping(); // Prevent overlapping executions
+// Schedule to auto-update jadwal dates every day at midnight
+Schedule::command('jadwal:update-dates')
+    ->dailyAt('00:01') // Run at 12:01 AM every day
+    ->withoutOverlapping()
+    ->timezone('Asia/Jakarta');
 
 // Schedule to cancel expired pending bookings every 5 minutes
 Schedule::command('bookings:cancel-expired')
