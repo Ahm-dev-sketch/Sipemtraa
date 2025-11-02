@@ -16,7 +16,7 @@
             {{-- Nama --}}
             <div>
                 <label for="name" class="block text-sm font-medium text-gray-700">Nama</label>
-                <input type="text" id="name" name="name" value="{{ old('name') }}" required
+                <input type="text" id="name" name="name" value="{{ old('name') }}" autocomplete="name" required
                     class="mt-1 block w-full border rounded p-2 focus:ring focus:ring-blue-300 focus:outline-none">
             </div>
 
@@ -24,7 +24,8 @@
             <div>
                 <label for="whatsapp_number" class="block text-sm font-medium text-gray-700">Nomor WhatsApp</label>
                 <input type="text" id="whatsapp_number" name="whatsapp_number" value="{{ old('whatsapp_number') }}"
-                    required class="mt-1 block w-full border rounded p-2 focus:ring focus:ring-blue-300 focus:outline-none">
+                    autocomplete="tel" required
+                    class="mt-1 block w-full border rounded p-2 focus:ring focus:ring-blue-300 focus:outline-none">
             </div>
 
             {{-- Role --}}
@@ -40,7 +41,7 @@
             {{-- Password --}}
             <div>
                 <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                <input type="password" id="password" name="password" required
+                <input type="password" id="password" name="password" autocomplete="new-password" required
                     class="mt-1 block w-full border rounded p-2 focus:ring focus:ring-blue-300 focus:outline-none">
             </div>
 

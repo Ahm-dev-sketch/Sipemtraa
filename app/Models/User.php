@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
+
     protected $fillable = [
         'name',
         'whatsapp_number',
@@ -23,4 +24,21 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    /**
+     * Get the attributes that should be cast.
+     */
+    protected function casts(): array
+    {
+        return [
+            'password' => 'hashed',
+        ];
+    }
+
+    /**
+     * Relasi ke Booking
+     */
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
 }

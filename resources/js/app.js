@@ -743,6 +743,30 @@ document.addEventListener('DOMContentLoaded', function () {
                 e.preventDefault();
                 Swal.fire({
                     title: 'Yakin hapus jadwal ini?',
+                    text: 'Data booking terkait juga akan terpengaruh!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        }
+    });
+
+    // Delete confirmation for supir
+    const deleteFormsSupir = document.querySelectorAll('.delete-form');
+    deleteFormsSupir.forEach(form => {
+        if (form.querySelector('button')?.textContent.includes('Hapus')) {
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Yakin hapus data supir ini?',
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',

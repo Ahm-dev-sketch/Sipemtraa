@@ -6,6 +6,13 @@
     <title>PT. PELITA TRAN PRIMA</title>
     <link rel="icon" type="image/png" href="{{ asset('asset/logo.png') }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    {{-- Preload critical assets for better LCP --}}
+    @if (request()->is('/'))
+        <link rel="preload" as="image" href="{{ asset('asset/home.png') }}" fetchpriority="high">
+    @endif
+    <link rel="preload" as="image" href="{{ asset('asset/logo.png') }}">
+
     @if (app()->environment() !== 'testing')
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @endif
@@ -42,7 +49,8 @@
                 class="w-64 min-h-screen bg-blue-900 text-white flex flex-col transform -translate-x-full
                        md:translate-x-0 transition-transform duration-300 md:static fixed z-50">
                 <div class="p-4 text-xl font-bold border-b border-blue-700 flex items-center gap-2">
-                    <img src="{{ asset('asset/logo.png') }}" alt="Logo" class="h-10 w-10 rounded-full object-cover">
+                    <img src="{{ asset('asset/logo.png') }}" alt="Logo" class="h-10 w-10 rounded-full object-cover"
+                        width="40" height="40">
                     PT. PELITA TRAN PRIMA
                 </div>
 
@@ -119,8 +127,8 @@
 
                 {{-- Logo --}}
                 <a href="{{ route('home') }}" class="flex items-center space-x-2 text-lg md:text-xl font-bold">
-                    <img src="{{ asset('asset/logo.png') }}" alt="Logo"
-                        class="h-10 w-10 rounded-full object-cover">
+                    <img src="{{ asset('asset/logo.png') }}" alt="Logo" class="h-10 w-10 rounded-full object-cover"
+                        width="40" height="40">
                     <span>PT. PELITA TRAN PRIMA</span>
                 </a>
 

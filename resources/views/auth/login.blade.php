@@ -24,10 +24,11 @@
 
                     {{-- WhatsApp Number --}}
                     <input type="tel" name="whatsapp_number" placeholder="Nomor WA" value="{{ old('whatsapp_number') }}"
-                        required class="w-full border p-3 rounded focus:outline-none focus:ring focus:ring-blue-300">
+                        autocomplete="tel" required
+                        class="w-full border p-3 rounded focus:outline-none focus:ring focus:ring-blue-300">
 
                     {{-- Password --}}
-                    <input type="password" name="password" placeholder="Kata Sandi" required
+                    <input type="password" name="password" placeholder="Kata Sandi" autocomplete="current-password" required
                         class="w-full border p-3 rounded focus:outline-none focus:ring focus:ring-blue-300">
 
                     <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700 transition">
@@ -46,9 +47,11 @@
             {{-- Right side: Illustration --}}
             <div class="md:w-1/2 bg-blue-50 flex justify-center items-center p-6 fade-left animate-on-scroll">
                 <div class="text-center">
-                    <img src="{{ asset('login.jpg') }}" alt="Travel" class="max-w-sm mx-auto">
-                    <h3 class="mt-4 font-bold text-lg">PT. Pelita Transport </h3>
-                    <p class="text-gray-500">Travel Terbaik Untuk Anda </p>
+                    <div class="bg-blue-100 w-64 h-64 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-bus text-blue-600 text-8xl"></i>
+                    </div>
+                    <h3 class="mt-4 font-bold text-lg">PT. Pelita Tran Prima</h3>
+                    <p class="text-gray-500">Travel Terbaik Untuk Anda</p>
                 </div>
             </div>
         </div>

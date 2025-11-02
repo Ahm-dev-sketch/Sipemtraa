@@ -7,16 +7,18 @@ use App\Models\Jadwal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Carbon\Carbon;
 use App\Services\WhatsappService;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class BookingController extends Controller
 {
-    private function generateTicketNumber()
+    private function generateTicketNumber(): string
     {
         do {
-            $ticketNumber = 'TKT-' . strtoupper(uniqid());
+            $ticketNumber = 'TKT-' . strtoupper(Str::random(10));
         } while (Booking::where('ticket_number', $ticketNumber)->exists());
 
         return $ticketNumber;
@@ -152,8 +154,13 @@ class BookingController extends Controller
 
         $jadwal = \App\Models\Jadwal::with('mobil.supir')->find($step2Data['jadwal']->id);
 
-        // Kursi yang sudah dibooking dengan status setuju (approved) atau pending yang belum expired (30 menit)
+        // Auto-cleanup: Expired pending bookings menjadi 'expired' untuk free up seats
         $threshold = \Carbon\Carbon::now()->subMinutes(30);
+        Booking::where('status', 'pending')
+            ->where('created_at', '<', $threshold)
+            ->update(['status' => 'expired']);
+
+        // Kursi yang sudah dibooking dengan status setuju (approved) atau pending yang belum expired (30 menit)
         $bookedSeats = Booking::where('jadwal_id', $jadwal->id)
             ->where(function ($query) use ($threshold) {
                 $query->where('status', 'setuju')
@@ -165,8 +172,12 @@ class BookingController extends Controller
             ->pluck('seat_number')
             ->toArray();
 
-        // Layout kursi minibus (13 kursi penumpang)
-        $seats = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'A9', 'A10', 'A11', 'A12', 'A13'];
+        // Dynamic seat layout based on mobil capacity
+        $capacity = $jadwal->mobil->kapasitas ?? 13;
+        $seats = [];
+        for ($i = 1; $i <= $capacity; $i++) {
+            $seats[] = 'A' . $i;
+        }
 
         return view('booking.step3', compact('jadwal', 'seats', 'bookedSeats', 'step1Data', 'step2Data'));
     }
@@ -185,7 +196,7 @@ class BookingController extends Controller
             'seats' => 'required|array|min:1|max:7',
         ]);
 
-        $jadwal = $step2Data['jadwal'];
+        $jadwal = Jadwal::with('mobil')->findOrFail($step2Data['jadwal']->id);
 
         // Cek batas waktu pemesanan (H-1 jam)
         $waktuKeberangkatan = \Carbon\Carbon::parse($jadwal->tanggal . ' ' . $jadwal->jam);
@@ -196,44 +207,86 @@ class BookingController extends Controller
             return back()->with('error', 'Pemesanan ditutup. Minimal 1 jam sebelum keberangkatan.');
         }
 
-        $firstBooking = null;
+        // Gunakan Database Transaction untuk mencegah race condition
+        try {
+            $firstBooking = DB::transaction(function () use ($request, $jadwal) {
+                // Lock jadwal untuk mencegah concurrent booking
+                $jadwalLocked = Jadwal::lockForUpdate()->find($jadwal->id);
 
-        foreach ($request->seats as $seat) {
-            // Cek apakah kursi sudah diambil dengan status setuju (approved)
-            if (Booking::where('jadwal_id', $jadwal->id)
-                ->where('seat_number', $seat)
-                ->where('status', 'setuju')
-                ->exists()
-            ) {
-                return back()->withErrors(['seat' => "Kursi $seat sudah dipesan."]);
+                $threshold = \Carbon\Carbon::now()->subMinutes(30);
+                $firstBooking = null;
+
+                // Validasi total kapasitas
+                $existingBookingsCount = Booking::where('jadwal_id', $jadwal->id)
+                    ->where(function ($query) use ($threshold) {
+                        $query->where('status', 'setuju')
+                            ->orWhere(function ($q) use ($threshold) {
+                                $q->where('status', 'pending')
+                                    ->where('created_at', '>=', $threshold);
+                            });
+                    })
+                    ->count();
+
+                if (($existingBookingsCount + count($request->seats)) > $jadwal->mobil->kapasitas) {
+                    throw new \Exception('Kapasitas penuh! Hanya tersisa ' . ($jadwal->mobil->kapasitas - $existingBookingsCount) . ' kursi.');
+                }
+
+                foreach ($request->seats as $seat) {
+                    // Cek apakah kursi sudah diambil (approved ATAU pending yang masih valid)
+                    $existingBooking = Booking::where('jadwal_id', $jadwal->id)
+                        ->where('seat_number', $seat)
+                        ->where(function ($query) use ($threshold) {
+                            $query->where('status', 'setuju')
+                                ->orWhere(function ($q) use ($threshold) {
+                                    $q->where('status', 'pending')
+                                        ->where('created_at', '>=', $threshold);
+                                });
+                        })
+                        ->lockForUpdate() // Pessimistic locking
+                        ->first();
+
+                    if ($existingBooking) {
+                        throw new \Exception("Kursi $seat sudah dipesan oleh pengguna lain.");
+                    }
+
+                    // Simpan tiap kursi sebagai booking dengan status pending
+                    $booking = Booking::create([
+                        'user_id' => \Illuminate\Support\Facades\Auth::id(),
+                        'jadwal_id' => $jadwal->id,
+                        'seat_number' => $seat,
+                        'status' => 'pending',
+                        'payment_status' => 'belum_bayar',
+                        'ticket_number' => $this->generateTicketNumber(),
+                        'jadwal_tanggal' => $jadwal->tanggal,
+                        'jadwal_jam' => $jadwal->jam,
+                    ]);
+
+                    if (!$firstBooking) {
+                        $firstBooking = $booking;
+                    }
+                }
+
+                return $firstBooking;
+            });
+
+            // Kirim notif admin pakai booking pertama (di luar transaction)
+            if ($firstBooking) {
+                try {
+                    app(\App\Services\WhatsappService::class)->notifyAdminBooking($firstBooking);
+                } catch (\Exception $e) {
+                    Log::error('Failed to send WhatsApp notification: ' . $e->getMessage());
+                    // Continue anyway, booking is successful
+                }
             }
 
-            // Simpan tiap kursi sebagai booking dengan status pending
-            $booking = Booking::create([
-                'user_id' => \Illuminate\Support\Facades\Auth::id(),
-                'jadwal_id' => $jadwal->id,
-                'seat_number' => $seat,
-                'status' => 'pending',
-                'payment_status' => 'belum_bayar',
-                'ticket_number' => $this->generateTicketNumber(),
-                'jadwal_tanggal' => $jadwal->tanggal,
-                'jadwal_jam' => $jadwal->jam,
-            ]);
+            // Clear session data
+            session()->forget(['booking_step1', 'booking_step2']);
 
-            if (!$firstBooking) {
-                $firstBooking = $booking;
-            }
+            return redirect()->route('riwayat')->with('success', 'Tiket berhasil dipesan!');
+        } catch (\Exception $e) {
+            Log::error('Booking failed: ' . $e->getMessage());
+            return back()->with('error', $e->getMessage());
         }
-
-        // Kirim notif admin pakai booking pertama
-        if ($firstBooking) {
-            app(\App\Services\WhatsappService::class)->notifyAdminBooking($firstBooking);
-        }
-
-        // Clear session data
-        session()->forget(['booking_step1', 'booking_step2']);
-
-        return redirect()->route('riwayat')->with('success', 'Tiket berhasil dipesan!');
     }
 
     public function pilihKursi($jadwal_id)
@@ -256,7 +309,7 @@ class BookingController extends Controller
     {
         $request->validate([
             'jadwal_id' => 'required|exists:jadwals,id',
-            'seats'     => 'required|array|min:1',
+            'seats'     => 'required|array|min:1|max:7',
         ]);
 
         $jadwal = Jadwal::findOrFail($request->jadwal_id);
@@ -286,41 +339,78 @@ class BookingController extends Controller
             return back()->with('error', 'Pemesanan ditutup. Minimal 1 jam sebelum keberangkatan.');
         }
 
-        $firstBooking = null;
+        // Gunakan Database Transaction untuk mencegah race condition
+        try {
+            $firstBooking = DB::transaction(function () use ($request, $jadwal) {
+                // Lock jadwal untuk mencegah concurrent booking
+                $jadwalLocked = Jadwal::lockForUpdate()->find($jadwal->id);
 
-        foreach ($request->seats as $seat) {
-            // Cek apakah kursi sudah diambil dengan status setuju (approved)
-            if (Booking::where('jadwal_id', $jadwal->id)
-                ->where('seat_number', $seat)
-                ->where('status', 'setuju')
-                ->exists()
-            ) {
-                return back()->withErrors(['seat' => "Kursi $seat sudah dipesan."]);
+                $threshold = \Carbon\Carbon::now()->subMinutes(30);
+                $firstBooking = null;
+
+                // Validasi total kapasitas
+                $existingBookingsCount = Booking::where('jadwal_id', $jadwal->id)
+                    ->where(function ($query) use ($threshold) {
+                        $query->where('status', 'setuju')
+                            ->orWhere(function ($q) use ($threshold) {
+                                $q->where('status', 'pending')
+                                    ->where('created_at', '>=', $threshold);
+                            });
+                    })
+                    ->count();
+
+                if (($existingBookingsCount + count($request->seats)) > $jadwal->mobil->kapasitas) {
+                    throw new \Exception('Kapasitas penuh! Hanya tersisa ' . ($jadwal->mobil->kapasitas - $existingBookingsCount) . ' kursi.');
+                }
+
+                foreach ($request->seats as $seat) {
+                    // Cek apakah kursi sudah diambil (approved ATAU pending yang masih valid)
+                    $existingBooking = Booking::where('jadwal_id', $jadwal->id)
+                        ->where('seat_number', $seat)
+                        ->where(function ($query) use ($threshold) {
+                            $query->where('status', 'setuju')
+                                ->orWhere(function ($q) use ($threshold) {
+                                    $q->where('status', 'pending')
+                                        ->where('created_at', '>=', $threshold);
+                                });
+                        })
+                        ->lockForUpdate() // Pessimistic locking
+                        ->first();
+
+                    if ($existingBooking) {
+                        throw new \Exception("Kursi $seat sudah dipesan oleh pengguna lain.");
+                    }
+
+                    // Simpan tiap kursi sebagai booking dengan status pending
+                    $booking = Booking::create([
+                        'user_id'       => Auth::id(),
+                        'jadwal_id'     => $jadwal->id,
+                        'seat_number'   => $seat,
+                        'status'        => 'pending',
+                        'payment_status' => 'belum_bayar',
+                        'ticket_number' => $this->generateTicketNumber(),
+                        'jadwal_tanggal' => $jadwal->tanggal,
+                        'jadwal_jam'    => $jadwal->jam,
+                    ]);
+
+                    if (!$firstBooking) {
+                        $firstBooking = $booking;
+                    }
+                }
+
+                return $firstBooking;
+            });
+
+            // Kirim notif admin pakai booking pertama
+            if ($firstBooking) {
+                app(WhatsappService::class)->notifyAdminBooking($firstBooking);
             }
 
-            // Simpan tiap kursi sebagai booking dengan status pending
-            $booking = Booking::create([
-                'user_id'       => Auth::id(),
-                'jadwal_id'     => $jadwal->id,
-                'seat_number'   => $seat,
-                'status'        => 'pending',
-                'payment_status' => 'belum_bayar',
-                'ticket_number' => $this->generateTicketNumber(),
-                'jadwal_tanggal' => $jadwal->tanggal,
-                'jadwal_jam'    => $jadwal->jam,
-            ]);
-
-            if (!$firstBooking) {
-                $firstBooking = $booking;
-            }
+            return redirect()->route('riwayat')->with('success', 'Tiket berhasil dipesan!');
+        } catch (\Exception $e) {
+            Log::error('Booking transaction failed: ' . $e->getMessage());
+            return back()->with('error', $e->getMessage());
         }
-
-        // Kirim notif admin pakai booking pertama
-        if ($firstBooking) {
-            app(WhatsappService::class)->notifyAdminBooking($firstBooking);
-        }
-
-        return redirect()->route('riwayat')->with('success', 'Tiket berhasil dipesan!');
     }
 
     public function updateStatus(Request $request, Booking $booking)
@@ -338,8 +428,15 @@ class BookingController extends Controller
 
     public function getSeats($id)
     {
+        $threshold = \Carbon\Carbon::now()->subMinutes(30);
         $bookedSeats = Booking::where('jadwal_id', $id)
-            ->where('status', 'setuju')
+            ->where(function ($query) use ($threshold) {
+                $query->where('status', 'setuju')
+                    ->orWhere(function ($q) use ($threshold) {
+                        $q->where('status', 'pending')
+                            ->where('created_at', '>=', $threshold);
+                    });
+            })
             ->pluck('seat_number')
             ->toArray();
 

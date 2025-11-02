@@ -28,7 +28,8 @@
         {{-- Right side: Illustration --}}
         <div class="md:w-1/2 mt-10 md:mt-0 flex flex-col items-center fade-left animate-on-scroll">
             <img src="{{ asset('asset/home.png') }}" alt="Ilustrasi pemesanan tiket"
-                class="w-full max-w-lg rounded-2xl shadow-xl object-contain" loading="lazy" />
+                class="w-full max-w-lg rounded-2xl shadow-xl object-contain min-h-[512px]" loading="eager" width="512"
+                height="512" fetchpriority="high" />
 
             <div class="mt-6 mb-12 text-center">
                 <h3 class="font-bold text-xl md:text-2xl">PT. Pelita Tran Prima</h3>
