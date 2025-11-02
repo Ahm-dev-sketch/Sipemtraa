@@ -28,7 +28,8 @@
 
                     {{-- Name --}}
                     <div>
-                        <input type="text" name="name" placeholder="Nama Lengkap" value="{{ old('name') }}" required
+                        <input type="text" name="name" placeholder="Nama Lengkap" value="{{ old('name') }}"
+                            autocomplete="name" required
                             class="w-full border p-3 rounded focus:outline-none focus:ring focus:ring-blue-300">
                         @error('name')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -40,7 +41,7 @@
                     {{-- WhatsApp Number --}}
                     <div>
                         <input type="tel" name="whatsapp_number" placeholder="Nomor WA aktif (contoh: 08123456789)"
-                            value="{{ old('whatsapp_number') }}" required
+                            value="{{ old('whatsapp_number') }}" autocomplete="tel" required
                             class="w-full border p-3 rounded focus:outline-none focus:ring focus:ring-blue-300">
                         @error('whatsapp_number')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -49,7 +50,7 @@
 
                     {{-- Password --}}
                     <div>
-                        <input type="password" name="password" placeholder="Kata Sandi" required
+                        <input type="password" name="password" placeholder="Kata Sandi" autocomplete="new-password" required
                             class="w-full border p-3 rounded focus:outline-none focus:ring focus:ring-blue-300">
                         @error('password')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -58,7 +59,8 @@
 
                     {{-- Konfirmasi Password --}}
                     <div>
-                        <input type="password" name="password_confirmation" placeholder="Konfirmasi Kata Sandi" required
+                        <input type="password" name="password_confirmation" placeholder="Konfirmasi Kata Sandi"
+                            autocomplete="new-password" required
                             class="w-full border p-3 rounded focus:outline-none focus:ring focus:ring-blue-300">
                     </div>
 

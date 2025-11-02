@@ -18,13 +18,14 @@
                         required class="w-full border p-3 rounded focus:outline-none focus:ring focus:ring-blue-300"
                         placeholder="Nomor WhatsApp" readonly>
 
-                    <input type="text" name="otp_code" placeholder="Kode OTP" required
+                    <input type="text" name="otp_code" placeholder="Kode OTP" autocomplete="one-time-code" required
                         class="w-full border p-3 rounded focus:outline-none focus:ring focus:ring-blue-300">
 
-                    <input type="password" name="password" placeholder="Kata Sandi Baru" required
-                        class="w-full border p-3 rounded focus:outline-none focus:ring focus:ring-blue-300">
+                    <input type="password" name="password" placeholder="Kata Sandi Baru" autocomplete="new-password"
+                        required class="w-full border p-3 rounded focus:outline-none focus:ring focus:ring-blue-300">
 
-                    <input type="password" name="password_confirmation" placeholder="Konfirmasi Kata Sandi Baru" required
+                    <input type="password" name="password_confirmation" placeholder="Konfirmasi Kata Sandi Baru"
+                        autocomplete="new-password" required
                         class="w-full border p-3 rounded focus:outline-none focus:ring focus:ring-blue-300">
 
                     @error('whatsapp_number')

@@ -12,7 +12,7 @@ use App\Services\WhatsappService;
 
 class AdminController extends Controller
 {
-    // Dashboard
+    // Dashboard Admin
     public function dashboard()
     {
         // Hitung total pendapatan bulan ini dari booking yang disetujui dan sudah bayar
@@ -104,9 +104,12 @@ class AdminController extends Controller
         $request->validate([
             'rute_id' => 'required|exists:rutes,id',
             'mobil_id' => 'required|exists:mobils,id',
-            'tanggal' => 'required|date',
+            'tanggal' => 'required|date|after_or_equal:today',
             'jam' => 'required',
-            'harga' => 'required|integer',
+            'harga' => 'required|integer|min:0',
+        ], [
+            'tanggal.after_or_equal' => 'Tanggal jadwal harus hari ini atau setelahnya.',
+            'harga.min' => 'Harga tidak boleh negatif.',
         ]);
 
         Jadwal::create($request->only(['rute_id', 'mobil_id', 'tanggal', 'jam', 'harga']));
@@ -126,9 +129,12 @@ class AdminController extends Controller
     {
         $request->validate([
             'rute_id' => 'required|exists:rutes,id',
-            'tanggal' => 'required|date',
+            'tanggal' => 'required|date|after_or_equal:today',
             'jam' => 'required',
-            'harga' => 'required|integer',
+            'harga' => 'required|integer|min:0',
+        ], [
+            'tanggal.after_or_equal' => 'Tanggal jadwal harus hari ini atau setelahnya.',
+            'harga.min' => 'Harga tidak boleh negatif.',
         ]);
 
         $jadwal->update($request->only(['rute_id', 'tanggal', 'jam', 'harga']));
@@ -139,6 +145,11 @@ class AdminController extends Controller
     // Hapus jadwal
     public function destroyJadwal(Jadwal $jadwal)
     {
+        // Cek apakah ada booking terkait
+        if ($jadwal->bookings()->exists()) {
+            return back()->with('error', 'Tidak dapat menghapus jadwal karena ada booking terkait. Hapus booking terlebih dahulu.');
+        }
+
         $jadwal->delete();
         return back()->with('success', 'Jadwal berhasil dihapus');
     }
@@ -251,6 +262,11 @@ class AdminController extends Controller
     // Hapus pelanggan
     public function destroyPelanggan(User $customer)
     {
+        // Cek apakah ada booking terkait
+        if ($customer->bookings()->exists()) {
+            return back()->with('error', 'Tidak dapat menghapus pelanggan karena ada booking terkait. Hapus booking terlebih dahulu atau ubah status booking.');
+        }
+
         $customer->delete();
         return back()->with('success', 'Pelanggan berhasil dihapus');
     }
@@ -365,11 +381,15 @@ class AdminController extends Controller
     public function storeRute(Request $request)
     {
         $request->validate([
-            'kota_asal' => 'required|string',
-            'kota_tujuan' => 'required|string',
-            'jarak_estimasi' => 'required|string',
-            'harga_tiket' => 'required|string',
-            'status_rute' => 'required|string',
+            'kota_asal' => 'required|string|max:255',
+            'kota_tujuan' => 'required|string|max:255|different:kota_asal',
+            'jarak_estimasi' => 'required|numeric|min:0',
+            'harga_tiket' => 'required|numeric|min:0',
+            'status_rute' => 'required|string|in:aktif,nonaktif',
+        ], [
+            'kota_tujuan.different' => 'Kota tujuan harus berbeda dengan kota asal.',
+            'jarak_estimasi.numeric' => 'Jarak estimasi harus berupa angka.',
+            'harga_tiket.numeric' => 'Harga tiket harus berupa angka.',
         ]);
 
         \App\Models\Rute::create($request->only([
@@ -393,11 +413,15 @@ class AdminController extends Controller
     public function updateRute(Request $request, \App\Models\Rute $rute)
     {
         $request->validate([
-            'kota_asal' => 'required|string',
-            'kota_tujuan' => 'required|string',
-            'jarak_estimasi' => 'required|string',
-            'harga_tiket' => 'required|string',
-            'status_rute' => 'required|string',
+            'kota_asal' => 'required|string|max:255',
+            'kota_tujuan' => 'required|string|max:255|different:kota_asal',
+            'jarak_estimasi' => 'required|numeric|min:0',
+            'harga_tiket' => 'required|numeric|min:0',
+            'status_rute' => 'required|string|in:aktif,nonaktif',
+        ], [
+            'kota_tujuan.different' => 'Kota tujuan harus berbeda dengan kota asal.',
+            'jarak_estimasi.numeric' => 'Jarak estimasi harus berupa angka.',
+            'harga_tiket.numeric' => 'Harga tiket harus berupa angka.',
         ]);
 
         $rute->update($request->only([
@@ -414,6 +438,11 @@ class AdminController extends Controller
     // Hapus rute
     public function destroyRute(\App\Models\Rute $rute)
     {
+        // Cek apakah ada jadwal terkait
+        if ($rute->jadwals()->exists()) {
+            return back()->with('error', 'Tidak dapat menghapus rute karena ada jadwal terkait. Hapus jadwal terlebih dahulu.');
+        }
+
         $rute->delete();
         return back()->with('success', 'Rute berhasil dihapus');
     }
@@ -447,12 +476,15 @@ class AdminController extends Controller
     public function storeMobil(Request $request)
     {
         $request->validate([
-            'nomor_polisi' => 'required|string|unique:mobils',
-            'jenis' => 'required|string',
-            'kapasitas' => 'required|integer|min:1',
+            'nomor_polisi' => 'required|string|unique:mobils|regex:/^[A-Z]{1,2}\s?\d{1,4}\s?[A-Z]{1,3}$/i',
+            'jenis' => 'required|string|max:255',
+            'kapasitas' => 'required|integer|min:1|max:100',
             'tahun' => 'required|integer|min:1900|max:' . (date('Y') + 1),
-            'merk' => 'required|string',
-            'status' => 'required|string',
+            'merk' => 'required|string|max:255',
+            'status' => 'required|string|in:tersedia,tidak tersedia,maintenance',
+        ], [
+            'nomor_polisi.regex' => 'Format nomor polisi tidak valid (contoh: B 1234 XYZ).',
+            'kapasitas.max' => 'Kapasitas maksimal 100 orang.',
         ]);
 
         \App\Models\Mobil::create($request->only([
@@ -477,12 +509,15 @@ class AdminController extends Controller
     public function updateMobil(Request $request, \App\Models\Mobil $mobil)
     {
         $request->validate([
-            'nomor_polisi' => 'required|string|unique:mobils,nomor_polisi,' . $mobil->id,
-            'jenis' => 'required|string',
-            'kapasitas' => 'required|integer|min:1',
+            'nomor_polisi' => 'required|string|unique:mobils,nomor_polisi,' . $mobil->id . '|regex:/^[A-Z]{1,2}\s?\d{1,4}\s?[A-Z]{1,3}$/i',
+            'jenis' => 'required|string|max:255',
+            'kapasitas' => 'required|integer|min:1|max:100',
             'tahun' => 'required|integer|min:1900|max:' . (date('Y') + 1),
-            'merk' => 'required|string',
-            'status' => 'required|string',
+            'merk' => 'required|string|max:255',
+            'status' => 'required|string|in:tersedia,tidak tersedia,maintenance',
+        ], [
+            'nomor_polisi.regex' => 'Format nomor polisi tidak valid (contoh: B 1234 XYZ).',
+            'kapasitas.max' => 'Kapasitas maksimal 100 orang.',
         ]);
 
         $mobil->update($request->only([
@@ -500,6 +535,16 @@ class AdminController extends Controller
     // Hapus mobil
     public function destroyMobil(\App\Models\Mobil $mobil)
     {
+        // Cek apakah ada jadwal terkait
+        if ($mobil->jadwals()->exists()) {
+            return back()->with('error', 'Tidak dapat menghapus mobil karena ada jadwal terkait. Hapus jadwal terlebih dahulu.');
+        }
+
+        // Cek apakah ada supir terkait
+        if ($mobil->supir()->exists()) {
+            return back()->with('error', 'Tidak dapat menghapus mobil karena ada supir terkait. Hapus supir terlebih dahulu.');
+        }
+
         $mobil->delete();
         return back()->with('success', 'Mobil berhasil dihapus');
     }
