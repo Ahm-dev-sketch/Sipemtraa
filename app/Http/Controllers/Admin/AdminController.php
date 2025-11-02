@@ -669,11 +669,11 @@ class AdminController extends Controller
         // Kirim notifikasi whatsapp jika status berubah
         if ($oldStatus !== $request->status) {
             try {
-                $whatsappService = new WhatsappService();
-                $whatsappService->notifyBookingStatusUpdate($booking);
+                $fonnteService = app(\App\Services\FonnteService::class);
+                $fonnteService->notifyBookingStatusUpdate($booking);
             } catch (\Exception $e) {
                 // Log error jika whatsapp gagal dikirim, tapi tetap lanjutkan proses
-                Log::error('Gagal mengirim whatsapp notifikasi: ' . $e->getMessage());
+                Log::error('Gagal mengirim Fonnte notifikasi: ' . $e->getMessage());
             }
         }
 

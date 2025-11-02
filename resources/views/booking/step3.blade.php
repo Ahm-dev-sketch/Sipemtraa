@@ -98,11 +98,15 @@
                                 <span>Supir</span>
                             </div>
                             <div class="flex items-center">
-                                <div class="w-4 h-4 bg-gradient-to-br from-blue-400 to-blue-500 border border-blue-600 rounded mr-2"></div>
+                                <div
+                                    class="w-4 h-4 bg-gradient-to-br from-blue-400 to-blue-500 border border-blue-600 rounded mr-2">
+                                </div>
                                 <span>Tersedia</span>
                             </div>
                             <div class="flex items-center">
-                                <div class="w-4 h-4 bg-gradient-to-br from-green-400 to-green-500 border border-green-600 rounded mr-2"></div>
+                                <div
+                                    class="w-4 h-4 bg-gradient-to-br from-green-400 to-green-500 border border-green-600 rounded mr-2">
+                                </div>
                                 <span>Terpilih</span>
                             </div>
                             <div class="flex items-center">
@@ -118,152 +122,161 @@
 
                         <!-- Layout Interior Mobil Hiace -->
                         <div class="flex justify-center mb-6">
-                            <div class="relative bg-gradient-to-b from-gray-700 to-gray-800 rounded-3xl p-12 shadow-2xl border-4 border-gray-900" style="width: 380px;">
+                            <div class="relative bg-gradient-to-b from-gray-700 to-gray-800 rounded-3xl p-12 shadow-2xl border-4 border-gray-900"
+                                style="width: 380px;">
                                 <!-- Dashboard/Depan Mobil -->
-                                <div class="absolute top-0 left-0 right-0 h-8 bg-gray-900 rounded-t-3xl border-b-2 border-gray-600"></div>
-                                
+                                <div
+                                    class="absolute top-0 left-0 right-0 h-8 bg-gray-900 rounded-t-3xl border-b-2 border-gray-600">
+                                </div>
+
                                 <!-- Windshield (Kaca Depan) -->
-                                <div class="absolute top-8 left-8 right-8 h-2 bg-gradient-to-r from-transparent via-blue-300 to-transparent opacity-40 rounded"></div>
-                                
+                                <div
+                                    class="absolute top-8 left-8 right-8 h-2 bg-gradient-to-r from-transparent via-blue-300 to-transparent opacity-40 rounded">
+                                </div>
+
                                 <!-- Grid Layout Kursi -->
                                 <div class="inline-grid gap-4 mt-6" style="grid-template-columns: 64px 64px 64px 64px;">
 
-<!-- Baris 1: Kursi 1 | KOSONG | KOSONG | Supir -->
-<label class="cursor-pointer transform transition-all hover:scale-105">
-    <input type="checkbox" name="seats[]" value="1" id="seat-1" class="hidden seat-checkbox"
-        {{ in_array('1', $bookedSeats) ? 'disabled' : '' }}>
-    <div class="w-16 h-16 flex items-center justify-center rounded-xl border-3 font-bold shadow-lg transition-all
-        @if(in_array('1', $bookedSeats)) 
-            bg-red-600 text-white border-red-700 cursor-not-allowed shadow-red-500/50
-        @else 
-            bg-gradient-to-br from-blue-400 to-blue-500 text-white border-blue-600 hover:from-blue-500 hover:to-blue-600 hover:shadow-xl hover:shadow-blue-500/50 
-        @endif">
-        <span class="text-lg">1</span>
-    </div>
-</label>
-<div class="relative">
-    <!-- Lorong/Aisle Indicator -->
-    <div class="w-16 h-16 flex items-center justify-center">
-        <div class="w-1 h-12 bg-gray-600 rounded-full opacity-30"></div>
-    </div>
-</div>
-<div></div>
-<div class="w-16 h-16 bg-gradient-to-br from-gray-600 to-gray-700 text-white flex flex-col items-center justify-center rounded-xl border-3 border-gray-800 shadow-xl">
-    <svg class="w-7 h-7 mb-1" fill="currentColor" viewBox="0 0 20 20">
-        <path fill-rule="evenodd"
-            d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
-    </svg>
-    <span class="text-xs font-bold">SUPIR</span>
-</div>
+                                    <!-- Baris 1: Kursi 1 | KOSONG | KOSONG | Supir -->
+                                    <label class="cursor-pointer transform transition-all hover:scale-105">
+                                        <input type="checkbox" name="seats[]" value="1" id="seat-1"
+                                            class="hidden seat-checkbox"
+                                            {{ in_array('1', $bookedSeats) ? 'disabled' : '' }}>
+                                        <div
+                                            class="w-16 h-16 flex items-center justify-center rounded-xl border-3 font-bold shadow-lg transition-all
+        @if (in_array('1', $bookedSeats)) bg-red-600 text-white border-red-700 cursor-not-allowed shadow-red-500/50
+        @else
+            bg-gradient-to-br from-blue-400 to-blue-500 text-white border-blue-600 hover:from-blue-500 hover:to-blue-600 hover:shadow-xl hover:shadow-blue-500/50 @endif">
+                                            <span class="text-lg">1</span>
+                                        </div>
+                                    </label>
+                                    <div class="relative">
+                                        <!-- Lorong/Aisle Indicator -->
+                                        <div class="w-16 h-16 flex items-center justify-center">
+                                            <div class="w-1 h-12 bg-gray-600 rounded-full opacity-30"></div>
+                                        </div>
+                                    </div>
+                                    <div></div>
+                                    <div
+                                        class="w-16 h-16 bg-gradient-to-br from-gray-600 to-gray-700 text-white flex flex-col items-center justify-center rounded-xl border-3 border-gray-800 shadow-xl">
+                                        <svg class="w-7 h-7 mb-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                        <span class="text-xs font-bold">SUPIR</span>
+                                    </div>
 
-<!-- Baris 2: KOSONG | 2 | 3 | 4 -->
-<div class="relative">
-    <div class="w-16 h-16 flex items-center justify-center">
-        <div class="w-1 h-12 bg-gray-600 rounded-full opacity-30"></div>
-    </div>
-</div>
-@foreach ([2,3,4] as $seat)
-<label class="cursor-pointer transform transition-all hover:scale-105">
-    <input type="checkbox" name="seats[]" value="{{ $seat }}" id="seat-{{ $seat }}" class="hidden seat-checkbox"
-        {{ in_array($seat, $bookedSeats) ? 'disabled' : '' }}>
-    <div class="w-16 h-16 flex items-center justify-center rounded-xl border-3 font-bold shadow-lg transition-all
-        @if(in_array($seat, $bookedSeats)) 
-            bg-red-600 text-white border-red-700 cursor-not-allowed shadow-red-500/50
-        @else 
-            bg-gradient-to-br from-blue-400 to-blue-500 text-white border-blue-600 hover:from-blue-500 hover:to-blue-600 hover:shadow-xl hover:shadow-blue-500/50 
-        @endif">
-        <span class="text-lg">{{ $seat }}</span>
-    </div>
-</label>
-@endforeach
+                                    <!-- Baris 2: KOSONG | 2 | 3 | 4 -->
+                                    <div class="relative">
+                                        <div class="w-16 h-16 flex items-center justify-center">
+                                            <div class="w-1 h-12 bg-gray-600 rounded-full opacity-30"></div>
+                                        </div>
+                                    </div>
+                                    @foreach ([2, 3, 4] as $seat)
+                                        <label class="cursor-pointer transform transition-all hover:scale-105">
+                                            <input type="checkbox" name="seats[]" value="{{ $seat }}"
+                                                id="seat-{{ $seat }}" class="hidden seat-checkbox"
+                                                {{ in_array($seat, $bookedSeats) ? 'disabled' : '' }}>
+                                            <div
+                                                class="w-16 h-16 flex items-center justify-center rounded-xl border-3 font-bold shadow-lg transition-all
+        @if (in_array($seat, $bookedSeats)) bg-red-600 text-white border-red-700 cursor-not-allowed shadow-red-500/50
+        @else
+            bg-gradient-to-br from-blue-400 to-blue-500 text-white border-blue-600 hover:from-blue-500 hover:to-blue-600 hover:shadow-xl hover:shadow-blue-500/50 @endif">
+                                                <span class="text-lg">{{ $seat }}</span>
+                                            </div>
+                                        </label>
+                                    @endforeach
 
-<!-- Baris 3: 5 | LORONG | 6 | 7 -->
-<label class="cursor-pointer transform transition-all hover:scale-105">
-    <input type="checkbox" name="seats[]" value="5" id="seat-5" class="hidden seat-checkbox"
-        {{ in_array('5', $bookedSeats) ? 'disabled' : '' }}>
-    <div class="w-16 h-16 flex items-center justify-center rounded-xl border-3 font-bold shadow-lg transition-all
-        @if(in_array('5', $bookedSeats)) 
-            bg-red-600 text-white border-red-700 cursor-not-allowed shadow-red-500/50
-        @else 
-            bg-gradient-to-br from-blue-400 to-blue-500 text-white border-blue-600 hover:from-blue-500 hover:to-blue-600 hover:shadow-xl hover:shadow-blue-500/50 
-        @endif">
-        <span class="text-lg">5</span>
-    </div>
-</label>
-<div class="relative">
-    <div class="w-16 h-16 flex items-center justify-center">
-        <div class="w-1 h-12 bg-gray-600 rounded-full opacity-30"></div>
-    </div>
-</div>
-@foreach ([6,7] as $seat)
-<label class="cursor-pointer transform transition-all hover:scale-105">
-    <input type="checkbox" name="seats[]" value="{{ $seat }}" id="seat-{{ $seat }}" class="hidden seat-checkbox"
-        {{ in_array($seat, $bookedSeats) ? 'disabled' : '' }}>
-    <div class="w-16 h-16 flex items-center justify-center rounded-xl border-3 font-bold shadow-lg transition-all
-        @if(in_array($seat, $bookedSeats)) 
-            bg-red-600 text-white border-red-700 cursor-not-allowed shadow-red-500/50
-        @else 
-            bg-gradient-to-br from-blue-400 to-blue-500 text-white border-blue-600 hover:from-blue-500 hover:to-blue-600 hover:shadow-xl hover:shadow-blue-500/50 
-        @endif">
-        <span class="text-lg">{{ $seat }}</span>
-    </div>
-</label>
-@endforeach
+                                    <!-- Baris 3: 5 | LORONG | 6 | 7 -->
+                                    <label class="cursor-pointer transform transition-all hover:scale-105">
+                                        <input type="checkbox" name="seats[]" value="5" id="seat-5"
+                                            class="hidden seat-checkbox"
+                                            {{ in_array('5', $bookedSeats) ? 'disabled' : '' }}>
+                                        <div
+                                            class="w-16 h-16 flex items-center justify-center rounded-xl border-3 font-bold shadow-lg transition-all
+        @if (in_array('5', $bookedSeats)) bg-red-600 text-white border-red-700 cursor-not-allowed shadow-red-500/50
+        @else
+            bg-gradient-to-br from-blue-400 to-blue-500 text-white border-blue-600 hover:from-blue-500 hover:to-blue-600 hover:shadow-xl hover:shadow-blue-500/50 @endif">
+                                            <span class="text-lg">5</span>
+                                        </div>
+                                    </label>
+                                    <div class="relative">
+                                        <div class="w-16 h-16 flex items-center justify-center">
+                                            <div class="w-1 h-12 bg-gray-600 rounded-full opacity-30"></div>
+                                        </div>
+                                    </div>
+                                    @foreach ([6, 7] as $seat)
+                                        <label class="cursor-pointer transform transition-all hover:scale-105">
+                                            <input type="checkbox" name="seats[]" value="{{ $seat }}"
+                                                id="seat-{{ $seat }}" class="hidden seat-checkbox"
+                                                {{ in_array($seat, $bookedSeats) ? 'disabled' : '' }}>
+                                            <div
+                                                class="w-16 h-16 flex items-center justify-center rounded-xl border-3 font-bold shadow-lg transition-all
+        @if (in_array($seat, $bookedSeats)) bg-red-600 text-white border-red-700 cursor-not-allowed shadow-red-500/50
+        @else
+            bg-gradient-to-br from-blue-400 to-blue-500 text-white border-blue-600 hover:from-blue-500 hover:to-blue-600 hover:shadow-xl hover:shadow-blue-500/50 @endif">
+                                                <span class="text-lg">{{ $seat }}</span>
+                                            </div>
+                                        </label>
+                                    @endforeach
 
-<!-- Baris 4: 8 | LORONG | 9 | 10 -->
-<label class="cursor-pointer transform transition-all hover:scale-105">
-    <input type="checkbox" name="seats[]" value="8" id="seat-8" class="hidden seat-checkbox"
-        {{ in_array('8', $bookedSeats) ? 'disabled' : '' }}>
-    <div class="w-16 h-16 flex items-center justify-center rounded-xl border-3 font-bold shadow-lg transition-all
-        @if(in_array('8', $bookedSeats)) 
-            bg-red-600 text-white border-red-700 cursor-not-allowed shadow-red-500/50
-        @else 
-            bg-gradient-to-br from-blue-400 to-blue-500 text-white border-blue-600 hover:from-blue-500 hover:to-blue-600 hover:shadow-xl hover:shadow-blue-500/50 
-        @endif">
-        <span class="text-lg">8</span>
-    </div>
-</label>
-<div class="relative">
-    <div class="w-16 h-16 flex items-center justify-center">
-        <div class="w-1 h-12 bg-gray-600 rounded-full opacity-30"></div>
-    </div>
-</div>
-@foreach ([9,10] as $seat)
-<label class="cursor-pointer transform transition-all hover:scale-105">
-    <input type="checkbox" name="seats[]" value="{{ $seat }}" id="seat-{{ $seat }}" class="hidden seat-checkbox"
-        {{ in_array($seat, $bookedSeats) ? 'disabled' : '' }}>
-    <div class="w-16 h-16 flex items-center justify-center rounded-xl border-3 font-bold shadow-lg transition-all
-        @if(in_array($seat, $bookedSeats)) 
-            bg-red-600 text-white border-red-700 cursor-not-allowed shadow-red-500/50
-        @else 
-            bg-gradient-to-br from-blue-400 to-blue-500 text-white border-blue-600 hover:from-blue-500 hover:to-blue-600 hover:shadow-xl hover:shadow-blue-500/50 
-        @endif">
-        <span class="text-lg">{{ $seat }}</span>
-    </div>
-</label>
-@endforeach
+                                    <!-- Baris 4: 8 | LORONG | 9 | 10 -->
+                                    <label class="cursor-pointer transform transition-all hover:scale-105">
+                                        <input type="checkbox" name="seats[]" value="8" id="seat-8"
+                                            class="hidden seat-checkbox"
+                                            {{ in_array('8', $bookedSeats) ? 'disabled' : '' }}>
+                                        <div
+                                            class="w-16 h-16 flex items-center justify-center rounded-xl border-3 font-bold shadow-lg transition-all
+        @if (in_array('8', $bookedSeats)) bg-red-600 text-white border-red-700 cursor-not-allowed shadow-red-500/50
+        @else
+            bg-gradient-to-br from-blue-400 to-blue-500 text-white border-blue-600 hover:from-blue-500 hover:to-blue-600 hover:shadow-xl hover:shadow-blue-500/50 @endif">
+                                            <span class="text-lg">8</span>
+                                        </div>
+                                    </label>
+                                    <div class="relative">
+                                        <div class="w-16 h-16 flex items-center justify-center">
+                                            <div class="w-1 h-12 bg-gray-600 rounded-full opacity-30"></div>
+                                        </div>
+                                    </div>
+                                    @foreach ([9, 10] as $seat)
+                                        <label class="cursor-pointer transform transition-all hover:scale-105">
+                                            <input type="checkbox" name="seats[]" value="{{ $seat }}"
+                                                id="seat-{{ $seat }}" class="hidden seat-checkbox"
+                                                {{ in_array($seat, $bookedSeats) ? 'disabled' : '' }}>
+                                            <div
+                                                class="w-16 h-16 flex items-center justify-center rounded-xl border-3 font-bold shadow-lg transition-all
+        @if (in_array($seat, $bookedSeats)) bg-red-600 text-white border-red-700 cursor-not-allowed shadow-red-500/50
+        @else
+            bg-gradient-to-br from-blue-400 to-blue-500 text-white border-blue-600 hover:from-blue-500 hover:to-blue-600 hover:shadow-xl hover:shadow-blue-500/50 @endif">
+                                                <span class="text-lg">{{ $seat }}</span>
+                                            </div>
+                                        </label>
+                                    @endforeach
 
-<!-- Baris 5: 11 | 12 | 13 | 14 -->
-@foreach ([11,12,13,14] as $seat)
-<label class="cursor-pointer transform transition-all hover:scale-105">
-    <input type="checkbox" name="seats[]" value="{{ $seat }}" id="seat-{{ $seat }}" class="hidden seat-checkbox"
-        {{ in_array($seat, $bookedSeats) ? 'disabled' : '' }}>
-    <div class="w-16 h-16 flex items-center justify-center rounded-xl border-3 font-bold shadow-lg transition-all
-        @if(in_array($seat, $bookedSeats)) 
-            bg-red-600 text-white border-red-700 cursor-not-allowed shadow-red-500/50
-        @else 
-            bg-gradient-to-br from-blue-400 to-blue-500 text-white border-blue-600 hover:from-blue-500 hover:to-blue-600 hover:shadow-xl hover:shadow-blue-500/50 
-        @endif">
-        <span class="text-lg">{{ $seat }}</span>
-    </div>
-</label>
-@endforeach
+                                    <!-- Baris 5: 11 | 12 | 13 | 14 -->
+                                    @foreach ([11, 12, 13, 14] as $seat)
+                                        <label class="cursor-pointer transform transition-all hover:scale-105">
+                                            <input type="checkbox" name="seats[]" value="{{ $seat }}"
+                                                id="seat-{{ $seat }}" class="hidden seat-checkbox"
+                                                {{ in_array($seat, $bookedSeats) ? 'disabled' : '' }}>
+                                            <div
+                                                class="w-16 h-16 flex items-center justify-center rounded-xl border-3 font-bold shadow-lg transition-all
+        @if (in_array($seat, $bookedSeats)) bg-red-600 text-white border-red-700 cursor-not-allowed shadow-red-500/50
+        @else
+            bg-gradient-to-br from-blue-400 to-blue-500 text-white border-blue-600 hover:from-blue-500 hover:to-blue-600 hover:shadow-xl hover:shadow-blue-500/50 @endif">
+                                                <span class="text-lg">{{ $seat }}</span>
+                                            </div>
+                                        </label>
+                                    @endforeach
 
                                 </div>
-                                
+
                                 <!-- Rear Bumper -->
-                                <div class="absolute bottom-0 left-0 right-0 h-6 bg-gray-900 rounded-b-3xl border-t-2 border-gray-600"></div>
-                                
+                                <div
+                                    class="absolute bottom-0 left-0 right-0 h-6 bg-gray-900 rounded-b-3xl border-t-2 border-gray-600">
+                                </div>
+
                                 <!-- Side Mirrors Effect -->
                                 <div class="absolute -left-2 top-10 w-4 h-6 bg-gray-900 rounded-l-lg"></div>
                                 <div class="absolute -right-2 top-10 w-4 h-6 bg-gray-900 rounded-r-lg"></div>
