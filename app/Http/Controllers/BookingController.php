@@ -164,13 +164,11 @@ class BookingController extends Controller
 
         $jadwal = \App\Models\Jadwal::with('mobil.supir')->find($step2Data['jadwal']->id);
 
-        // Auto-cleanup: Expired pending bookings menjadi 'expired' untuk free up seats
-        $threshold = \Carbon\Carbon::now()->subMinutes(30);
-        Booking::where('status', 'pending')
-            ->where('created_at', '<', $threshold)
-            ->update(['status' => 'expired']);
+        // REMOVED: Inline cleanup - rely on scheduled command for better performance
+        // Auto-cleanup is handled by CancelExpiredBookings scheduled command (runs every 5 minutes)
 
         // Kursi yang sudah dibooking dengan status setuju (approved) atau pending yang belum expired (30 menit)
+        $threshold = \Carbon\Carbon::now()->subMinutes(config('booking.pending_expiry_minutes', 30));
         $bookedSeats = Booking::where('jadwal_id', $jadwal->id)
             ->where(function ($query) use ($threshold) {
                 $query->where('status', 'setuju')
@@ -209,12 +207,14 @@ class BookingController extends Controller
         $jadwal = Jadwal::with('mobil')->findOrFail($step2Data['jadwal']->id);
 
         // Cek batas waktu pemesanan (H-1 jam)
-        $waktuKeberangkatan = \Carbon\Carbon::parse($jadwal->tanggal . ' ' . $jadwal->jam);
-        $batasPesan = $waktuKeberangkatan->copy()->subHour();
+        // FIX: Use getRawOriginal to get date string without cast formatting
+        $waktuKeberangkatan = \Carbon\Carbon::parse($jadwal->getRawOriginal('tanggal') . ' ' . $jadwal->jam);
+        $batasPesan = $waktuKeberangkatan->copy()->subHours(config('booking.booking_close_hours', 1));
         $waktuSekarang = \Carbon\Carbon::now();
 
         if ($waktuSekarang->greaterThanOrEqualTo($batasPesan)) {
-            return back()->with('error', 'Pemesanan ditutup. Minimal 1 jam sebelum keberangkatan.');
+            $hours = config('booking.booking_close_hours', 1);
+            return back()->with('error', "Pemesanan ditutup. Minimal {$hours} jam sebelum keberangkatan.");
         }
 
         // Gunakan Database Transaction untuk mencegah race condition
@@ -223,7 +223,7 @@ class BookingController extends Controller
                 // Lock jadwal untuk mencegah concurrent booking
                 $jadwalLocked = Jadwal::lockForUpdate()->find($jadwal->id);
 
-                $threshold = \Carbon\Carbon::now()->subMinutes(30);
+                $threshold = \Carbon\Carbon::now()->subMinutes(config('booking.pending_expiry_minutes', 30));
                 $firstBooking = null;
 
                 // CRITICAL FIX: Cek apakah user sudah punya booking pending untuk jadwal ini
@@ -234,7 +234,7 @@ class BookingController extends Controller
                     ->exists();
 
                 if ($existingPendingBooking) {
-                    throw new \Exception('Anda masih memiliki booking yang menunggu persetujuan admin untuk jadwal ini. Silakan tunggu konfirmasi atau batalkan booking sebelumnya.');
+                    throw new \Exception('Anda masih memiliki pesanan yang menunggu persetujuan admin untuk jadwal ini. Silahkan batalkan pesanan sebelumnya.');
                 }
 
                 // Validasi total kapasitas
@@ -295,7 +295,12 @@ class BookingController extends Controller
                 try {
                     app(\App\Services\FonnteService::class)->notifyAdminBooking($firstBooking);
                 } catch (\Exception $e) {
-                    Log::error('Failed to send Fonnte notification: ' . $e->getMessage());
+                    Log::error('Notification failed but booking succeeded', [
+                        'booking_id' => $firstBooking->id,
+                        'user_id' => Auth::id(),
+                        'error' => $e->getMessage(),
+                        'timestamp' => now()
+                    ]);
                     // Continue anyway, booking is successful
                 }
             }
@@ -305,8 +310,16 @@ class BookingController extends Controller
 
             return redirect()->route('riwayat')->with('success', 'Tiket berhasil dipesan!');
         } catch (\Exception $e) {
-            Log::error('Booking failed: ' . $e->getMessage());
-            return back()->with('error', $e->getMessage());
+            Log::error('Booking transaction failed', [
+                'user_id' => Auth::id(),
+                'jadwal_id' => $request->jadwal_id ?? null,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'timestamp' => now()
+            ]);
+
+            // Don't clear session on error - let user retry
+            return back()->with('error', 'Booking gagal: ' . $e->getMessage());
         }
     }
 
@@ -336,7 +349,8 @@ class BookingController extends Controller
         $jadwal = Jadwal::findOrFail($request->jadwal_id);
 
         // Cek batas waktu pemesanan (H-1 jam)
-        $waktuKeberangkatan = Carbon::parse($jadwal->tanggal . ' ' . $jadwal->jam);
+        // FIX: Use getRawOriginal to get date string without cast formatting
+        $waktuKeberangkatan = Carbon::parse($jadwal->getRawOriginal('tanggal') . ' ' . $jadwal->jam);
         $batasPesan = $waktuKeberangkatan->copy()->subHour();
         $waktuSekarang = Carbon::now();
 
@@ -436,12 +450,33 @@ class BookingController extends Controller
 
     public function updateStatus(Request $request, Booking $booking)
     {
+        // CRITICAL FIX: Only admin can update booking status
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'Anda tidak memiliki izin untuk mengubah status pesanan.');
+        }
+
         $request->validate([
             'status' => 'required|in:pending,setuju,batal'
         ]);
 
+        // Prevent status change if already paid
+        if ($booking->payment_status === 'sudah_bayar' && $request->status !== $booking->status) {
+            return back()->with('error', 'Tidak dapat mengubah status pesanan yang sudah dibayar. Kelola di menu Pembayaran.');
+        }
+
+        $oldStatus = $booking->status;
+
         $booking->update([
             'status' => $request->status
+        ]);
+
+        // Log status change for audit trail
+        Log::info('Booking status updated', [
+            'booking_id' => $booking->id,
+            'admin_id' => Auth::id(),
+            'old_status' => $oldStatus,
+            'new_status' => $request->status,
+            'timestamp' => now()
         ]);
 
         return back()->with('success', 'Status berhasil diperbarui');
@@ -449,7 +484,7 @@ class BookingController extends Controller
 
     public function getSeats($id)
     {
-        $threshold = \Carbon\Carbon::now()->subMinutes(30);
+        $threshold = \Carbon\Carbon::now()->subMinutes(config('booking.pending_expiry_minutes', 30));
         $bookedSeats = Booking::where('jadwal_id', $id)
             ->where(function ($query) use ($threshold) {
                 $query->where('status', 'setuju')
@@ -509,11 +544,12 @@ class BookingController extends Controller
 
         // CRITICAL FIX: Validasi batas waktu cancel (minimal 2 jam sebelum keberangkatan)
         $waktuKeberangkatan = \Carbon\Carbon::parse($booking->jadwal_tanggal . ' ' . $booking->jadwal_jam);
-        $batasCancel = $waktuKeberangkatan->copy()->subHours(2);
+        $batasCancel = $waktuKeberangkatan->copy()->subHours(config('booking.cancel_close_hours', 2));
         $waktuSekarang = \Carbon\Carbon::now();
 
         if ($waktuSekarang->greaterThanOrEqualTo($batasCancel)) {
-            return back()->with('error', 'Tidak dapat membatalkan booking. Minimal 2 jam sebelum keberangkatan.');
+            $hours = config('booking.cancel_close_hours', 2);
+            return back()->with('error', "Tidak dapat membatalkan pesanan. Minimal {$hours} jam sebelum keberangkatan.");
         }
 
         // Update status ke batal

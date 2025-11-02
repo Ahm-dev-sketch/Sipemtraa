@@ -24,6 +24,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/bookings', [AdminController::class, 'bookings'])->name('bookings');
     Route::put('/bookings/{booking}', [AdminController::class, 'updateBooking'])->name('bookings.update');
 
+    // CRITICAL FIX: Move booking status update to admin routes
+    Route::patch('/bookings/{booking}/status', [BookingController::class, 'updateStatus'])->name('bookings.update.status');
+
     // Kelola Pembayaran
     Route::get('/pembayaran', [AdminController::class, 'pembayaran'])->name('pembayaran');
     Route::put('/pembayaran/{booking}', [AdminController::class, 'updatePembayaran'])->name('pembayaran.update');
@@ -109,8 +112,8 @@ Route::middleware('auth')->group(function () {
     // Legacy route for backward compatibility
     Route::post('/pesan-tiket', [BookingController::class, 'store'])->name('booking.store');
 
-    // Update booking status
-    Route::patch('/booking/{booking}/status', [BookingController::class, 'updateStatus'])->name('booking.update.status');
+    // REMOVED: Route moved to admin middleware group for security
+    // Route::patch('/booking/{booking}/status', [BookingController::class, 'updateStatus'])->name('booking.update.status');
 
     // Download e-ticket
     Route::get('/booking/{booking}/download-ticket', [BookingController::class, 'downloadTicket'])->name('booking.download.ticket');

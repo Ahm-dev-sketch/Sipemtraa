@@ -37,6 +37,27 @@
                 </div>
 
                 <div>
+                    <label for="mobil_id" class="block text-sm font-medium text-gray-700 mb-2">Mobil</label>
+                    <select id="mobil_id" name="mobil_id" required
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="" disabled>Pilih Mobil</option>
+                        @foreach ($mobils as $mobil)
+                            <option value="{{ $mobil->id }}"
+                                {{ old('mobil_id', $jadwal->mobil_id) == $mobil->id ? 'selected' : '' }}
+                                data-status="{{ $mobil->status }}">
+                                {{ $mobil->merk }} ({{ $mobil->nomor_polisi }}) - {{ $mobil->kapasitas }} kursi
+                                @if ($mobil->status !== 'tersedia')
+                                    - [{{ strtoupper($mobil->status) }}]
+                                @endif
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('mobil_id')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div>
                     <label for="tanggal" class="block text-sm font-medium text-gray-700 mb-2">Tanggal</label>
                     <input type="date" name="tanggal" id="tanggal" value="{{ old('tanggal', $jadwal->tanggal) }}"
                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -65,6 +86,7 @@
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
+
             </div>
 
             <div class="flex gap-4">
