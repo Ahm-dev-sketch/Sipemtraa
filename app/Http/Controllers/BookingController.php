@@ -272,9 +272,9 @@ class BookingController extends Controller
             // Kirim notif admin pakai booking pertama (di luar transaction)
             if ($firstBooking) {
                 try {
-                    app(\App\Services\WhatsappService::class)->notifyAdminBooking($firstBooking);
+                    app(\App\Services\FonnteService::class)->notifyAdminBooking($firstBooking);
                 } catch (\Exception $e) {
-                    Log::error('Failed to send WhatsApp notification: ' . $e->getMessage());
+                    Log::error('Failed to send Fonnte notification: ' . $e->getMessage());
                     // Continue anyway, booking is successful
                 }
             }

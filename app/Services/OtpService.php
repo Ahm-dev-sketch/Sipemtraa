@@ -10,6 +10,13 @@ use Illuminate\Support\Facades\Http;
 
 class OtpService
 {
+    protected $fonnteService;
+
+    public function __construct(FonnteService $fonnteService)
+    {
+        $this->fonnteService = $fonnteService;
+    }
+
     /**
      * Generate and send OTP via WhatsApp
      */
@@ -39,17 +46,17 @@ class OtpService
             'used'            => false
         ]);
 
-        // Kirim OTP via WhatsApp menggunakan WhatsappService
-        $whatsappService = app(\App\Services\WhatsappService::class);
-        $message = "Kode OTP Anda: {$otpCode}. Berlaku 10 menit.";
+        // Kirim OTP via WhatsApp menggunakan Fonnte
+        $result = $this->fonnteService->sendOtp($whatsappNumber, $otpCode);
 
-        // Untuk development, log saja dulu (komentari jika sudah siap production)
-        \Illuminate\Support\Facades\Log::info("OTP untuk {$whatsappNumber}: {$message}");
-
-        // Uncomment baris berikut untuk mengaktifkan WhatsApp API
-        // $whatsappService->sendMessage($this->formatNumber($whatsappNumber), $message);
-
-        return ['success' => true, 'message' => 'OTP telah dikirim ke WhatsApp Anda'];
+        if ($result['success']) {
+            return ['success' => true, 'message' => 'OTP telah dikirim ke WhatsApp Anda'];
+        } else {
+            // Jika gagal kirim, tetap return success karena OTP sudah dibuat
+            // User bisa cek log atau retry
+            Log::warning('Failed to send OTP via Fonnte', ['result' => $result]);
+            return ['success' => true, 'message' => 'OTP telah dikirim ke WhatsApp Anda'];
+        }
     }
 
     /**
@@ -90,22 +97,16 @@ class OtpService
      */
     public function sendAdminNotification(Booking $booking)
     {
-        $user   = $booking->user;
-        $jadwal = $booking->jadwal;
+        // Kirim notifikasi admin menggunakan Fonnte
+        $result = $this->fonnteService->notifyAdminBooking($booking);
 
-        $message = "📢 *Pesanan Baru!* \n\n" .
-            "Nama: {$user->name}\n" .
-            "Nomor WA: {$user->whatsapp_number}\n" .
-            "Rute/Tujuan: {$jadwal->tujuan}\n" .
-            "Tanggal: {$jadwal->tanggal} {$jadwal->jam}\n" .
-            "Kursi: {$booking->seat_number}\n\n" .
-            "Segera cek sistem admin.";
+        if ($result['success']) {
+            Log::info('Admin notification sent successfully', ['booking_id' => $booking->id]);
+        } else {
+            Log::error('Failed to send admin notification', ['booking_id' => $booking->id, 'result' => $result]);
+        }
 
-        // Kirim notifikasi admin menggunakan WhatsappService
-        $whatsappService = app(\App\Services\WhatsappService::class);
-        $whatsappService->notifyAdminBooking($booking);
-
-        return true;
+        return $result['success'];
     }
 
     /**
