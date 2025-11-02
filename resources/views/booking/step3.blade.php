@@ -116,117 +116,160 @@
                         data-price-per-seat="{{ $jadwal->harga }}">
                         @csrf
 
-                        <div class="flex flex-col items-center space-y-4">
+                        <!-- Layout menggunakan grid untuk alignment yang tepat -->
+                        <div class="flex justify-center">
+                            <div class="inline-grid gap-4" style="grid-template-columns: 56px 56px 56px 56px;">
 
-<!-- Baris depan -->
-<div class="flex justify-center items-center space-x-24 mb-6">
-    <!-- Kursi 1 -->
-    <label class="cursor-pointer">
-        <input type="checkbox" name="seats[]" value="1" id="seat-1" class="hidden seat-checkbox"
-            {{ in_array('1', $bookedSeats) ? 'disabled' : '' }}>
-        <div class="w-14 h-14 flex items-center justify-center rounded-lg border-2 font-semibold
-            @if(in_array('1', $bookedSeats)) bg-red-500 text-white border-red-500 cursor-not-allowed
-            @else bg-gray-200 text-gray-700 border-gray-300 hover:border-blue-400 @endif">
-            1
-        </div>
-    </label>
-
-    <!-- Supir -->
-    <div class="w-14 h-14 bg-gray-500 text-white flex flex-col items-center justify-center rounded-lg border-2 border-gray-600">
-        <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd"
-                d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
-        </svg>
-        <span class="text-xs font-semibold">Supir</span>
+<!-- Baris 1: Kursi 1 | KOSONG | KOSONG | Supir -->
+<label class="cursor-pointer">
+    <input type="checkbox" name="seats[]" value="1" id="seat-1" class="hidden seat-checkbox"
+        {{ in_array('1', $bookedSeats) ? 'disabled' : '' }}>
+    <div class="w-14 h-14 flex items-center justify-center rounded-lg border-2 font-semibold
+        @if(in_array('1', $bookedSeats)) bg-red-500 text-white border-red-500 cursor-not-allowed
+        @else bg-gray-200 text-gray-700 border-gray-300 hover:border-blue-400 @endif">
+        1
     </div>
+</label>
+<div></div>
+<div></div>
+<div class="w-14 h-14 bg-gray-500 text-white flex flex-col items-center justify-center rounded-lg border-2 border-gray-600">
+    <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd"
+            d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+    </svg>
+    <span class="text-xs font-semibold">Supir</span>
 </div>
 
-<div class="flex justify-end space-x-2">
-    @foreach ([2,3,4] as $seat)
-        <label class="cursor-pointer">
-            <input type="checkbox" name="seats[]" value="{{ $seat }}" id="seat-{{ $seat }}" class="hidden seat-checkbox"
-                {{ in_array($seat, $bookedSeats) ? 'disabled' : '' }}>
-            <div class="w-14 h-14 flex items-center justify-center rounded-lg border-2 font-semibold
-                @if(in_array($seat, $bookedSeats)) bg-red-500 text-white border-red-500 cursor-not-allowed
-                @else bg-gray-200 text-gray-700 border-gray-300 hover:border-blue-400 @endif">
-                {{ $seat }}
-            </div>
-        </label>
-    @endforeach
-</div>
-
-<!-- Baris 3 -->
-<div class="flex justify-center space-x-24 mb-4">
-    <!-- Kursi 5 kiri -->
-    <label class="cursor-pointer">
-        <input type="checkbox" name="seats[]" value="5" id="seat-5" class="hidden seat-checkbox"
-            {{ in_array('5', $bookedSeats) ? 'disabled' : '' }}>
-        <div class="w-14 h-14 flex items-center justify-center rounded-lg border-2 font-semibold
-            @if(in_array('5', $bookedSeats)) bg-red-500 text-white border-red-500 cursor-not-allowed
-            @else bg-gray-200 text-gray-700 border-gray-300 hover:border-blue-400 @endif">
-            5
-        </div>
-    </label>
-
-    <!-- Kursi kanan (6,7) -->
-    <div class="flex space-x-4">
-        @foreach ([6,7] as $seat)
-            <label class="cursor-pointer">
-                <input type="checkbox" name="seats[]" value="{{ $seat }}" id="seat-{{ $seat }}" class="hidden seat-checkbox"
-                    {{ in_array($seat, $bookedSeats) ? 'disabled' : '' }}>
-                <div class="w-14 h-14 flex items-center justify-center rounded-lg border-2 font-semibold
-                    @if(in_array($seat, $bookedSeats)) bg-red-500 text-white border-red-500 cursor-not-allowed
-                    @else bg-gray-200 text-gray-700 border-gray-300 hover:border-blue-400 @endif">
-                    {{ $seat }}
-                </div>
-            </label>
-        @endforeach
+<!-- Baris 2: KOSONG | 2 | 3 | 4 -->
+<div></div>
+<label class="cursor-pointer">
+    <input type="checkbox" name="seats[]" value="2" id="seat-2" class="hidden seat-checkbox"
+        {{ in_array('2', $bookedSeats) ? 'disabled' : '' }}>
+    <div class="w-14 h-14 flex items-center justify-center rounded-lg border-2 font-semibold
+        @if(in_array('2', $bookedSeats)) bg-red-500 text-white border-red-500 cursor-not-allowed
+        @else bg-gray-200 text-gray-700 border-gray-300 hover:border-blue-400 @endif">
+        2
     </div>
-</div>
-
-<!-- Baris 4 -->
-<div class="flex justify-center space-x-24 mb-4">
-    <!-- Kursi 8 kiri -->
-    <label class="cursor-pointer">
-        <input type="checkbox" name="seats[]" value="8" id="seat-8" class="hidden seat-checkbox"
-            {{ in_array('8', $bookedSeats) ? 'disabled' : '' }}>
-        <div class="w-14 h-14 flex items-center justify-center rounded-lg border-2 font-semibold
-            @if(in_array('8', $bookedSeats)) bg-red-500 text-white border-red-500 cursor-not-allowed
-            @else bg-gray-200 text-gray-700 border-gray-300 hover:border-blue-400 @endif">
-            8
-        </div>
-    </label>
-
-    <!-- Kursi kanan (9,10) -->
-    <div class="flex space-x-4">
-        @foreach ([9,10] as $seat)
-            <label class="cursor-pointer">
-                <input type="checkbox" name="seats[]" value="{{ $seat }}" id="seat-{{ $seat }}" class="hidden seat-checkbox"
-                    {{ in_array($seat, $bookedSeats) ? 'disabled' : '' }}>
-                <div class="w-14 h-14 flex items-center justify-center rounded-lg border-2 font-semibold
-                    @if(in_array($seat, $bookedSeats)) bg-red-500 text-white border-red-500 cursor-not-allowed
-                    @else bg-gray-200 text-gray-700 border-gray-300 hover:border-blue-400 @endif">
-                    {{ $seat }}
-                </div>
-            </label>
-        @endforeach
+</label>
+<label class="cursor-pointer">
+    <input type="checkbox" name="seats[]" value="3" id="seat-3" class="hidden seat-checkbox"
+        {{ in_array('3', $bookedSeats) ? 'disabled' : '' }}>
+    <div class="w-14 h-14 flex items-center justify-center rounded-lg border-2 font-semibold
+        @if(in_array('3', $bookedSeats)) bg-red-500 text-white border-red-500 cursor-not-allowed
+        @else bg-gray-200 text-gray-700 border-gray-300 hover:border-blue-400 @endif">
+        3
     </div>
-</div>
+</label>
+<label class="cursor-pointer">
+    <input type="checkbox" name="seats[]" value="4" id="seat-4" class="hidden seat-checkbox"
+        {{ in_array('4', $bookedSeats) ? 'disabled' : '' }}>
+    <div class="w-14 h-14 flex items-center justify-center rounded-lg border-2 font-semibold
+        @if(in_array('4', $bookedSeats)) bg-red-500 text-white border-red-500 cursor-not-allowed
+        @else bg-gray-200 text-gray-700 border-gray-300 hover:border-blue-400 @endif">
+        4
+    </div>
+</label>
 
-<!-- Baris 5 -->
-<div class="flex justify-center space-x-4">
-    @foreach ([11,12,13,14] as $seat)
-        <label class="cursor-pointer">
-            <input type="checkbox" name="seats[]" value="{{ $seat }}" id="seat-{{ $seat }}" class="hidden seat-checkbox"
-                {{ in_array($seat, $bookedSeats) ? 'disabled' : '' }}>
-            <div class="w-14 h-14 flex items-center justify-center rounded-lg border-2 font-semibold
-                @if(in_array($seat, $bookedSeats)) bg-red-500 text-white border-red-500 cursor-not-allowed
-                @else bg-gray-200 text-gray-700 border-gray-300 hover:border-blue-400 @endif">
-                {{ $seat }}
-            </div>
-        </label>
-    @endforeach
+<!-- Baris 3: 5 | KOSONG | 6 | 7 -->
+<label class="cursor-pointer">
+    <input type="checkbox" name="seats[]" value="5" id="seat-5" class="hidden seat-checkbox"
+        {{ in_array('5', $bookedSeats) ? 'disabled' : '' }}>
+    <div class="w-14 h-14 flex items-center justify-center rounded-lg border-2 font-semibold
+        @if(in_array('5', $bookedSeats)) bg-red-500 text-white border-red-500 cursor-not-allowed
+        @else bg-gray-200 text-gray-700 border-gray-300 hover:border-blue-400 @endif">
+        5
+    </div>
+</label>
+<div></div>
+<label class="cursor-pointer">
+    <input type="checkbox" name="seats[]" value="6" id="seat-6" class="hidden seat-checkbox"
+        {{ in_array('6', $bookedSeats) ? 'disabled' : '' }}>
+    <div class="w-14 h-14 flex items-center justify-center rounded-lg border-2 font-semibold
+        @if(in_array('6', $bookedSeats)) bg-red-500 text-white border-red-500 cursor-not-allowed
+        @else bg-gray-200 text-gray-700 border-gray-300 hover:border-blue-400 @endif">
+        6
+    </div>
+</label>
+<label class="cursor-pointer">
+    <input type="checkbox" name="seats[]" value="7" id="seat-7" class="hidden seat-checkbox"
+        {{ in_array('7', $bookedSeats) ? 'disabled' : '' }}>
+    <div class="w-14 h-14 flex items-center justify-center rounded-lg border-2 font-semibold
+        @if(in_array('7', $bookedSeats)) bg-red-500 text-white border-red-500 cursor-not-allowed
+        @else bg-gray-200 text-gray-700 border-gray-300 hover:border-blue-400 @endif">
+        7
+    </div>
+</label>
+
+<!-- Baris 4: 8 | KOSONG | 9 | 10 -->
+<label class="cursor-pointer">
+    <input type="checkbox" name="seats[]" value="8" id="seat-8" class="hidden seat-checkbox"
+        {{ in_array('8', $bookedSeats) ? 'disabled' : '' }}>
+    <div class="w-14 h-14 flex items-center justify-center rounded-lg border-2 font-semibold
+        @if(in_array('8', $bookedSeats)) bg-red-500 text-white border-red-500 cursor-not-allowed
+        @else bg-gray-200 text-gray-700 border-gray-300 hover:border-blue-400 @endif">
+        8
+    </div>
+</label>
+<div></div>
+<label class="cursor-pointer">
+    <input type="checkbox" name="seats[]" value="9" id="seat-9" class="hidden seat-checkbox"
+        {{ in_array('9', $bookedSeats) ? 'disabled' : '' }}>
+    <div class="w-14 h-14 flex items-center justify-center rounded-lg border-2 font-semibold
+        @if(in_array('9', $bookedSeats)) bg-red-500 text-white border-red-500 cursor-not-allowed
+        @else bg-gray-200 text-gray-700 border-gray-300 hover:border-blue-400 @endif">
+        9
+    </div>
+</label>
+<label class="cursor-pointer">
+    <input type="checkbox" name="seats[]" value="10" id="seat-10" class="hidden seat-checkbox"
+        {{ in_array('10', $bookedSeats) ? 'disabled' : '' }}>
+    <div class="w-14 h-14 flex items-center justify-center rounded-lg border-2 font-semibold
+        @if(in_array('10', $bookedSeats)) bg-red-500 text-white border-red-500 cursor-not-allowed
+        @else bg-gray-200 text-gray-700 border-gray-300 hover:border-blue-400 @endif">
+        10
+    </div>
+</label>
+
+<!-- Baris 5: 11 | 12 | 13 | 14 -->
+<label class="cursor-pointer">
+    <input type="checkbox" name="seats[]" value="11" id="seat-11" class="hidden seat-checkbox"
+        {{ in_array('11', $bookedSeats) ? 'disabled' : '' }}>
+    <div class="w-14 h-14 flex items-center justify-center rounded-lg border-2 font-semibold
+        @if(in_array('11', $bookedSeats)) bg-red-500 text-white border-red-500 cursor-not-allowed
+        @else bg-gray-200 text-gray-700 border-gray-300 hover:border-blue-400 @endif">
+        11
+    </div>
+</label>
+<label class="cursor-pointer">
+    <input type="checkbox" name="seats[]" value="12" id="seat-12" class="hidden seat-checkbox"
+        {{ in_array('12', $bookedSeats) ? 'disabled' : '' }}>
+    <div class="w-14 h-14 flex items-center justify-center rounded-lg border-2 font-semibold
+        @if(in_array('12', $bookedSeats)) bg-red-500 text-white border-red-500 cursor-not-allowed
+        @else bg-gray-200 text-gray-700 border-gray-300 hover:border-blue-400 @endif">
+        12
+    </div>
+</label>
+<label class="cursor-pointer">
+    <input type="checkbox" name="seats[]" value="13" id="seat-13" class="hidden seat-checkbox"
+        {{ in_array('13', $bookedSeats) ? 'disabled' : '' }}>
+    <div class="w-14 h-14 flex items-center justify-center rounded-lg border-2 font-semibold
+        @if(in_array('13', $bookedSeats)) bg-red-500 text-white border-red-500 cursor-not-allowed
+        @else bg-gray-200 text-gray-700 border-gray-300 hover:border-blue-400 @endif">
+        13
+    </div>
+</label>
+<label class="cursor-pointer">
+    <input type="checkbox" name="seats[]" value="14" id="seat-14" class="hidden seat-checkbox"
+        {{ in_array('14', $bookedSeats) ? 'disabled' : '' }}>
+    <div class="w-14 h-14 flex items-center justify-center rounded-lg border-2 font-semibold
+        @if(in_array('14', $bookedSeats)) bg-red-500 text-white border-red-500 cursor-not-allowed
+        @else bg-gray-200 text-gray-700 border-gray-300 hover:border-blue-400 @endif">
+        14
+    </div>
+</label>
+
 </div>
+                        </div>
 
                         <!-- Selected Seats Display -->
                         <div class="text-center mb-6">

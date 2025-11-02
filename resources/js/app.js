@@ -1005,7 +1005,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 responsive: true,
                 plugins: {
                     legend: {
-                        display: false // Hide legend to reduce clutter
+                        display: false
                     },
                     tooltip: {
                         callbacks: {
