@@ -67,9 +67,20 @@
                         <i class="fa fa-home"></i> Dashboard
                     </a>
                     <a href="{{ route('admin.bookings') }}"
-                        class="flex items-center gap-2 py-2 px-3 rounded hover:bg-blue-700 transition-all duration-200 relative
+                        class="flex items-center justify-between py-2 px-3 rounded hover:bg-blue-700 transition-all duration-200 relative
                               {{ request()->routeIs('admin.bookings') ? 'bg-blue-800 border-l-4 border-yellow-400' : '' }}">
-                        <i class="fa fa-ticket"></i> Data Pemesanan
+                        <span class="flex items-center gap-2">
+                            <i class="fa fa-ticket"></i> Data Pemesanan
+                        </span>
+                        @php
+                            $pendingBookingsCount = \App\Models\Booking::where('status', 'pending')->count();
+                        @endphp
+                        @if ($pendingBookingsCount > 0)
+                            <span
+                                class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full min-w-[24px] text-center">
+                                {{ $pendingBookingsCount }}
+                            </span>
+                        @endif
                     </a>
                     <a href="{{ route('admin.jadwals') }}"
                         class="flex items-center gap-2 py-2 px-3 rounded hover:bg-blue-700 transition-all duration-200 relative
@@ -102,9 +113,29 @@
                         <i class="fa fa-user"></i> Data Supir
                     </a>
                     <a href="{{ route('admin.pembayaran') }}"
-                        class="flex items-center gap-2 py-2 px-3 rounded hover:bg-blue-700 transition-all duration-200 relative
+                        class="flex items-center justify-between py-2 px-3 rounded hover:bg-blue-700 transition-all duration-200 relative
                               {{ request()->routeIs('admin.pembayaran') ? 'bg-blue-800 border-l-4 border-yellow-400' : '' }}">
-                        <i class="fa fa-money-bill-wave"></i> Kelola Pembayaran
+                        <span class="flex items-center gap-2">
+                            <i class="fa fa-money-bill-wave"></i> Kelola Pembayaran
+                        </span>
+                        @php
+                            // Hitung booking yang perlu perhatian:
+                            // 1. Belum bayar (perlu reminder)
+                            // 2. Sudah bayar tapi pending (perlu konfirmasi)
+                            $belumBayarCount = \App\Models\Booking::where('payment_status', 'belum_bayar')
+                                ->where('status', 'setuju')
+                                ->count();
+                            $sudahBayarPendingCount = \App\Models\Booking::where('payment_status', 'sudah_bayar')
+                                ->where('status', 'pending')
+                                ->count();
+                            $totalPaymentNotif = $belumBayarCount + $sudahBayarPendingCount;
+                        @endphp
+                        @if ($totalPaymentNotif > 0)
+                            <span
+                                class="bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full min-w-6 text-center">
+                                {{ $totalPaymentNotif }}
+                            </span>
+                        @endif
                     </a>
                 </nav>
 
@@ -162,12 +193,26 @@
                     <a href="{{ auth()->check() ? route('pesan') : route('login') }}" class="relative group">
                         Pesan Tiket
                         <span
-                            class="absolute left-0 -bottom-1 h-[2px] bg-white transition-all {{ request()->routeIs('pesan') ? 'w-full' : 'w-0 group-hover:w-full' }}"></span>
+                            class="absolute left-0 -bottom-1 h-0.5 bg-white transition-all {{ request()->routeIs('pesan') ? 'w-full' : 'w-0 group-hover:w-full' }}"></span>
                     </a>
-                    <a href="{{ auth()->check() ? route('riwayat') : route('login') }}" class="relative group">
+                    <a href="{{ auth()->check() ? route('riwayat') : route('login') }}"
+                        class="relative group flex items-center gap-2">
                         Riwayat Transaksi
+                        @auth
+                            @php
+                                $userPendingCount = \App\Models\Booking::where('user_id', auth()->id())
+                                    ->where('status', 'pending')
+                                    ->count();
+                            @endphp
+                            @if ($userPendingCount > 0)
+                                <span
+                                    class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full min-w-6 text-center">
+                                    {{ $userPendingCount }}
+                                </span>
+                            @endif
+                        @endauth
                         <span
-                            class="absolute left-0 -bottom-1 h-[2px] bg-white transition-all {{ request()->routeIs('riwayat') ? 'w-full' : 'w-0 group-hover:w-full' }}"></span>
+                            class="absolute left-0 -bottom-1 h-0.5 bg-white transition-all {{ request()->routeIs('riwayat') ? 'w-full' : 'w-0 group-hover:w-full' }}"></span>
                     </a>
 
                     @guest
@@ -216,8 +261,22 @@
                     class="block py-2 px-3 rounded hover:bg-blue-700 transition-all duration-200 {{ request()->routeIs('pesan') ? 'bg-blue-700 border-l-4 border-yellow-400' : '' }}">Pesan
                     Tiket</a>
                 <a href="{{ auth()->check() ? route('riwayat') : route('login') }}"
-                    class="block py-2 px-3 rounded hover:bg-blue-700 transition-all duration-200 {{ request()->routeIs('riwayat') ? 'bg-blue-700 border-l-4 border-yellow-400' : '' }}">Riwayat
-                    Transaksi</a>
+                    class="flex items-center justify-between py-2 px-3 rounded hover:bg-blue-700 transition-all duration-200 {{ request()->routeIs('riwayat') ? 'bg-blue-700 border-l-4 border-yellow-400' : '' }}">
+                    <span>Riwayat Transaksi</span>
+                    @auth
+                        @php
+                            $userPendingCount = \App\Models\Booking::where('user_id', auth()->id())
+                                ->where('status', 'pending')
+                                ->count();
+                        @endphp
+                        @if ($userPendingCount > 0)
+                            <span
+                                class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full min-w-6 text-center">
+                                {{ $userPendingCount }}
+                            </span>
+                        @endif
+                    @endauth
+                </a>
 
                 @guest
                     <a href="{{ route('login') }}"

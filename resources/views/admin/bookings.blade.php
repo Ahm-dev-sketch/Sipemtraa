@@ -142,7 +142,7 @@
                                 class="flex items-center justify-center gap-2">
                                 @csrf @method('PUT')
                                 <input type="hidden" name="status" id="status_{{ $booking->id }}" value="">
-                                @if ($booking->status !== 'batal')
+                                @if ($booking->status !== 'batal' && $booking->payment_status !== 'sudah_bayar')
                                     <button type="submit"
                                         onclick="document.getElementById('status_{{ $booking->id }}').value='setuju'"
                                         class="bg-green-600 text-white text-sm px-3 py-1 rounded hover:bg-green-700 transition inline-flex items-center gap-1">
@@ -279,7 +279,7 @@
                         class="flex items-center justify-center gap-2">
                         @csrf @method('PUT')
                         <input type="hidden" name="status" id="status_mobile_{{ $booking->id }}" value="">
-                        @if ($booking->status !== 'batal')
+                        @if ($booking->status !== 'batal' && $booking->payment_status !== 'sudah_bayar')
                             <button type="submit"
                                 onclick="document.getElementById('status_mobile_{{ $booking->id }}').value='setuju'"
                                 class="flex-1 bg-green-600 text-white text-sm px-3 py-2 rounded hover:bg-green-700 transition inline-flex items-center justify-center gap-1">
