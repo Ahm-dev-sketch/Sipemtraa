@@ -88,14 +88,26 @@
                         </div>
                         <div>
                             @if ($booking->status == 'setuju')
-                                <span
-                                    class="bg-green-600 text-white px-3 py-1 rounded-full text-sm font-semibold">Lunas</span>
+                                <span class="bg-green-600 text-white px-3 py-1 rounded-full text-sm font-semibold inline-flex items-center gap-1">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    Lunas
+                                </span>
                             @elseif($booking->status == 'pending')
-                                <span
-                                    class="bg-yellow-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Pending</span>
+                                <span class="bg-yellow-400 text-white px-3 py-1 rounded-full text-sm font-semibold inline-flex items-center gap-1">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    Pending
+                                </span>
                             @else
-                                <span
-                                    class="bg-red-600 text-white px-3 py-1 rounded-full text-sm font-semibold">Batal</span>
+                                <span class="bg-red-600 text-white px-3 py-1 rounded-full text-sm font-semibold inline-flex items-center gap-1">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                    Batal
+                                </span>
                             @endif
                         </div>
                     </div>
@@ -164,4 +176,4 @@
             {{ $bookings->links() }}
         </div>
     @endif
-@endsection
+@endsectiongit
