@@ -112,6 +112,22 @@ class AdminController extends Controller
             'harga.min' => 'Harga tidak boleh negatif.',
         ]);
 
+        // CRITICAL FIX: Validasi status mobil
+        $mobil = \App\Models\Mobil::findOrFail($request->mobil_id);
+        if ($mobil->status !== 'tersedia') {
+            return back()->withErrors(['mobil_id' => 'Mobil tidak tersedia. Status saat ini: ' . $mobil->status]);
+        }
+
+        // CRITICAL FIX: Cek konflik jadwal untuk mobil yang sama
+        $conflict = Jadwal::where('mobil_id', $request->mobil_id)
+            ->where('tanggal', $request->tanggal)
+            ->where('jam', $request->jam)
+            ->exists();
+
+        if ($conflict) {
+            return back()->withErrors(['mobil_id' => 'Mobil sudah dijadwalkan di waktu yang sama.']);
+        }
+
         Jadwal::create($request->only(['rute_id', 'mobil_id', 'tanggal', 'jam', 'harga']));
 
         return redirect()->route('admin.jadwals')->with('success', 'Jadwal berhasil ditambahkan');
@@ -129,6 +145,7 @@ class AdminController extends Controller
     {
         $request->validate([
             'rute_id' => 'required|exists:rutes,id',
+            'mobil_id' => 'required|exists:mobils,id',
             'tanggal' => 'required|date|after_or_equal:today',
             'jam' => 'required',
             'harga' => 'required|integer|min:0',
@@ -137,7 +154,26 @@ class AdminController extends Controller
             'harga.min' => 'Harga tidak boleh negatif.',
         ]);
 
-        $jadwal->update($request->only(['rute_id', 'tanggal', 'jam', 'harga']));
+        // CRITICAL FIX: Validasi status mobil jika mobil_id berubah
+        if ($request->mobil_id != $jadwal->mobil_id) {
+            $mobil = \App\Models\Mobil::findOrFail($request->mobil_id);
+            if ($mobil->status !== 'tersedia') {
+                return back()->withErrors(['mobil_id' => 'Mobil tidak tersedia. Status saat ini: ' . $mobil->status]);
+            }
+
+            // Cek konflik jadwal untuk mobil baru
+            $conflict = Jadwal::where('mobil_id', $request->mobil_id)
+                ->where('id', '!=', $jadwal->id) // Exclude current jadwal
+                ->where('tanggal', $request->tanggal)
+                ->where('jam', $request->jam)
+                ->exists();
+
+            if ($conflict) {
+                return back()->withErrors(['mobil_id' => 'Mobil sudah dijadwalkan di waktu yang sama.']);
+            }
+        }
+
+        $jadwal->update($request->only(['rute_id', 'mobil_id', 'tanggal', 'jam', 'harga']));
 
         return redirect()->route('admin.jadwals')->with('success', 'Jadwal berhasil diperbarui');
     }

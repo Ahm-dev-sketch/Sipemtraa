@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="flex items-center justify-between mb-6">
-        <h1 class="text-2xl font-bold flex items-center gap-2 fade-right animate-on-scroll">
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold flex items-center gap-2 mb-4 fade-right animate-on-scroll">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -10,12 +10,12 @@
             </svg>
             Data Rute
         </h1>
-        <div class="flex items-center gap-4">
+        <div class="flex flex-col lg:flex-row gap-3">
             {{-- Search Form --}}
-            <form method="GET" action="{{ route('admin.rute') }}" class="flex items-center gap-2">
-                <div class="flex items-center border border-gray-300 rounded-lg overflow-hidden shadow-sm">
+            <form method="GET" action="{{ route('admin.rute') }}" class="flex-1 flex items-center gap-2">
+                <div class="flex items-center border border-gray-300 rounded-lg overflow-hidden shadow-sm flex-1">
                     <input type="text" name="search" value="{{ $search ?? '' }}" placeholder="Cari rute..."
-                        class="px-4 py-2 w-64 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        class="px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     <button type="submit"
                         class="bg-blue-600 text-white px-4 py-2 hover:bg-blue-700 transition flex items-center justify-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
@@ -40,7 +40,7 @@
                 @endif
             </form>
             <a href="{{ route('admin.rute.create') }}"
-                class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2 transition fade-left animate-on-scroll">
+                class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center justify-center gap-2 transition fade-left animate-on-scroll whitespace-nowrap">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -50,8 +50,8 @@
         </div>
     </div>
 
-    {{-- Card untuk tabel --}}
-    <div class="bg-white p-6 rounded shadow overflow-x-auto fade-up animate-on-scroll">
+    {{-- Desktop Table View --}}
+    <div class="hidden lg:block bg-white p-6 rounded shadow overflow-x-auto fade-up animate-on-scroll">
         <table class="w-full border-collapse">
             <thead class="bg-blue-600 text-white">
                 <tr>
@@ -103,6 +103,62 @@
                 @endforelse
             </tbody>
         </table>
+    </div>
+
+    {{-- Mobile Card View --}}
+    <div class="lg:hidden space-y-4 fade-up animate-on-scroll">
+        @forelse($rutes as $rute)
+            <div class="bg-white rounded-lg shadow p-4">
+                <div class="flex justify-between items-start mb-3">
+                    <div>
+                        <h3 class="font-semibold text-gray-800 text-lg">{{ $rute->kota_asal }} → {{ $rute->kota_tujuan }}
+                        </h3>
+                        <p class="text-xs text-gray-500">ID: {{ $rute->id }}</p>
+                    </div>
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
+                        {{ $rute->status_rute }}
+                    </span>
+                </div>
+
+                <div class="space-y-2 text-sm mb-3">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                        </svg>
+                        <span class="text-gray-700">Jarak: {{ $rute->jarak_estimasi }}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1">
+                            </path>
+                        </svg>
+                        <span class="font-semibold text-blue-600">Rp
+                            {{ number_format(preg_replace('/[^\d]/', '', $rute->harga_tiket), 0, ',', '.') }}</span>
+                    </div>
+                </div>
+
+                <div class="flex gap-2">
+                    <a href="{{ route('admin.rute.edit', $rute) }}"
+                        class="flex-1 bg-blue-600 text-white text-sm px-3 py-2 rounded hover:bg-blue-700 transition inline-flex items-center justify-center gap-1">
+                        <i class="fa fa-edit"></i> Edit
+                    </a>
+                    <form action="{{ route('admin.rute.destroy', $rute) }}" method="POST" class="flex-1 delete-form">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit"
+                            class="w-full bg-red-600 text-white text-sm px-3 py-2 rounded hover:bg-red-700 transition inline-flex items-center justify-center gap-1">
+                            <i class="fa fa-trash"></i> Hapus
+                        </button>
+                    </form>
+                </div>
+            </div>
+        @empty
+            <div class="bg-white rounded-lg shadow p-6 text-center text-gray-500">
+                Belum ada rute
+            </div>
+        @endforelse
     </div>
 
     {{-- Pagination --}}

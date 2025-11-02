@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="flex items-center justify-between mb-6">
-        <h1 class="text-2xl font-bold flex items-center gap-2 fade-right animate-on-scroll">
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold flex items-center gap-2 mb-4 fade-right animate-on-scroll">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -10,12 +10,12 @@
             </svg>
             Data Supir
         </h1>
-        <div class="flex items-center gap-4">
+        <div class="flex flex-col lg:flex-row gap-3">
             {{-- Search Form --}}
-            <form method="GET" action="{{ route('admin.supir') }}" class="flex items-center gap-2">
-                <div class="flex items-center border border-gray-300 rounded-lg overflow-hidden shadow-sm">
+            <form method="GET" action="{{ route('admin.supir') }}" class="flex-1 flex items-center gap-2">
+                <div class="flex items-center border border-gray-300 rounded-lg overflow-hidden shadow-sm flex-1">
                     <input type="text" name="search" value="{{ $search ?? '' }}" placeholder="Cari supir..."
-                        class="px-4 py-2 w-64 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        class="px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     <button type="submit"
                         class="bg-blue-600 text-white px-4 py-2 hover:bg-blue-700 transition flex items-center justify-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
@@ -42,7 +42,7 @@
 
             {{-- Tambah Supir --}}
             <a href="{{ route('admin.supir.create') }}"
-                class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2 transition fade-left animate-on-scroll">
+                class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center justify-center gap-2 transition fade-left animate-on-scroll whitespace-nowrap">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -52,8 +52,8 @@
         </div>
     </div>
 
-    {{-- Card untuk tabel --}}
-    <div class="bg-white p-6 rounded shadow overflow-x-auto fade-up animate-on-scroll">
+    {{-- Desktop Table View --}}
+    <div class="hidden lg:block bg-white p-6 rounded shadow overflow-x-auto fade-up animate-on-scroll">
         <table class="w-full border-collapse">
             <thead class="bg-blue-600 text-white">
                 <tr>
@@ -100,6 +100,60 @@
                 @endforelse
             </tbody>
         </table>
+    </div>
+
+    {{-- Mobile Card View --}}
+    <div class="lg:hidden space-y-4 fade-up animate-on-scroll">
+        @forelse($supirs as $supir)
+            <div class="bg-white rounded-lg shadow p-4">
+                <div class="flex justify-between items-start mb-3">
+                    <div>
+                        <h3 class="font-semibold text-gray-800 text-lg">{{ $supir->nama }}</h3>
+                        <p class="text-xs text-gray-500">ID: {{ $supir->id }}</p>
+                    </div>
+                </div>
+
+                <div class="space-y-2 text-sm mb-3">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z">
+                            </path>
+                        </svg>
+                        <span class="text-gray-700">{{ $supir->telepon ?? '-' }}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 17V7m0 10a2 2 0 100 4 2 2 0 000-4zm0 0a2 2 0 110 4 2 2 0 01-4 0 2 2 0 014 0zm0 0V7a2 2 0 012-2h6a2 2 0 012 2v10M9 7a2 2 0 012-2h6a2 2 0 012 2m0 10a2 2 0 100 4 2 2 0 000-4zm0 0a2 2 0 110 4 2 2 0 01-4 0 2 2 0 014 0z">
+                            </path>
+                        </svg>
+                        <span class="text-gray-700">
+                            {{ $supir->mobil->merk ?? 'N/A' }} ({{ $supir->mobil->nomor_polisi ?? 'N/A' }})
+                        </span>
+                    </div>
+                </div>
+
+                <div class="flex gap-2">
+                    <a href="{{ route('admin.supir.edit', $supir) }}"
+                        class="flex-1 bg-blue-600 text-white text-sm px-3 py-2 rounded hover:bg-blue-700 transition inline-flex items-center justify-center gap-1">
+                        <i class="fa fa-edit"></i> Edit
+                    </a>
+                    <form action="{{ route('admin.supir.destroy', $supir) }}" method="POST" class="flex-1 delete-form">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit"
+                            class="w-full bg-red-600 text-white text-sm px-3 py-2 rounded hover:bg-red-700 transition inline-flex items-center justify-center gap-1">
+                            <i class="fa fa-trash"></i> Hapus
+                        </button>
+                    </form>
+                </div>
+            </div>
+        @empty
+            <div class="bg-white rounded-lg shadow p-6 text-center text-gray-500">
+                Belum ada data supir
+            </div>
+        @endforelse
     </div>
 
     {{-- Pagination --}}

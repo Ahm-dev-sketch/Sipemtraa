@@ -44,9 +44,11 @@
             {{-- Right side: Illustration --}}
             <div class="md:w-1/2 bg-green-50 flex justify-center items-center p-6 fade-left animate-on-scroll">
                 <div class="text-center">
-                    <img src="{{ asset('reset.jpg') }}" alt="Reset Password" class="max-w-sm mx-auto">
+                    <div class="bg-green-100 w-64 h-64 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-lock text-green-600 text-8xl"></i>
+                    </div>
                     <h3 class="mt-4 font-bold text-lg">Atur Ulang Kata Sandi</h3>
-                    <p class="text-gray-500">Gunakan kata sandi yang kuat dan aman.</p>
+                    <p class="text-gray-500">Gunakan kata sandi yang kuat dan aman</p>
                 </div>
             </div>
         </div>

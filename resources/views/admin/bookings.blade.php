@@ -76,7 +76,8 @@
         </form>
     </div>
 
-    <div class="overflow-x-auto bg-white p-6 rounded-lg shadow fade-up animate-on-scroll">
+    {{-- Desktop View - Table --}}
+    <div class="hidden lg:block overflow-x-auto bg-white p-6 rounded-lg shadow fade-up animate-on-scroll">
         <table class="w-full border-collapse">
             <thead>
                 <tr class="bg-blue-600 text-white">
@@ -110,23 +111,27 @@
                         </td>
                         <td class="px-6 py-3 text-center border border-white">{{ $booking->seat_number }}</td>
                         <td class="px-6 py-3 text-center border border-white">
-                            <span class="px-3 py-1 rounded-full text-xs font-semibold inline-flex items-center justify-center gap-1
+                            <span
+                                class="px-3 py-1 rounded-full text-xs font-semibold inline-flex items-center justify-center gap-1
                                 {{ $booking->status == 'setuju'
                                     ? 'bg-green-100 text-green-700'
                                     : ($booking->status == 'batal'
                                         ? 'bg-red-100 text-red-700'
                                         : 'bg-yellow-100 text-yellow-700') }}">
-                                @if($booking->status == 'setuju')
+                                @if ($booking->status == 'setuju')
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M5 13l4 4L19 7"></path>
                                     </svg>
                                 @elseif($booking->status == 'pending')
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
                                 @else
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M6 18L18 6M6 6l12 12"></path>
                                     </svg>
                                 @endif
                                 {{ ucfirst($booking->status) }}
@@ -142,7 +147,8 @@
                                         onclick="document.getElementById('status_{{ $booking->id }}').value='setuju'"
                                         class="bg-green-600 text-white text-sm px-3 py-1 rounded hover:bg-green-700 transition inline-flex items-center gap-1">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M5 13l4 4L19 7"></path>
                                         </svg>
                                         Setuju
                                     </button>
@@ -150,7 +156,8 @@
                                         onclick="document.getElementById('status_{{ $booking->id }}').value='batal'"
                                         class="bg-red-600 text-white text-sm px-3 py-1 rounded hover:bg-red-700 transition inline-flex items-center gap-1">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M6 18L18 6M6 6l12 12"></path>
                                         </svg>
                                         Batalkan
                                     </button>
@@ -163,6 +170,141 @@
                 @endforeach
             </tbody>
         </table>
+    </div>
+
+    {{-- Mobile View - Cards --}}
+    <div class="lg:hidden space-y-4 fade-up animate-on-scroll">
+        @foreach ($bookings as $booking)
+            <div class="bg-white rounded-lg shadow-md border border-gray-200 p-4">
+                {{-- User Info --}}
+                <div class="flex items-center gap-2 mb-3 pb-3 border-b border-gray-200">
+                    <svg class="w-5 h-5 text-blue-600 shrink-0" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                    <div class="flex-1">
+                        <div class="font-semibold text-gray-900">{{ $booking->user->name }}</div>
+                    </div>
+                    <span
+                        class="px-3 py-1 rounded-full text-xs font-semibold inline-flex items-center gap-1
+                        {{ $booking->status == 'setuju' ? 'bg-green-100 text-green-700' : ($booking->status == 'batal' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700') }}">
+                        @if ($booking->status == 'setuju')
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                                </path>
+                            </svg>
+                        @elseif($booking->status == 'pending')
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        @else
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        @endif
+                        {{ ucfirst($booking->status) }}
+                    </span>
+                </div>
+
+                {{-- Booking Details --}}
+                <div class="space-y-2 mb-3">
+                    <div class="flex items-center gap-2 text-sm">
+                        <svg class="w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
+                            </path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        <span class="text-gray-600">Rute:</span>
+                        <span class="font-medium text-gray-900">
+                            {{ $booking->jadwal->rute ? $booking->jadwal->rute->kota_asal : '-' }} →
+                            {{ $booking->jadwal->rute ? $booking->jadwal->rute->kota_tujuan : '-' }}
+                        </span>
+                    </div>
+
+                    <div class="flex items-center gap-2 text-sm">
+                        <svg class="w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                            </path>
+                        </svg>
+                        <span class="text-gray-600">Tanggal:</span>
+                        <span class="font-medium text-gray-900">{{ $booking->jadwal_tanggal }}</span>
+                    </div>
+
+                    <div class="flex items-center gap-2 text-sm">
+                        <svg class="w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span class="text-gray-600">Jam:</span>
+                        <span
+                            class="font-medium text-gray-900">{{ $booking->jadwal ? $booking->jadwal->jam : '-' }}</span>
+                    </div>
+
+                    <div class="flex items-center gap-2 text-sm">
+                        <svg class="w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                        </svg>
+                        <span class="text-gray-600">Mobil:</span>
+                        <span class="font-medium text-gray-900 text-xs">
+                            {{ $booking->jadwal->mobil ? $booking->jadwal->mobil->merk . ' (' . $booking->jadwal->mobil->nomor_polisi . ')' : '-' }}
+                        </span>
+                    </div>
+
+                    <div class="flex items-center gap-2 text-sm">
+                        <svg class="w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
+                            </path>
+                        </svg>
+                        <span class="text-gray-600">Kursi:</span>
+                        <span class="font-medium text-gray-900">{{ $booking->seat_number }}</span>
+                    </div>
+                </div>
+
+                {{-- Actions --}}
+                <div class="pt-3 border-t border-gray-100">
+                    <form action="{{ route('admin.bookings.update', $booking->id) }}" method="POST"
+                        class="flex items-center justify-center gap-2">
+                        @csrf @method('PUT')
+                        <input type="hidden" name="status" id="status_mobile_{{ $booking->id }}" value="">
+                        @if ($booking->status !== 'batal')
+                            <button type="submit"
+                                onclick="document.getElementById('status_mobile_{{ $booking->id }}').value='setuju'"
+                                class="flex-1 bg-green-600 text-white text-sm px-3 py-2 rounded hover:bg-green-700 transition inline-flex items-center justify-center gap-1">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Setuju
+                            </button>
+                            <button type="submit"
+                                onclick="document.getElementById('status_mobile_{{ $booking->id }}').value='batal'"
+                                class="flex-1 bg-red-600 text-white text-sm px-3 py-2 rounded hover:bg-red-700 transition inline-flex items-center justify-center gap-1">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                                Batalkan
+                            </button>
+                        @else
+                            <span class="text-gray-500 text-sm">No Action</span>
+                        @endif
+                    </form>
+                </div>
+            </div>
+        @endforeach
     </div>
 
     {{-- Pagination --}}

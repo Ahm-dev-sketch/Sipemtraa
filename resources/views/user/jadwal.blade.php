@@ -39,32 +39,77 @@
     @if ($jadwals->isEmpty())
         <p class="text-gray-500 fade-up animate-on-scroll">Tidak ada jadwal ditemukan.</p>
     @else
-        {{-- Card Table --}}
-        <div class="bg-white rounded shadow overflow-x-auto fade-up animate-on-scroll">
-            <table class="w-full border border-gray-200">
-                <thead class="bg-blue-600 text-white">
-                    <tr>
-                        <th class="px-4 py-3 border">Kota Asal</th>
-                        <th class="px-4 py-3 border">Kota Tujuan</th>
-                        <th class="px-4 py-3 border">Tanggal</th>
-                        <th class="px-4 py-3 border">Jam</th>
-                        <th class="px-4 py-3 border">Harga</th>
-                    </tr>
-                </thead>
-                <tbody class="text-center">
-                    @foreach ($jadwals as $index => $jadwal)
-                        <tr class="hover:bg-gray-50 fade-up animate-on-scroll">
-                            <td class="px-4 py-2 border">{{ $jadwal->rute->kota_asal ?? '-' }}</td>
-                            <td class="px-4 py-2 border">{{ $jadwal->rute->kota_tujuan ?? '-' }}</td>
-                            <td class="px-4 py-2 border">
-                                {{ \Carbon\Carbon::parse($jadwal->tanggal)->format('d M Y') }}
-                            </td>
-                            <td class="px-4 py-2 border">{{ $jadwal->jam }}</td>
-                            <td class="px-4 py-2 border">Rp {{ number_format($jadwal->harga, 0, ',', '.') }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+        {{-- Card View for All Devices --}}
+        <div class="space-y-4 fade-up animate-on-scroll">
+            @foreach ($jadwals as $jadwal)
+                <div class="bg-white rounded-lg shadow-md border border-gray-200 p-4 hover:shadow-lg transition-shadow">
+                    {{-- Route Info --}}
+                    <div class="flex items-center gap-2 mb-3 pb-3 border-b border-gray-200">
+                        <svg class="w-5 h-5 text-blue-600 shrink-0" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
+                            </path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        <div class="flex-1">
+                            <div class="font-semibold text-gray-900 text-base">
+                                {{ $jadwal->rute->kota_asal ?? '-' }}
+                                <svg class="inline w-4 h-4 mx-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                                </svg>
+                                {{ $jadwal->rute->kota_tujuan ?? '-' }}
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Schedule Details --}}
+                    <div class="space-y-2">
+                        {{-- Date --}}
+                        <div class="flex items-center gap-2 text-sm">
+                            <svg class="w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                </path>
+                            </svg>
+                            <span class="text-gray-600">Tanggal:</span>
+                            <span class="font-medium text-gray-900">
+                                {{ \Carbon\Carbon::parse($jadwal->tanggal)->locale('id')->isoFormat('D MMMM YYYY') }}
+                            </span>
+                        </div>
+
+                        {{-- Time --}}
+                        <div class="flex items-center gap-2 text-sm">
+                            <svg class="w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span class="text-gray-600">Jam Berangkat:</span>
+                            <span class="font-medium text-gray-900">{{ $jadwal->jam }} WIB</span>
+                        </div>
+
+                        {{-- Price --}}
+                        <div class="flex items-center justify-between pt-2 mt-2 border-t border-gray-100">
+                            <div class="flex items-center gap-2">
+                                <svg class="w-5 h-5 text-green-600 shrink-0" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                                    </path>
+                                </svg>
+                                <span class="text-gray-600 text-sm">Harga:</span>
+                            </div>
+                            <span class="font-bold text-blue-600 text-lg">
+                                Rp {{ number_format($jadwal->harga, 0, ',', '.') }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
         </div>
 
         {{-- Pagination --}}

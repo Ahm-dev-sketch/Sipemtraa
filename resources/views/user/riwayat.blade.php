@@ -28,7 +28,7 @@
                     class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white">
                     <option value="">Semua Status</option>
                     <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                    <option value="setuju" {{ request('status') == 'setuju' ? 'selected' : '' }}>Lunas</option>
+                    <option value="setuju" {{ request('status') == 'setuju' ? 'selected' : '' }}>Disetujui</option>
                     <option value="batal" {{ request('status') == 'batal' ? 'selected' : '' }}>Batal</option>
                 </select>
             </div>
@@ -83,28 +83,45 @@
                                 {{ $booking->ticket_number }}
                             </a>
                             <p class="text-gray-500 text-sm">
-                                Dipesan pada: {{ \Carbon\Carbon::parse($booking->created_at)->format('d M Y, H:i') }}
+                                Dipesan pada:
+                                {{ \Carbon\Carbon::parse($booking->created_at)->locale('id')->isoFormat('D MMM YYYY, HH:mm') }}
+                                WIB
                             </p>
                         </div>
                         <div>
-                            @if ($booking->status == 'setuju')
-                                <span class="bg-green-600 text-white px-3 py-1 rounded-full text-sm font-semibold inline-flex items-center gap-1">
+                            @if ($booking->status == 'setuju' && $booking->payment_status == 'sudah_bayar')
+                                <span
+                                    class="bg-green-600 text-white px-3 py-1 rounded-full text-sm font-semibold inline-flex items-center gap-1">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M5 13l4 4L19 7"></path>
                                     </svg>
                                     Lunas
                                 </span>
-                            @elseif($booking->status == 'pending')
-                                <span class="bg-yellow-400 text-white px-3 py-1 rounded-full text-sm font-semibold inline-flex items-center gap-1">
+                            @elseif($booking->status == 'setuju' && $booking->payment_status == 'belum_bayar')
+                                <span
+                                    class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold inline-flex items-center gap-1">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    Sudah Dipesan
+                                </span>
+                            @elseif($booking->status == 'pending')
+                                <span
+                                    class="bg-yellow-400 text-white px-3 py-1 rounded-full text-sm font-semibold inline-flex items-center gap-1">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
                                     Pending
                                 </span>
                             @else
-                                <span class="bg-red-600 text-white px-3 py-1 rounded-full text-sm font-semibold inline-flex items-center gap-1">
+                                <span
+                                    class="bg-red-600 text-white px-3 py-1 rounded-full text-sm font-semibold inline-flex items-center gap-1">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M6 18L18 6M6 6l12 12"></path>
                                     </svg>
                                     Batal
                                 </span>
@@ -112,14 +129,14 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4 text-gray-700 mb-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700 mb-4">
                         <div>
                             <p><span class="font-semibold">Rute:</span>
                                 {{ $booking->jadwal->rute->kota_asal ?? '-' }} —
                                 {{ $booking->jadwal->rute->kota_tujuan ?? '-' }}
                             </p>
                             <p><span class="font-semibold">Jadwal:</span>
-                                {{ \Carbon\Carbon::parse($booking->jadwal_tanggal)->format('l, d F Y') }}
+                                {{ \Carbon\Carbon::parse($booking->jadwal_tanggal)->locale('id')->isoFormat('dddd, D MMMM YYYY') }}
                                 pukul {{ $booking->jadwal_jam }} WIB
                             </p>
                             <p><span class="font-semibold">Jenis Mobil:</span> {{ $booking->jadwal->mobil->jenis ?? '-' }}
@@ -141,14 +158,14 @@
                         </div>
                     </div>
 
-                    <div class="flex justify-between items-center">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                         <div class="font-semibold text-lg text-gray-900">
                             Total: Rp {{ number_format($booking->jadwal->harga ?? 0, 0, ',', '.') }}
                         </div>
 
                         @if ($booking->status == 'setuju' && $booking->payment_status == 'sudah_bayar')
                             <a href="{{ route('booking.download.ticket', $booking) }}" target="_blank"
-                                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm flex items-center">
+                                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm flex items-center justify-center w-full sm:w-auto">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none"
                                     viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -158,10 +175,10 @@
                             </a>
                         @elseif($booking->status === 'pending')
                             <form action="{{ route('booking.cancel', $booking->id) }}" method="POST"
-                                class="cancel-booking-form">
+                                class="cancel-booking-form w-full sm:w-auto">
                                 @csrf
                                 <button type="submit"
-                                    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm">
+                                    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm w-full sm:w-auto">
                                     Batalkan
                                 </button>
                             </form>
@@ -176,4 +193,4 @@
             {{ $bookings->links() }}
         </div>
     @endif
-@endsectiongit
+@endsection

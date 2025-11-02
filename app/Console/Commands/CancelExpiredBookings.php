@@ -27,7 +27,9 @@ class CancelExpiredBookings extends Command
      */
     public function handle()
     {
-        $threshold = Carbon::now()->subMinutes(30);
+        // Get expiry minutes from config
+        $expiryMinutes = config('booking.pending_expiry_minutes', 30);
+        $threshold = Carbon::now()->subMinutes($expiryMinutes);
 
         $expiredBookings = Booking::where('status', 'pending')
             ->where('created_at', '<', $threshold)
@@ -38,11 +40,15 @@ class CancelExpiredBookings extends Command
         if ($count > 0) {
             foreach ($expiredBookings as $booking) {
                 $booking->update(['status' => 'batal']);
+
+                $this->line("Cancelled booking #{$booking->id} - Ticket: {$booking->ticket_number}");
             }
 
-            $this->info("Cancelled {$count} expired pending bookings.");
+            $this->info("✅ Successfully cancelled {$count} expired pending bookings.");
         } else {
-            $this->info("No expired pending bookings found.");
+            $this->info("✓ No expired pending bookings found.");
         }
+
+        return Command::SUCCESS;
     }
 }
