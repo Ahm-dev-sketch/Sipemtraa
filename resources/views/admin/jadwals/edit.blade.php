@@ -1,51 +1,71 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1 class="text-2xl font-bold mb-6 flex items-center gap-2 fade-down animate-on-scroll">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-blue-600" fill="none" viewBox="0 0 24 24"
-            stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M11 19V6a2 2 0 012-2h2m4 0h2a2 2 0 012 2v13a2 2 0 01-2 2H7a2 2 0 01-2-2V9a2 2 0 012-2h4" />
-        </svg>
-        Edit Jadwal
-    </h1>
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold flex items-center gap-3">
+            <div class="p-2 bg-blue-100 rounded-lg">
+                <i class="fas fa-calendar-edit text-blue-600 text-2xl"></i>
+            </div>
+            <div>
+                <div class="text-gray-900">Edit Jadwal</div>
+                <div class="text-sm text-gray-500 font-normal">Perbarui informasi jadwal keberangkatan</div>
+            </div>
+        </h1>
+    </div>
 
-    <div class="bg-white p-6 rounded shadow fade-up animate-on-scroll">
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-4xl">
+        <!-- Header Form -->
+        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                <i class="fas fa-clipboard-list text-blue-600"></i>
+                Detail Jadwal
+            </h2>
+        </div>
 
-
-
-        <form action="{{ route('admin.jadwals.update', $jadwal) }}" method="POST">
+        <!-- Form Body -->
+        <form id="formJadwalEdit" action="{{ route('admin.jadwals.update', $jadwal) }}" method="POST" class="p-6">
             @csrf
             @method('PUT')
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div>
-                    <label for="rute_id" class="block text-sm font-medium text-gray-700 mb-2">Rute</label>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {{-- Rute --}}
+                <div class="md:col-span-2">
+                    <label for="rute_id" class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-route text-gray-400 mr-1"></i>
+                        Rute Perjalanan
+                    </label>
                     <select id="rute_id" name="rute_id" required
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="" disabled>Pilih Rute</option>
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
+                        <option value="" disabled>-- Pilih Rute --</option>
                         @foreach ($rutes as $rute)
                             <option value="{{ $rute->id }}"
                                 {{ old('rute_id', $jadwal->rute_id) == $rute->id ? 'selected' : '' }}>
-                                {{ $rute->kota_asal }} - {{ $rute->kota_tujuan }}
+                                {{ $rute->kota_asal }} → {{ $rute->kota_tujuan }} ({{ $rute->jarak_estimasi }})
                             </option>
                         @endforeach
                     </select>
                     @error('rute_id')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p class="mt-1 text-sm text-red-600 flex items-center gap-1">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {{ $message }}
+                        </p>
                     @enderror
                 </div>
 
-                <div>
-                    <label for="mobil_id" class="block text-sm font-medium text-gray-700 mb-2">Mobil</label>
+                {{-- Mobil --}}
+                <div class="md:col-span-2">
+                    <label for="mobil_id" class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-bus text-gray-400 mr-1"></i>
+                        Kendaraan
+                    </label>
                     <select id="mobil_id" name="mobil_id" required
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="" disabled>Pilih Mobil</option>
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
+                        <option value="" disabled>-- Pilih Mobil --</option>
                         @foreach ($mobils as $mobil)
                             <option value="{{ $mobil->id }}"
                                 {{ old('mobil_id', $jadwal->mobil_id) == $mobil->id ? 'selected' : '' }}
                                 data-status="{{ $mobil->status }}">
-                                {{ $mobil->merk }} ({{ $mobil->nomor_polisi }}) - {{ $mobil->kapasitas }} kursi
+                                {{ $mobil->merk }} - {{ $mobil->nomor_polisi }} ({{ $mobil->kapasitas }} kursi)
                                 @if ($mobil->status !== 'tersedia')
                                     - [{{ strtoupper($mobil->status) }}]
                                 @endif
@@ -53,48 +73,83 @@
                         @endforeach
                     </select>
                     @error('mobil_id')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p class="mt-1 text-sm text-red-600 flex items-center gap-1">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {{ $message }}
+                        </p>
                     @enderror
                 </div>
 
+                {{-- Tanggal --}}
                 <div>
-                    <label for="tanggal" class="block text-sm font-medium text-gray-700 mb-2">Tanggal</label>
-                    <input type="date" name="tanggal" id="tanggal" value="{{ old('tanggal', $jadwal->tanggal) }}"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        required>
+                    <label for="tanggal" class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-calendar-day text-gray-400 mr-1"></i>
+                        Tanggal Keberangkatan
+                    </label>
+                    <input type="date" id="tanggal" name="tanggal" value="{{ old('tanggal', $jadwal->tanggal) }}"
+                        required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
                     @error('tanggal')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p class="mt-1 text-sm text-red-600 flex items-center gap-1">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {{ $message }}
+                        </p>
                     @enderror
                 </div>
 
+                {{-- Jam --}}
                 <div>
-                    <label for="jam" class="block text-sm font-medium text-gray-700 mb-2">Jam</label>
-                    <input type="time" name="jam" id="jam" value="{{ old('jam', $jadwal->jam) }}"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        required>
+                    <label for="jam" class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-clock text-gray-400 mr-1"></i>
+                        Waktu Keberangkatan
+                    </label>
+                    <input type="time" id="jam" name="jam" value="{{ old('jam', $jadwal->jam) }}" required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
                     @error('jam')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p class="mt-1 text-sm text-red-600 flex items-center gap-1">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {{ $message }}
+                        </p>
                     @enderror
                 </div>
 
-                <div>
-                    <label for="harga" class="block text-sm font-medium text-gray-700 mb-2">Harga</label>
-                    <input type="number" name="harga" id="harga" value="{{ old('harga', (int) $jadwal->harga) }}"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        required>
+                {{-- Harga --}}
+                <div class="md:col-span-2">
+                    <label for="harga" class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-money-bill-wave text-gray-400 mr-1"></i>
+                        Harga Tiket
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-500 font-semibold">Rp</span>
+                        <input type="text" id="harga" name="harga"
+                            value="{{ old('harga', number_format((int) $jadwal->harga, 0, ',', '.')) }}" required
+                            pattern="[0-9.]+" title="Masukkan angka dengan/tanpa titik pemisah"
+                            class="w-full pl-14 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                            placeholder="170.000">
+                    </div>
+                    <p class="mt-1 text-xs text-gray-500">
+                        <i class="fas fa-info-circle"></i>
+                        Contoh: 170000 atau 170.000
+                    </p>
                     @error('harga')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p class="mt-1 text-sm text-red-600 flex items-center gap-1">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {{ $message }}
+                        </p>
                     @enderror
                 </div>
-
             </div>
 
-            <div class="flex gap-4">
-                <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition">
+            {{-- Action Buttons --}}
+            <div class="flex items-center gap-3 mt-8 pt-6 border-t border-gray-200">
+                <button type="submit"
+                    class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all">
+                    <i class="fas fa-save"></i>
                     Update Jadwal
                 </button>
                 <a href="{{ route('admin.jadwals') }}"
-                    class="bg-gray-300 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-400 transition">
+                    class="inline-flex items-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 focus:ring-4 focus:ring-gray-200 transition-all">
+                    <i class="fas fa-times"></i>
                     Batal
                 </a>
             </div>

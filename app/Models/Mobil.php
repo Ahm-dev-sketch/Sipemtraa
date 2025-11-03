@@ -18,8 +18,15 @@ class Mobil extends Model
         'status',
     ];
 
+    // Relationship: Mobil memiliki satu Supir
     public function supir()
     {
         return $this->hasOne(Supir::class);
+    }
+
+    // Relationship: Mobil memiliki banyak Jadwal
+    public function jadwals()
+    {
+        return $this->hasMany(Jadwal::class);
     }
 }

@@ -10,95 +10,95 @@
         body {
             font-family: 'Poppins', sans-serif;
             margin: 0;
-            padding: 20px;
-            background-color: #eef2f7;
-            font-size: 20px;
-            color: #111827;
+            padding: 15px;
+            background: #ffffff;
+            font-size: 14px;
+            color: #1e293b;
         }
 
         .ticket-container {
-            max-width: 700px;
+            max-width: 650px;
             margin: 0 auto;
-            background: #fff;
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
             border-radius: 12px;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
             overflow: hidden;
-            border: 1px solid #ddd;
         }
 
         .ticket-header {
-            background: linear-gradient(135deg, #4f46e5, #7c3aed);
-            color: #fff;
+            background: linear-gradient(135deg, #3b82f6 0%, #6366f1 50%, #8b5cf6 100%);
+            color: #ffffff;
             text-align: center;
-            padding: 25px 20px;
+            padding: 18px 20px;
         }
 
         .ticket-header h1 {
             margin: 0;
-            font-size: 26px;
+            font-size: 22px;
             font-weight: 700;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
         }
 
         .ticket-number {
-            font-size: 20px;
+            font-size: 14px;
             font-weight: 600;
             color: #e0e7ff;
             margin-top: 6px;
+            letter-spacing: 0.3px;
         }
 
         .ticket-body {
-            padding: 30px 40px;
+            padding: 20px;
         }
 
         .info-line {
-            margin-bottom: 10px;
-            font-size: 20px;
+            font-size: 13px;
+            color: #475569;
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f5f9;
+            line-height: 1.4;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .info-line:last-child {
+            border-bottom: none;
         }
 
         .info-line strong {
-            color: #374151;
+            color: #334155;
             font-weight: 600;
+            min-width: 160px;
+            flex-shrink: 0;
+        }
+
+        .info-line span {
+            flex: 1;
+            text-align: right;
+            color: #1e293b;
         }
 
         .ticket-divider {
-            border-top: 2px dashed #d1d5db;
-            margin: 25px 0;
-        }
-
-        /* ======== STATUS SECTION ======== */
-        .status-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 10px;
-        }
-
-        .status-item {
-            width: 50%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 20px;
-        }
-
-        .status-item strong {
-            color: #374151;
-            font-weight: 600;
-            margin-right: 10px;
+            height: 1px;
+            background: repeating-linear-gradient(to right,
+                    #cbd5e1 0px,
+                    #cbd5e1 8px,
+                    transparent 8px,
+                    transparent 12px);
+            margin: 15px 0;
         }
 
         .status-badge {
-            display: inline-block;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 17px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
             font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            min-width: 140px;
-            text-align: center;
+            text-transform: capitalize;
+            letter-spacing: 0.2px;
         }
 
         .status-approved {
@@ -126,48 +126,63 @@
             color: #991b1b;
         }
 
+
+
         /* ======== QR SECTION ======== */
         .qr-code {
             text-align: center;
-            margin: 25px 0;
+            margin: 12px 0 8px;
         }
 
         .qr-box {
-            border: 2px solid #4b5563;
-            padding: 20px;
-            border-radius: 10px;
+            border: 2px solid #cbd5e1;
+            padding: 12px;
+            border-radius: 8px;
             display: inline-block;
-            background: #f9fafb;
+            background: #f8fafc;
         }
 
         .qr-box .ticket-number {
-            color: #111827;
-            font-size: 20px;
-            font-weight: 600;
+            color: #1e293b;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
         }
 
         .qr-box small {
             display: block;
-            color: #6b7280;
-            margin-top: 5px;
-            font-size: 19px;
+            color: #64748b;
+            margin-top: 3px;
+            font-size: 10px;
+            font-weight: 500;
         }
 
         .note {
             text-align: center;
-            color: #6b7280;
-            font-size: 20px;
-            margin-top: 15px;
+            color: #64748b;
+            font-size: 11px;
+            margin-top: 8px;
+            line-height: 1.5;
+        }
+
+        .note p {
+            margin: 4px 0;
         }
 
         .note strong {
-            color: #111827;
+            color: #1e293b;
+            font-weight: 600;
         }
 
         @media print {
             body {
-                background: none;
+                background: white;
                 padding: 0;
+            }
+
+            .ticket-container {
+                box-shadow: none;
+                border: 1px solid #e2e8f0;
             }
         }
     </style>
@@ -182,36 +197,60 @@
 
         <div class="ticket-body">
             {{-- Informasi Penumpang --}}
-            <div class="info-line"><strong>Nama Penumpang:</strong> {{ $booking->user->name }}</div>
-            <div class="info-line"><strong>Nomor Kursi:</strong> {{ $booking->seat_number }}</div>
-            <div class="info-line"><strong>Rute Perjalanan:</strong> {{ $booking->jadwal->rute->kota_asal }} -
-                {{ $booking->jadwal->rute->kota_tujuan }}</div>
-            <div class="info-line"><strong>Tanggal Keberangkatan:</strong>
-                {{ \Carbon\Carbon::parse($booking->jadwal->tanggal)->format('d M Y') }}</div>
-            <div class="info-line"><strong>Jam Keberangkatan:</strong> {{ $booking->jadwal->jam }}</div>
-            <div class="info-line"><strong>Mobil:</strong> {{ $booking->jadwal->mobil->merk }} -
-                {{ $booking->jadwal->mobil->nomor_polisi }}</div>
-            <div class="info-line"><strong>Supir:</strong> {{ $booking->jadwal->mobil->supir->nama ?? 'N/A' }}</div>
-            <div class="info-line"><strong>Harga Tiket:</strong> Rp
-                {{ number_format($booking->jadwal->harga, 0, ',', '.') }}</div>
+            <div class="info-line">
+                <strong>Nama Penumpang:</strong>
+                <span>{{ $booking->user->name }}</span>
+            </div>
+            <div class="info-line">
+                <strong>Nomor Kursi:</strong>
+                <span>{{ $booking->seat_number }}</span>
+            </div>
+            <div class="info-line">
+                <strong>Rute:</strong>
+                <span>{{ $booking->jadwal->rute->kota_asal }} → {{ $booking->jadwal->rute->kota_tujuan }}</span>
+            </div>
+            <div class="info-line">
+                <strong>Keberangkatan:</strong>
+                <span>{{ \Carbon\Carbon::parse($booking->jadwal->tanggal)->format('d M Y') }},
+                    {{ $booking->jadwal->jam }}</span>
+            </div>
+            <div class="info-line">
+                <strong>Mobil:</strong>
+                <span>{{ $booking->jadwal->mobil->merk }} ({{ $booking->jadwal->mobil->nomor_polisi }})</span>
+            </div>
+            <div class="info-line">
+                <strong>Supir:</strong>
+                <span>{{ $booking->jadwal->mobil->supir->nama ?? 'N/A' }}</span>
+            </div>
+            <div class="info-line">
+                <strong>Harga:</strong>
+                <span>Rp {{ number_format($booking->jadwal->harga, 0, ',', '.') }}</span>
+            </div>
 
             <div class="ticket-divider"></div>
 
             {{-- Status Booking --}}
             <div class="info-line">
                 <strong>Status Booking:</strong>
-                <span class="status-badge {{ $booking->status == 'setuju' ? 'status-approved' : ($booking->status == 'batal' ? 'status-cancelled' : 'status-pending') }}" style="display: inline-flex; align-items: center; gap: 4px;">
-                    @if($booking->status == 'setuju')
-                        <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                <span
+                    class="status-badge {{ $booking->status == 'setuju' ? 'status-approved' : ($booking->status == 'batal' ? 'status-cancelled' : 'status-pending') }}">
+                    @if ($booking->status == 'setuju')
+                        <svg style="width: 10px; height: 10px;" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
                         </svg>
                     @elseif($booking->status == 'pending')
-                        <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        <svg style="width: 10px; height: 10px;" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                     @else
-                        <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        <svg style="width: 10px; height: 10px;" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
                     @endif
                     {{ ucfirst($booking->status) }}
@@ -237,8 +276,8 @@
             <div class="ticket-divider"></div>
 
             <div class="note">
-                <p><strong>Perhatian:</strong> Tunjukkan e-ticket ini saat naik kendaraan.</p>
-                <p>E-ticket ini dicetak pada {{ \Carbon\Carbon::now()->format('d M Y H:i:s') }}</p>
+                <p><strong>Perhatian:</strong> Tunjukkan e-ticket ini saat naik kendaraan. Tiket dicetak pada
+                    {{ \Carbon\Carbon::now()->format('d M Y, H:i') }}</p>
             </div>
         </div>
     </div>

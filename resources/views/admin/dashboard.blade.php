@@ -1,95 +1,138 @@
 @extends('layouts.app')
 
-@section('content')
-    <h1 class="text-2xl font-bold mb-6 flex items-center gap-2 fade-down animate-on-scroll">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-blue-600" fill="none" viewBox="0 0 24 24"
-            stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M13 5v6h6" />
-        </svg>
-        Dashboard
-    </h1>
+@section('page-title', 'Dashboard')
+@section('page-subtitle', 'Ringkasan data dan statistik sistem')
 
-    <!-- Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-        <div class="bg-white p-6 rounded shadow flex items-center gap-4 zoom-in animate-on-scroll">
-            <div class="bg-blue-100 p-3 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 10c-4.41 0-8-1.79-8-4V6c0-2.21 3.59-4 8-4s8 1.79 8 4v8c0 2.21-3.59 4-8 4z" />
-                </svg>
-            </div>
-            <div>
-                <h3 class="text-gray-500">Pendapatan (Bulan ini)</h3>
-                <div class="flex items-center gap-2">
-                    <p id="revenue-amount" class="text-2xl font-bold text-blue-700">Rp
-                        {{ number_format($totalPendapatanBulanIni, 0, ',', '.') }}</p>
+@section('content')
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
+        <!-- Pendapatan Card -->
+        <div
+            class="group bg-white rounded-2xl shadow-sm border border-slate-200 hover:shadow-xl hover:border-blue-300 transition-all duration-300 overflow-hidden">
+            <div class="p-6">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-wallet text-white text-xl"></i>
+                        </div>
+                    </div>
                     <button id="toggle-revenue-visibility" aria-label="Toggle revenue visibility"
-                        class="focus:outline-none">
-                        <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-700" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        class="p-2 hover:bg-slate-100 rounded-lg transition-colors">
+                        <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg"
+                            class="h-5 w-5 text-slate-400 hover:text-blue-600" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                         </svg>
                     </button>
                 </div>
+                <div>
+                    <p class="text-sm font-medium text-slate-500 mb-1">Pendapatan Bulan Ini</p>
+                    <p id="revenue-amount" class="text-2xl font-bold text-slate-800 mb-1">
+                        Rp {{ number_format($totalPendapatanBulanIni, 0, ',', '.') }}
+                    </p>
+                    <div class="flex items-center gap-1 text-xs text-green-600">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>Dari booking yang sudah bayar</span>
+                    </div>
+                </div>
             </div>
+            <div class="h-1 bg-gradient-to-r from-blue-500 to-blue-600"></div>
         </div>
 
-        <div class="bg-white p-6 rounded shadow flex items-center gap-4 zoom-in animate-on-scroll">
-            <div class="bg-green-100 p-3 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M9 17v-6a2 2 0 012-2h8m-8 0V7a2 2 0 012-2h2a2 2 0 012 2v2m0 4h2a2 2 0 012 2v6M9 17h6" />
-                </svg>
+        <!-- Pemesanan Card -->
+        <div
+            class="group bg-white rounded-2xl shadow-sm border border-slate-200 hover:shadow-xl hover:border-purple-300 transition-all duration-300 overflow-hidden">
+            <div class="p-6">
+                <div class="flex items-start justify-between mb-4">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-lg shadow-purple-500/30 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-ticket-alt text-white text-xl"></i>
+                    </div>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-slate-500 mb-1">Pemesanan Bulan Ini</p>
+                    <p class="text-2xl font-bold text-slate-800 mb-1">{{ $jumlahPemesananBulanIni }}</p>
+                    <div class="flex items-center gap-1 text-xs text-slate-500">
+                        <i class="fas fa-ticket-alt"></i>
+                        <span>Total tiket terjual</span>
+                    </div>
+                </div>
             </div>
-            <div>
-                <h3 class="text-gray-500">Pemesanan (Bulan ini)</h3>
-                <p class="text-2xl font-bold text-green-700">{{ $jumlahPemesananBulanIni }} Tiket</p>
-            </div>
+            <div class="h-1 bg-gradient-to-r from-purple-500 to-purple-600"></div>
         </div>
 
-        <div class="bg-white p-6 rounded shadow flex items-center gap-4 zoom-in animate-on-scroll">
-            <div class="bg-yellow-100 p-3 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-yellow-600" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M8 7V3m8 4V3m-9 4h10M5 11h14v10H5V11z" />
-                </svg>
+        <!-- Perjalanan Aktif Card -->
+        <div
+            class="group bg-white rounded-2xl shadow-sm border border-slate-200 hover:shadow-xl hover:border-green-300 transition-all duration-300 overflow-hidden">
+            <div class="p-6">
+                <div class="flex items-start justify-between mb-4">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center shadow-lg shadow-green-500/30 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-calendar-check text-white text-xl"></i>
+                    </div>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-slate-500 mb-1">Perjalanan Aktif</p>
+                    <p class="text-2xl font-bold text-slate-800 mb-1">{{ $perjalananAktif }}</p>
+                    <div class="flex items-center gap-1 text-xs text-slate-500">
+                        <i class="fas fa-bus"></i>
+                        <span>Jadwal tersedia</span>
+                    </div>
+                </div>
             </div>
-            <div>
-                <h3 class="text-gray-500">Perjalanan Aktif</h3>
-                <p class="text-2xl font-bold text-yellow-600">{{ $perjalananAktif }} Jadwal</p>
-            </div>
+            <div class="h-1 bg-gradient-to-r from-green-500 to-green-600"></div>
         </div>
 
-        <div class="bg-white p-6 rounded shadow flex items-center gap-4 zoom-in animate-on-scroll">
-            <div class="bg-purple-100 p-3 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-purple-600" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M5.121 17.804A9 9 0 1119 12.804M9 12h.01M15 12h.01" />
-                </svg>
+        <!-- Total Pelanggan Card -->
+        <div
+            class="group bg-white rounded-2xl shadow-sm border border-slate-200 hover:shadow-xl hover:border-indigo-300 transition-all duration-300 overflow-hidden">
+            <div class="p-6">
+                <div class="flex items-start justify-between mb-4">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/30 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-users text-white text-xl"></i>
+                    </div>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-slate-500 mb-1">Total Pelanggan</p>
+                    <p class="text-2xl font-bold text-slate-800 mb-1">{{ $totalPelanggan }}</p>
+                    <div class="flex items-center gap-1 text-xs text-slate-500">
+                        <i class="fas fa-user-check"></i>
+                        <span>Pengguna terdaftar</span>
+                    </div>
+                </div>
             </div>
-            <div>
-                <h3 class="text-gray-500">Jumlah Pelanggan</h3>
-                <p class="text-2xl font-bold text-purple-700">{{ $totalPelanggan }} Orang</p>
-            </div>
+            <div class="h-1 bg-gradient-to-r from-indigo-500 to-indigo-600"></div>
         </div>
     </div>
 
     <!-- Grafik Pendapatan -->
-    <div class="bg-white p-6 rounded shadow fade-up animate-on-scroll">
-        <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4" />
-            </svg>
-            Grafik Garis Pendapatan (7 Hari Terakhir)
-        </h3>
-        <canvas id="chartPendapatanLineDashboard" height="100" data-labels="{{ json_encode($labels7Hari) }}"
-            data-data="{{ json_encode($pendapatan7Hari) }}" data-dashboard="true"></canvas>
+    <div
+        class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-6 lg:p-8 hover:shadow-lg transition-all duration-300">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-6">
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-chart-line text-white"></i>
+                </div>
+                <div>
+                    <h3 class="text-base sm:text-lg font-bold text-slate-800">Grafik Pendapatan</h3>
+                    <p class="text-xs sm:text-sm text-slate-500">7 Hari Terakhir</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 rounded-lg flex-shrink-0">
+                <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                <span class="text-xs font-medium text-emerald-700">Live Data</span>
+            </div>
+        </div>
+        <div class="relative overflow-x-auto">
+            <div class="min-w-[300px]">
+                <canvas id="chartPendapatanLineDashboard" height="100" data-labels="{{ json_encode($labels7Hari) }}"
+                    data-data="{{ json_encode($pendapatan7Hari) }}" data-dashboard="true"></canvas>
+            </div>
+        </div>
     </div>
 @endsection

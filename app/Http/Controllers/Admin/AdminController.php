@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Jadwal;
 use App\Models\Booking;
 use Illuminate\Http\Request;
-use App\Services\WhatsappService;
 
 class AdminController extends Controller
 {
@@ -36,8 +35,8 @@ class AdminController extends Controller
         $perjalananAktif = Jadwal::where('tanggal', '>=', now()->format('Y-m-d'))
             ->count();
 
-        // Hitung total semua pelanggan
-        $totalPelanggan = User::count();
+        // Hitung total pelanggan (hanya user, bukan admin)
+        $totalPelanggan = User::where('role', 'user')->count();
 
         // Hitung pendapatan 7 hari terakhir untuk chart (hanya yang sudah bayar)
         $pendapatan7Hari = [];
@@ -60,7 +59,7 @@ class AdminController extends Controller
         }
 
         return view('admin.dashboard', [
-            'totalUsers' => User::count(),
+            'totalUsers' => User::where('role', 'user')->count(),
             'totalJadwal' => Jadwal::count(),
             'totalBooking' => Booking::count(),
             'totalPendapatanBulanIni' => $totalPendapatanBulanIni,
@@ -117,10 +116,16 @@ class AdminController extends Controller
             'day_offset.max' => 'Offset maksimal 7 hari ke depan.',
         ]);
 
+        // CRITICAL FIX: Validasi status rute
+        $rute = \App\Models\Rute::findOrFail($request->rute_id);
+        if ($rute->status_rute !== 'aktif') {
+            return back()->withErrors(['rute_id' => 'Rute tidak aktif. Status saat ini: ' . $rute->status_rute]);
+        }
+
         // CRITICAL FIX: Validasi status mobil
         $mobil = \App\Models\Mobil::findOrFail($request->mobil_id);
-        if ($mobil->status !== 'tersedia') {
-            return back()->withErrors(['mobil_id' => 'Mobil tidak tersedia. Status saat ini: ' . $mobil->status]);
+        if ($mobil->status !== 'aktif') {
+            return back()->withErrors(['mobil_id' => 'Mobil tidak aktif. Status saat ini: ' . $mobil->status]);
         }
 
         // CRITICAL FIX: Cek konflik jadwal untuk mobil yang sama
@@ -139,7 +144,7 @@ class AdminController extends Controller
             'tanggal' => $request->tanggal,
             'jam' => $request->jam,
             'harga' => $request->harga,
-            'day_offset' => $request->day_offset ?? 0,
+            'day_offset' => (string)($request->day_offset ?? 0),
             'is_active' => $request->has('is_active') ? true : false,
             'notes' => $request->notes,
         ]);
@@ -161,26 +166,36 @@ class AdminController extends Controller
         $request->validate([
             'rute_id' => 'required|exists:rutes,id',
             'mobil_id' => 'required|exists:mobils,id',
-            'tanggal' => 'required|date|after_or_equal:today',
+            'tanggal' => 'required|date',
             'jam' => 'required',
             'harga' => 'required|integer|min:0',
             'day_offset' => 'nullable|integer|min:0|max:7',
             'is_active' => 'nullable|boolean',
             'notes' => 'nullable|string|max:500',
         ], [
-            'tanggal.after_or_equal' => 'Tanggal jadwal harus hari ini atau setelahnya.',
             'harga.min' => 'Harga tidak boleh negatif.',
             'day_offset.max' => 'Offset maksimal 7 hari ke depan.',
         ]);
 
-        // CRITICAL FIX: Validasi status mobil jika mobil_id berubah
-        if ($request->mobil_id != $jadwal->mobil_id) {
-            $mobil = \App\Models\Mobil::findOrFail($request->mobil_id);
-            if ($mobil->status !== 'tersedia') {
-                return back()->withErrors(['mobil_id' => 'Mobil tidak tersedia. Status saat ini: ' . $mobil->status]);
-            }
+        // CRITICAL FIX: Validasi status rute
+        $rute = \App\Models\Rute::findOrFail($request->rute_id);
+        if ($rute->status_rute !== 'aktif') {
+            return back()->withErrors(['rute_id' => 'Rute tidak aktif. Status saat ini: ' . $rute->status_rute]);
+        }
 
-            // Cek konflik jadwal untuk mobil baru
+        // CRITICAL FIX: Validasi status mobil
+        $mobil = \App\Models\Mobil::findOrFail($request->mobil_id);
+        if ($mobil->status !== 'aktif') {
+            return back()->withErrors(['mobil_id' => 'Mobil tidak aktif. Status saat ini: ' . $mobil->status]);
+        }
+
+        // CRITICAL FIX: Cek konflik jadwal jika mobil, tanggal, atau jam berubah
+        if (
+            $request->mobil_id != $jadwal->mobil_id ||
+            $request->tanggal != $jadwal->tanggal ||
+            $request->jam != $jadwal->jam
+        ) {
+
             $conflict = Jadwal::where('mobil_id', $request->mobil_id)
                 ->where('id', '!=', $jadwal->id) // Exclude current jadwal
                 ->where('tanggal', $request->tanggal)
@@ -198,12 +213,23 @@ class AdminController extends Controller
             'tanggal' => $request->tanggal,
             'jam' => $request->jam,
             'harga' => $request->harga,
-            'day_offset' => $request->day_offset ?? 0,
+            'day_offset' => (string)($request->day_offset ?? 0),
             'is_active' => $request->has('is_active') ? true : false,
             'notes' => $request->notes,
         ]);
 
         return redirect()->route('admin.jadwals')->with('success', 'Jadwal berhasil diperbarui');
+    }
+
+    // Toggle status jadwal (aktif/nonaktif)
+    public function toggleJadwalStatus(Jadwal $jadwal)
+    {
+        $jadwal->update([
+            'is_active' => !$jadwal->is_active
+        ]);
+
+        $status = $jadwal->is_active ? 'diaktifkan' : 'dinonaktifkan';
+        return back()->with('success', "Jadwal berhasil {$status}");
     }
 
     // Hapus jadwal
@@ -270,13 +296,13 @@ class AdminController extends Controller
     {
         $search = $request->input('search');
 
-        $customers = User::when($search, function ($query, $search) {
+        $users = User::when($search, function ($query, $search) {
             return $query->where('name', 'like', "%{$search}%")
                 ->orWhere('whatsapp_number', 'like', "%{$search}%")
                 ->orWhere('role', 'like', "%{$search}%");
         })->paginate(10);
 
-        return view('admin.pelanggan', compact('customers', 'search'));
+        return view('admin.pelanggan', compact('users', 'search'));
     }
 
     // Form edit pelanggan
@@ -447,12 +473,11 @@ class AdminController extends Controller
         $request->validate([
             'kota_asal' => 'required|string|max:255',
             'kota_tujuan' => 'required|string|max:255|different:kota_asal',
-            'jarak_estimasi' => 'required|numeric|min:0',
+            'jarak_estimasi' => 'required|string|max:255',
             'harga_tiket' => 'required|numeric|min:0',
             'status_rute' => 'required|string|in:aktif,nonaktif',
         ], [
             'kota_tujuan.different' => 'Kota tujuan harus berbeda dengan kota asal.',
-            'jarak_estimasi.numeric' => 'Jarak estimasi harus berupa angka.',
             'harga_tiket.numeric' => 'Harga tiket harus berupa angka.',
         ]);
 
@@ -479,12 +504,11 @@ class AdminController extends Controller
         $request->validate([
             'kota_asal' => 'required|string|max:255',
             'kota_tujuan' => 'required|string|max:255|different:kota_asal',
-            'jarak_estimasi' => 'required|numeric|min:0',
+            'jarak_estimasi' => 'required|string|max:255',
             'harga_tiket' => 'required|numeric|min:0',
             'status_rute' => 'required|string|in:aktif,nonaktif',
         ], [
             'kota_tujuan.different' => 'Kota tujuan harus berbeda dengan kota asal.',
-            'jarak_estimasi.numeric' => 'Jarak estimasi harus berupa angka.',
             'harga_tiket.numeric' => 'Harga tiket harus berupa angka.',
         ]);
 
@@ -545,7 +569,7 @@ class AdminController extends Controller
             'kapasitas' => 'required|integer|min:1|max:100',
             'tahun' => 'required|integer|min:1900|max:' . (date('Y') + 1),
             'merk' => 'required|string|max:255',
-            'status' => 'required|string|in:tersedia,tidak tersedia,maintenance',
+            'status' => 'required|string|in:aktif,tidak aktif',
         ], [
             'nomor_polisi.regex' => 'Format nomor polisi tidak valid (contoh: B 1234 XYZ).',
             'kapasitas.max' => 'Kapasitas maksimal 100 orang.',
@@ -578,7 +602,7 @@ class AdminController extends Controller
             'kapasitas' => 'required|integer|min:1|max:100',
             'tahun' => 'required|integer|min:1900|max:' . (date('Y') + 1),
             'merk' => 'required|string|max:255',
-            'status' => 'required|string|in:tersedia,tidak tersedia,maintenance',
+            'status' => 'required|string|in:aktif,tidak aktif',
         ], [
             'nomor_polisi.regex' => 'Format nomor polisi tidak valid (contoh: B 1234 XYZ).',
             'kapasitas.max' => 'Kapasitas maksimal 100 orang.',
@@ -689,6 +713,11 @@ class AdminController extends Controller
     // Hapus supir
     public function destroySupir(\App\Models\Supir $supir)
     {
+        // Cek apakah mobilnya masih punya jadwal aktif
+        if ($supir->mobil && $supir->mobil->jadwals()->exists()) {
+            return back()->with('error', 'Tidak dapat menghapus supir karena mobilnya masih memiliki jadwal. Hapus jadwal terlebih dahulu.');
+        }
+
         $supir->delete();
         return back()->with('success', 'Supir berhasil dihapus');
     }

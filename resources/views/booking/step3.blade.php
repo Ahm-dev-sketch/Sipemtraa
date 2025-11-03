@@ -1,117 +1,165 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="min-h-screen bg-gray-50 py-8">
+    <div class="min-h-screen py-8">
         <div class="max-w-4xl mx-auto px-4">
-            <!-- Progress Bar -->
+            <!-- Modern Progress Indicator -->
             <div class="mb-8 fade-down animate-on-scroll">
-                <div class="flex items-center justify-center">
-                    <div class="flex items-center space-x-4">
-                        <!-- Step 1 -->
-                        <div class="flex items-center">
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+                    <div class="flex items-center justify-between relative">
+                        <!-- Progress Line Background -->
+                        <div class="absolute top-6 left-0 right-0 h-1 bg-gray-200 -z-10"></div>
+                        <!-- Active Progress Line -->
+                        <div class="absolute top-6 left-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 transition-all duration-500 -z-10"
+                            style="width: 100%"></div>
+
+                        <!-- Step 1 - Completed -->
+                        <div class="flex flex-col items-center flex-1 relative">
                             <div
-                                class="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                                ✓
+                                class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-full flex items-center justify-center font-bold shadow-lg mb-2 ring-4 ring-green-100">
+                                <i class="fas fa-check"></i>
                             </div>
-                            <span class="ml-2 text-sm font-medium text-green-600">Pilih Perjalanan</span>
+                            <span class="text-sm font-semibold text-green-600">Pilih Perjalanan</span>
+                            <span class="text-xs text-gray-500 mt-1">Selesai</span>
                         </div>
 
-                        <!-- Connector -->
-                        <div class="w-16 h-1 bg-green-600"></div>
-
-                        <!-- Step 2 -->
-                        <div class="flex items-center">
+                        <!-- Step 2 - Completed -->
+                        <div class="flex flex-col items-center flex-1 relative">
                             <div
-                                class="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                                ✓
+                                class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-full flex items-center justify-center font-bold shadow-lg mb-2 ring-4 ring-green-100">
+                                <i class="fas fa-check"></i>
                             </div>
-                            <span class="ml-2 text-sm font-medium text-green-600">Pilih Rute</span>
+                            <span class="text-sm font-semibold text-green-600">Pilih Jadwal</span>
+                            <span class="text-xs text-gray-500 mt-1">Selesai</span>
                         </div>
 
-                        <!-- Connector -->
-                        <div class="w-16 h-1 bg-[#FF6B2C]"></div>
-
-                        <!-- Step 3 -->
-                        <div class="flex items-center">
+                        <!-- Step 3 - Active -->
+                        <div class="flex flex-col items-center flex-1 relative">
                             <div
-                                class="w-8 h-8 bg-[#FF6B2C] text-white rounded-full flex items-center justify-center text-sm font-bold">
-                                3
+                                class="w-12 h-12 bg-gradient-to-br from-purple-600 to-pink-600 text-white rounded-full flex items-center justify-center font-bold shadow-lg mb-2 ring-4 ring-purple-100">
+                                <i class="fas fa-chair"></i>
                             </div>
-                            <span class="ml-2 text-sm font-medium text-[#FF6B2C]">Pilih Kursi</span>
+                            <span class="text-sm font-semibold text-purple-600">Pilih Kursi</span>
+                            <span class="text-xs text-gray-500 mt-1">Step 3 dari 3</span>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Booking Summary -->
-            <div class="bg-white rounded-lg shadow mb-6 p-6 fade-right animate-on-scroll">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Detail Pemesanan</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <div class="text-sm text-gray-600 mb-1">Rute</div>
-                        <div class="font-medium">{{ $step1Data['kota_asal'] }} → {{ $step1Data['kota_tujuan'] }}</div>
+            <div
+                class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl shadow-lg border border-purple-100 mb-6 p-6 fade-right animate-on-scroll">
+                <div class="flex items-center gap-3 mb-4">
+                    <div
+                        class="w-10 h-10 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full flex items-center justify-center shadow-lg">
+                        <i class="fas fa-ticket-alt text-white"></i>
                     </div>
-                    <div>
-                        <div class="text-sm text-gray-600 mb-1">Tanggal & Jam</div>
-                        <div class="font-medium">
+                    <h3 class="text-lg font-bold text-gray-900">Detail Pemesanan</h3>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-white rounded-xl p-3 shadow-sm border border-gray-100">
+                        <div class="flex items-center gap-2 mb-1">
+                            <i class="fas fa-route text-blue-600"></i>
+                            <span class="text-xs text-gray-600 font-medium">Rute Perjalanan</span>
+                        </div>
+                        <div class="font-bold text-gray-900">
+                            <span class="text-blue-600">{{ $step1Data['kota_asal'] }}</span>
+                            <i class="fas fa-arrow-right mx-1 text-indigo-600"></i>
+                            <span class="text-purple-600">{{ $step1Data['kota_tujuan'] }}</span>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl p-3 shadow-sm border border-gray-100">
+                        <div class="flex items-center gap-2 mb-1">
+                            <i class="fas fa-calendar-clock text-indigo-600"></i>
+                            <span class="text-xs text-gray-600 font-medium">Tanggal & Jam</span>
+                        </div>
+                        <div class="font-bold text-gray-900">
                             {{ \Carbon\Carbon::parse($jadwal->tanggal)->format('d M Y') }} - {{ $jadwal->jam }}
                         </div>
                     </div>
-                    <div>
-                        <div class="text-sm text-gray-600 mb-1">Mobil</div>
-                        <div class="font-medium">
+                    <div class="bg-white rounded-xl p-3 shadow-sm border border-gray-100">
+                        <div class="flex items-center gap-2 mb-1">
+                            <i class="fas fa-car text-purple-600"></i>
+                            <span class="text-xs text-gray-600 font-medium">Kendaraan</span>
+                        </div>
+                        <div class="font-bold text-gray-900">
                             {{ $jadwal->mobil->merk ?? 'N/A' }} ({{ $jadwal->mobil->jenis ?? 'N/A' }})
                         </div>
                     </div>
-                    <div>
-                        <div class="text-sm text-gray-600 mb-1">Supir</div>
-                        <div class="font-medium">
+                    <div class="bg-white rounded-xl p-3 shadow-sm border border-gray-100">
+                        <div class="flex items-center gap-2 mb-1">
+                            <i class="fas fa-user-tie text-pink-600"></i>
+                            <span class="text-xs text-gray-600 font-medium">Supir</span>
+                        </div>
+                        <div class="font-bold text-gray-900">
                             {{ $jadwal->mobil->supir->nama ?? 'N/A' }}
                         </div>
                     </div>
-                    <div>
-                        <div class="text-sm text-gray-600 mb-1">Harga per Kursi</div>
-                        <div class="font-medium">Rp {{ number_format($jadwal->harga, 0, ',', '.') }}</div>
+                    <div
+                        class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-3 shadow-sm border border-green-200 md:col-span-2">
+                        <div class="flex items-center gap-2 mb-1">
+                            <i class="fas fa-tag text-green-600"></i>
+                            <span class="text-xs text-gray-600 font-medium">Harga per Kursi</span>
+                        </div>
+                        <div
+                            class="font-bold text-xl bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                            Rp {{ number_format($jadwal->harga, 0, ',', '.') }}
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Main Content -->
-            <div class="bg-white rounded-lg shadow-lg p-8 fade-up animate-on-scroll">
-                <div class="text-center mb-8 zoom-in animate-on-scroll">
-                    <h1 class="text-3xl font-bold text-gray-900 mb-2">Pilih Kursi Anda</h1>
-                    <p class="text-gray-600">Pilih kursi yang ingin dipesan (maksimal 7 kursi)</p>
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 md:p-8 fade-up animate-on-scroll">
+                <!-- Header -->
+                <div class="text-center mb-8">
+                    <div
+                        class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full mb-4">
+                        <i class="fas fa-chair text-3xl text-purple-600"></i>
+                    </div>
+                    <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+                        Pilih <span
+                            class="bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 bg-clip-text text-transparent">Kursi</span>
+                    </h1>
+                    <p class="text-gray-600">Pilih kursi yang ingin dipesan (maksimal 7 kursi per transaksi)</p>
                 </div>
 
                 <!-- Seat Layout -->
                 <div class="mb-8 fade-up animate-on-scroll">
-                    <div class="text-center mb-6">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Layout Kursi Mobil</h3>
-                        <div class="flex justify-center items-center space-x-6 text-sm text-gray-600">
-                            <div class="flex items-center">
-                                <div class="w-4 h-4 bg-gray-400 border rounded mr-2 flex items-center justify-center">
-                                    <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                                            clip-rule="evenodd"></path>
-                                    </svg>
-                                </div>
-                                <span>Supir</span>
-                            </div>
-                            <div class="flex items-center">
+                    <!-- Legend -->
+                    <div class="bg-gradient-to-r from-gray-50 to-slate-50 rounded-xl p-4 mb-6 border border-gray-200">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i class="fas fa-info-circle text-blue-600"></i>
+                            <h3 class="font-bold text-gray-900">Keterangan Kursi</h3>
+                        </div>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <div class="flex items-center gap-2">
                                 <div
-                                    class="w-4 h-4 bg-gradient-to-br from-blue-400 to-blue-500 border border-blue-600 rounded mr-2">
+                                    class="w-10 h-10 bg-gradient-to-br from-gray-500 to-gray-600 text-white rounded-lg flex items-center justify-center shadow-md">
+                                    <i class="fas fa-user-tie"></i>
                                 </div>
-                                <span>Tersedia</span>
+                                <span class="text-sm font-medium text-gray-700">Supir</span>
                             </div>
-                            <div class="flex items-center">
+                            <div class="flex items-center gap-2">
                                 <div
-                                    class="w-4 h-4 bg-gradient-to-br from-green-400 to-green-500 border border-green-600 rounded mr-2">
+                                    class="w-10 h-10 bg-gradient-to-br from-blue-400 to-indigo-500 text-white rounded-lg flex items-center justify-center shadow-md">
+                                    <i class="fas fa-check"></i>
                                 </div>
-                                <span>Terpilih</span>
+                                <span class="text-sm font-medium text-gray-700">Tersedia</span>
                             </div>
-                            <div class="flex items-center">
-                                <div class="w-4 h-4 bg-red-600 border border-red-700 rounded mr-2"></div>
-                                <span>Sudah Dipesan</span>
+                            <div class="flex items-center gap-2">
+                                <div
+                                    class="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-500 text-white rounded-lg flex items-center justify-center shadow-md ring-2 ring-green-300">
+                                    <i class="fas fa-check-double"></i>
+                                </div>
+                                <span class="text-sm font-medium text-gray-700">Terpilih</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div
+                                    class="w-10 h-10 bg-red-600 text-white rounded-lg flex items-center justify-center shadow-md">
+                                    <i class="fas fa-times"></i>
+                                </div>
+                                <span class="text-sm font-medium text-gray-700">Terpesan</span>
                             </div>
                         </div>
                     </div>
@@ -284,38 +332,41 @@
                         </div>
 
                         <!-- Selected Seats Display -->
-                        <div class="text-center mb-6">
-                            <div class="text-sm text-gray-600 mb-2">Kursi Terpilih:</div>
-                            <div id="selected-seats" class="font-medium text-blue-600 min-h-[24px]">
-                                Belum ada kursi dipilih
-                            </div>
-                        </div>
-
-                        <!-- Total Price -->
-                        <div class="text-center mb-8">
-                            <div class="text-lg font-semibold text-gray-900">
-                                Total: <span id="total-price">Rp 0</span>
+                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 mb-6 border border-blue-200">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center shadow-md">
+                                        <i class="fas fa-chair text-white"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-xs text-gray-600 mb-1">Kursi Terpilih</div>
+                                        <div id="selected-seats" class="font-bold text-gray-900 min-h-6">
+                                            Belum ada kursi dipilih
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-xs text-gray-600 mb-1">Total Pembayaran</div>
+                                    <div id="total-price"
+                                        class="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                                        Rp 0
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
                         <!-- Action Buttons -->
-                        <div class="flex justify-center space-x-4">
+                        <div class="flex flex-col sm:flex-row gap-3 pt-6 border-t border-gray-100">
                             <a href="{{ route('booking.step2') }}"
-                                class="inline-flex items-center px-6 py-3 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 transition-colors">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15 19l-7-7 7-7"></path>
-                                </svg>
-                                Kembali
+                                class="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-all duration-300 font-semibold">
+                                <i class="fas fa-arrow-left"></i>
+                                <span>Kembali</span>
                             </a>
-
                             <button type="submit" id="book-button" disabled
-                                class="inline-flex items-center px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed">
-                                Pesan Tiket
-                                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M5 13l4 4L19 7"></path>
-                                </svg>
+                                class="flex-1 group inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all duration-300 shadow-lg hover:shadow-2xl hover:scale-105 font-bold disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed disabled:shadow-none disabled:scale-100">
+                                <span>Pesan Tiket Sekarang</span>
+                                <i class="fas fa-check-circle group-hover:scale-110 transition-transform"></i>
                             </button>
                         </div>
                     </form>

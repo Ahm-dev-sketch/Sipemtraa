@@ -131,23 +131,29 @@ document.addEventListener("DOMContentLoaded", () => {
     // ======================
     // Dropdown user dengan fade
     // ======================
-    const userMenuToggle = document.getElementById("greeting-icon");
+    const userMenuBtn = document.getElementById("user-menu-btn");
     const userDropdown = document.getElementById("user-dropdown");
-    if (userMenuToggle && userDropdown) {
+    if (userMenuBtn && userDropdown) {
         const showDropdown = () => {
-            userDropdown.classList.remove("hidden");
-            setTimeout(() => userDropdown.classList.add("opacity-100"), 10);
+            userDropdown.classList.remove("hidden", "scale-95");
+            setTimeout(() => {
+                userDropdown.classList.add("opacity-100", "scale-100");
+            }, 10);
         }
         const hideDropdown = () => {
-            userDropdown.classList.remove("opacity-100");
-            setTimeout(() => userDropdown.classList.add("hidden"), 200);
+            userDropdown.classList.remove("opacity-100", "scale-100");
+            userDropdown.classList.add("scale-95");
+            setTimeout(() => userDropdown.classList.add("hidden"), 300);
         }
-        userMenuToggle.addEventListener("click", () => {
+        userMenuBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
             if (userDropdown.classList.contains("hidden")) showDropdown();
             else hideDropdown();
         });
         document.addEventListener("click", (e) => {
-            if (!userMenuToggle.contains(e.target) && !userDropdown.contains(e.target)) hideDropdown();
+            if (!userMenuBtn.contains(e.target) && !userDropdown.contains(e.target)) {
+                hideDropdown();
+            }
         });
     }
 
@@ -369,19 +375,6 @@ if (getCurrentPage().includes('/riwayat')) {
             });
         });
     });
-}
-
-// Function to check if element exists
-function elementExists(selector) {
-    return document.querySelector(selector) !== null;
-}
-
-// ======================
-// Optimize animations for home page
-// ======================
-if (getCurrentPage() === '/' || getCurrentPage().includes('home')) {
-    // Animasi sudah ditangani oleh Intersection Observer
-    // Tidak perlu inisialisasi tambahan
 }
 
 // ======================
@@ -821,38 +814,109 @@ document.addEventListener('DOMContentLoaded', function () {
         const labels = JSON.parse(dashboardChartCanvasLine.dataset.labels);
         const data = JSON.parse(dashboardChartCanvasLine.dataset.data);
 
+        // Create gradient
+        const ctx = dashboardChartCanvasLine.getContext('2d');
+        const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+        gradient.addColorStop(0, 'rgba(16, 185, 129, 0.3)');
+        gradient.addColorStop(0.5, 'rgba(16, 185, 129, 0.15)');
+        gradient.addColorStop(1, 'rgba(16, 185, 129, 0.02)');
+
         new Chart(dashboardChartCanvasLine, {
             type: 'line',
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Pendapatan',
+                    label: 'Pendapatan (Rp)',
                     data: data,
                     borderColor: '#10b981',
-                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                    borderWidth: 2,
+                    backgroundColor: gradient,
+                    borderWidth: 3,
                     fill: true,
-                    tension: 0.4
+                    tension: 0.4,
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    pointBackgroundColor: '#10b981',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    pointHoverBackgroundColor: '#059669',
+                    pointHoverBorderColor: '#ffffff',
+                    pointHoverBorderWidth: 3
                 }]
             },
             options: {
                 responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function (value) {
-                                return 'Rp ' + value.toLocaleString('id-ID');
-                            }
-                        }
-                    }
+                maintainAspectRatio: true,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
                 },
                 plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        align: 'end',
+                        labels: {
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            padding: 15,
+                            font: {
+                                size: 12,
+                                weight: '600'
+                            },
+                            color: '#1e293b'
+                        }
+                    },
                     tooltip: {
+                        backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#e2e8f0',
+                        titleFont: {
+                            size: 13,
+                            weight: 'bold'
+                        },
+                        bodyFont: {
+                            size: 12
+                        },
+                        padding: 12,
+                        cornerRadius: 8,
+                        displayColors: true,
+                        boxPadding: 6,
                         callbacks: {
                             label: function (context) {
                                 return 'Rp ' + context.parsed.y.toLocaleString('id-ID');
                             }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 11,
+                                weight: '500'
+                            },
+                            color: '#64748b'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(148, 163, 184, 0.1)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 11,
+                                weight: '500'
+                            },
+                            color: '#64748b',
+                            callback: function (value) {
+                                return 'Rp ' + (value / 1000000).toFixed(0) + 'jt';
+                            },
+                            padding: 8
                         }
                     }
                 }
@@ -923,36 +987,101 @@ document.addEventListener('DOMContentLoaded', function () {
         const labels = JSON.parse(laporanChartCanvasBar.dataset.labels);
         const data = JSON.parse(laporanChartCanvasBar.dataset.data);
 
+        // Create gradient for bars
+        const ctx = laporanChartCanvasBar.getContext('2d');
+        const barGradient = ctx.createLinearGradient(0, 0, 0, 400);
+        barGradient.addColorStop(0, '#6366f1');
+        barGradient.addColorStop(1, '#8b5cf6');
+
         new Chart(laporanChartCanvasBar, {
             type: 'bar',
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Pendapatan',
+                    label: 'Pendapatan (Rp)',
                     data: data,
-                    backgroundColor: '#3b82f6',
-                    borderColor: '#2563eb',
-                    borderWidth: 1
+                    backgroundColor: barGradient,
+                    borderColor: 'transparent',
+                    borderWidth: 0,
+                    borderRadius: 8,
+                    borderSkipped: false,
+                    hoverBackgroundColor: '#7c3aed'
                 }]
             },
             options: {
                 responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function (value) {
-                                return 'Rp ' + value.toLocaleString('id-ID');
-                            }
-                        }
-                    }
+                maintainAspectRatio: true,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
                 },
                 plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        align: 'end',
+                        labels: {
+                            usePointStyle: true,
+                            pointStyle: 'rectRounded',
+                            padding: 15,
+                            font: {
+                                size: 12,
+                                weight: '600'
+                            },
+                            color: '#1e293b'
+                        }
+                    },
                     tooltip: {
+                        backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#e2e8f0',
+                        titleFont: {
+                            size: 13,
+                            weight: 'bold'
+                        },
+                        bodyFont: {
+                            size: 12
+                        },
+                        padding: 12,
+                        cornerRadius: 8,
+                        displayColors: true,
+                        boxPadding: 6,
                         callbacks: {
                             label: function (context) {
                                 return 'Rp ' + context.parsed.y.toLocaleString('id-ID');
                             }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 11,
+                                weight: '500'
+                            },
+                            color: '#64748b'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(148, 163, 184, 0.1)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 11,
+                                weight: '500'
+                            },
+                            color: '#64748b',
+                            callback: function (value) {
+                                return 'Rp ' + (value / 1000000).toFixed(0) + 'jt';
+                            },
+                            padding: 8
                         }
                     }
                 }
@@ -966,38 +1095,109 @@ document.addEventListener('DOMContentLoaded', function () {
         const labels = JSON.parse(laporanChartCanvasLine.dataset.labels);
         const data = JSON.parse(laporanChartCanvasLine.dataset.data);
 
+        // Create gradient
+        const ctx = laporanChartCanvasLine.getContext('2d');
+        const lineGradient = ctx.createLinearGradient(0, 0, 0, 300);
+        lineGradient.addColorStop(0, 'rgba(16, 185, 129, 0.3)');
+        lineGradient.addColorStop(0.5, 'rgba(16, 185, 129, 0.15)');
+        lineGradient.addColorStop(1, 'rgba(16, 185, 129, 0.02)');
+
         new Chart(laporanChartCanvasLine, {
             type: 'line',
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Pendapatan',
+                    label: 'Pendapatan (Rp)',
                     data: data,
                     borderColor: '#10b981',
-                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                    borderWidth: 2,
+                    backgroundColor: lineGradient,
+                    borderWidth: 3,
                     fill: true,
-                    tension: 0.4
+                    tension: 0.4,
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    pointBackgroundColor: '#10b981',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    pointHoverBackgroundColor: '#059669',
+                    pointHoverBorderColor: '#ffffff',
+                    pointHoverBorderWidth: 3
                 }]
             },
             options: {
                 responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function (value) {
-                                return 'Rp ' + value.toLocaleString('id-ID');
-                            }
-                        }
-                    }
+                maintainAspectRatio: true,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
                 },
                 plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        align: 'end',
+                        labels: {
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            padding: 15,
+                            font: {
+                                size: 12,
+                                weight: '600'
+                            },
+                            color: '#1e293b'
+                        }
+                    },
                     tooltip: {
+                        backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#e2e8f0',
+                        titleFont: {
+                            size: 13,
+                            weight: 'bold'
+                        },
+                        bodyFont: {
+                            size: 12
+                        },
+                        padding: 12,
+                        cornerRadius: 8,
+                        displayColors: true,
+                        boxPadding: 6,
                         callbacks: {
                             label: function (context) {
                                 return 'Rp ' + context.parsed.y.toLocaleString('id-ID');
                             }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 11,
+                                weight: '500'
+                            },
+                            color: '#64748b'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(148, 163, 184, 0.1)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 11,
+                                weight: '500'
+                            },
+                            color: '#64748b',
+                            callback: function (value) {
+                                return 'Rp ' + (value / 1000000).toFixed(0) + 'jt';
+                            },
+                            padding: 8
                         }
                     }
                 }
@@ -1012,48 +1212,156 @@ document.addEventListener('DOMContentLoaded', function () {
         const data = JSON.parse(laporanChartCanvasPie.dataset.data);
 
         new Chart(laporanChartCanvasPie, {
-            type: 'pie',
+            type: 'doughnut',
             data: {
                 labels: labels,
                 datasets: [{
                     label: 'Pendapatan',
                     data: data,
                     backgroundColor: [
-                        '#3b82f6', // blue
-                        '#10b981', // green
-                        '#f59e0b', // yellow
-                        '#ef4444', // red
+                        '#6366f1', // indigo
                         '#8b5cf6', // purple
-                        '#06b6d4', // cyan
-                        '#f97316', // orange
-                        '#84cc16', // lime
                         '#ec4899', // pink
-                        '#6b7280'  // gray
+                        '#f43f5e', // rose
+                        '#f97316', // orange
+                        '#f59e0b', // amber
+                        '#eab308', // yellow
+                        '#84cc16', // lime
+                        '#22c55e', // green
+                        '#10b981', // emerald
+                        '#14b8a6', // teal
+                        '#06b6d4', // cyan
+                        '#0ea5e9', // sky
+                        '#3b82f6', // blue
+                        '#6366f1', // indigo
                     ],
-                    borderWidth: 2,
-                    borderColor: '#ffffff'
+                    borderWidth: 3,
+                    borderColor: '#ffffff',
+                    hoverBorderWidth: 4,
+                    hoverBorderColor: '#ffffff',
+                    hoverOffset: 15
                 }]
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: true,
+                cutout: '65%',
                 plugins: {
                     legend: {
                         display: false
                     },
                     tooltip: {
+                        backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#e2e8f0',
+                        titleFont: {
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        bodyFont: {
+                            size: 13
+                        },
+                        padding: 16,
+                        cornerRadius: 10,
+                        displayColors: true,
+                        boxPadding: 8,
                         callbacks: {
+                            title: function (context) {
+                                return 'Tanggal ' + context[0].label;
+                            },
                             label: function (context) {
-                                const label = context.label || '';
                                 const value = context.parsed;
                                 const total = context.dataset.data.reduce((a, b) => a + b, 0);
                                 const percentage = ((value / total) * 100).toFixed(1);
-                                return 'Tanggal ' + label + ': Rp ' + value.toLocaleString('id-ID') + ' (' + percentage + '%)';
+                                return [
+                                    'Pendapatan: Rp ' + value.toLocaleString('id-ID'),
+                                    'Persentase: ' + percentage + '%'
+                                ];
                             }
                         }
                     }
+                },
+                animation: {
+                    animateRotate: true,
+                    animateScale: true
                 }
-            }
+            },
+            plugins: [{
+                id: 'centerText',
+                beforeDraw: function (chart) {
+                    const ctx = chart.ctx;
+                    const width = chart.width;
+                    const height = chart.height;
+                    const total = chart.config.data.datasets[0].data.reduce((a, b) => a + b, 0);
+
+                    ctx.restore();
+                    ctx.font = 'bold 16px sans-serif';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillStyle = '#64748b';
+
+                    const text = 'Total Pendapatan';
+                    const textX = Math.round((width - ctx.measureText(text).width) / 2);
+                    const textY = height / 2 - 15;
+
+                    ctx.fillText(text, textX, textY);
+
+                    ctx.font = 'bold 18px sans-serif';
+                    ctx.fillStyle = '#1e293b';
+                    const totalText = 'Rp ' + (total / 1000000).toFixed(1) + 'jt';
+                    const totalX = Math.round((width - ctx.measureText(totalText).width) / 2);
+                    const totalY = height / 2 + 10;
+
+                    ctx.fillText(totalText, totalX, totalY);
+                    ctx.save();
+                }
+            }]
         });
     }
 });
 
+// ======================
+// Form Harga: Format ribuan dengan titik dan bersihkan sebelum submit
+// ======================
+document.addEventListener('DOMContentLoaded', function () {
+    // Helper function untuk format angka dengan titik pemisah ribuan
+    function formatNumber(num) {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+
+    // Helper function untuk auto-format saat mengetik
+    function autoFormatPrice(inputId) {
+        const input = document.getElementById(inputId);
+        if (input) {
+            input.addEventListener('input', function (e) {
+                let value = this.value.replace(/\./g, ''); // Hapus titik
+                if (value && !isNaN(value)) {
+                    this.value = formatNumber(value);
+                }
+            });
+        }
+    }
+
+    // Helper function untuk membersihkan input harga sebelum submit
+    function cleanPriceInput(formId, inputId) {
+        const form = document.getElementById(formId);
+        if (form) {
+            form.addEventListener('submit', function (e) {
+                const hargaInput = document.getElementById(inputId);
+                if (hargaInput) {
+                    // Hapus semua titik, hanya kirim angka
+                    hargaInput.value = hargaInput.value.replace(/\./g, '');
+                }
+            });
+        }
+    }
+
+    // Auto-format untuk semua input harga
+    autoFormatPrice('harga_tiket'); // Form Rute (create & edit)
+    autoFormatPrice('harga');       // Form Jadwal (create & edit)
+
+    // Clean sebelum submit
+    cleanPriceInput('formRute', 'harga_tiket');
+    cleanPriceInput('formRuteEdit', 'harga_tiket');
+    cleanPriceInput('formJadwal', 'harga');
+    cleanPriceInput('formJadwalEdit', 'harga');
+});

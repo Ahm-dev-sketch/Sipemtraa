@@ -17,10 +17,10 @@ class JadwalController extends Controller
         $bookedSeats = Booking::where('jadwal_id', $jadwal_id)
             ->where(function ($query) use ($threshold) {
                 $query->where('status', 'setuju')
-                      ->orWhere(function ($q) use ($threshold) {
-                          $q->where('status', 'pending')
+                    ->orWhere(function ($q) use ($threshold) {
+                        $q->where('status', 'pending')
                             ->where('created_at', '>=', $threshold);
-                      });
+                    });
             })
             ->pluck('seat_number');
 
@@ -31,13 +31,14 @@ class JadwalController extends Controller
         $search = $request->input('search');
 
         $jadwals = Jadwal::with('rute')
+            ->where('is_active', true) // Only show active schedules
             ->when($search, function ($query, $search) {
                 $query->whereHas('rute', function ($q) use ($search) {
                     $q->where('kota_asal', 'like', "%{$search}%")
-                      ->orWhere('kota_tujuan', 'like', "%{$search}%");
+                        ->orWhere('kota_tujuan', 'like', "%{$search}%");
                 })
-                ->orWhere('tanggal', 'like', "%{$search}%")
-                ->orWhere('jam', 'like', "%{$search}%");
+                    ->orWhere('tanggal', 'like', "%{$search}%")
+                    ->orWhere('jam', 'like', "%{$search}%");
             })
             ->orderBy('tanggal')
             ->paginate(10);

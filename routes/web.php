@@ -18,6 +18,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/jadwals', [AdminController::class, 'storeJadwal'])->name('jadwals.store');
     Route::get('/jadwals/{jadwal}/edit', [AdminController::class, 'editJadwal'])->name('jadwals.edit');
     Route::put('/jadwals/{jadwal}', [AdminController::class, 'updateJadwal'])->name('jadwals.update');
+    Route::patch('/jadwals/{jadwal}/toggle', [AdminController::class, 'toggleJadwalStatus'])->name('jadwals.toggle');
     Route::delete('/jadwals/{jadwal}', [AdminController::class, 'destroyJadwal'])->name('jadwals.destroy');
 
     // Kelola Booking
@@ -103,6 +104,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/pesan-tiket/step2', [BookingController::class, 'processStep2'])->name('booking.step2.process');
     Route::get('/pesan-tiket/step3', [BookingController::class, 'wizardStep3'])->name('booking.step3');
     Route::post('/pesan-tiket/step3', [BookingController::class, 'processStep3'])->name('booking.step3.process');
+
+    // Quick booking - langsung ke step3 dengan jadwal_id
+    Route::get('/pesan-tiket/quick/{jadwal}', [BookingController::class, 'quickBooking'])->name('booking.quick');
 
     Route::get('/riwayat', [BookingController::class, 'index'])->name('riwayat');
 
