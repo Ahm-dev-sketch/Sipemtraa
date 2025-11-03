@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
-use App\Services\WhatsappService;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class BookingController extends Controller
@@ -125,6 +124,7 @@ class BookingController extends Controller
         // Find available schedules for these routes on the selected date
         $jadwals = Jadwal::whereIn('rute_id', $routes->pluck('id'))
             ->where('tanggal', $step1Data['tanggal'])
+            ->where('is_active', true) // Only show active schedules
             ->with('rute')
             ->orderBy('jam')
             ->get();
@@ -153,6 +153,32 @@ class BookingController extends Controller
     }
 
     // Step 3: Pilih Kursi
+    /**
+     * Quick booking - langsung ke step3 dengan jadwal_id
+     */
+    public function quickBooking(Jadwal $jadwal)
+    {
+        // Load relationships
+        $jadwal->load(['mobil.supir', 'rute']);
+
+        // Auto-populate session untuk step 1 & 2
+        $step1Data = [
+            'kota_asal' => $jadwal->rute->kota_asal,
+            'kota_tujuan' => $jadwal->rute->kota_tujuan,
+            'tanggal' => $jadwal->tanggal,
+        ];
+
+        $step2Data = [
+            'jadwal' => $jadwal,
+        ];
+
+        session(['booking_step1' => $step1Data]);
+        session(['booking_step2' => $step2Data]);
+
+        // Redirect ke step3
+        return redirect()->route('booking.step3');
+    }
+
     public function wizardStep3()
     {
         $step1Data = session('booking_step1');
@@ -435,11 +461,6 @@ class BookingController extends Controller
 
                 return $firstBooking;
             });
-
-            // Kirim notif admin pakai booking pertama
-            if ($firstBooking) {
-                app(WhatsappService::class)->notifyAdminBooking($firstBooking);
-            }
 
             return redirect()->route('riwayat')->with('success', 'Tiket berhasil dipesan!');
         } catch (\Exception $e) {

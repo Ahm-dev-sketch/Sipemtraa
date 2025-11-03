@@ -1,139 +1,226 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="min-h-screen bg-gray-50 py-8">
+    <div class="min-h-screen py-8">
         <div class="max-w-6xl mx-auto px-4">
-            <!-- Progress Bar -->
+            <!-- Modern Progress Indicator -->
             <div class="mb-8 fade-down animate-on-scroll">
-                <div class="flex items-center justify-center">
-                    <div class="flex items-center space-x-4">
-                        <!-- Step 1 -->
-                        <div class="flex items-center">
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+                    <div class="flex items-center justify-between relative">
+                        <!-- Progress Line Background -->
+                        <div class="absolute top-6 left-0 right-0 h-1 bg-gray-200 -z-10"></div>
+                        <!-- Active Progress Line -->
+                        <div class="absolute top-6 left-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-600 to-indigo-600 transition-all duration-500 -z-10"
+                            style="width: 50%"></div>
+
+                        <!-- Step 1 - Completed -->
+                        <div class="flex flex-col items-center flex-1 relative">
                             <div
-                                class="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                                ✓
+                                class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-full flex items-center justify-center font-bold shadow-lg mb-2 ring-4 ring-green-100">
+                                <i class="fas fa-check"></i>
                             </div>
-                            <span class="ml-2 text-sm font-medium text-green-600">Pilih Perjalanan</span>
+                            <span class="text-sm font-semibold text-green-600">Pilih Perjalanan</span>
+                            <span class="text-xs text-gray-500 mt-1">Selesai</span>
                         </div>
 
-                        <!-- Connector -->
-                        <div class="w-16 h-1 bg-[#FF6B2C]"></div>
-
-                        <!-- Step 2 -->
-                        <div class="flex items-center">
+                        <!-- Step 2 - Active -->
+                        <div class="flex flex-col items-center flex-1 relative">
                             <div
-                                class="w-8 h-8 bg-[#FF6B2C] text-white rounded-full flex items-center justify-center text-sm font-bold">
-                                2
+                                class="w-12 h-12 bg-gradient-to-br from-indigo-600 to-purple-600 text-white rounded-full flex items-center justify-center font-bold shadow-lg mb-2 ring-4 ring-indigo-100">
+                                <i class="fas fa-route"></i>
                             </div>
-                            <span class="ml-2 text-sm font-medium text-[#FF6B2C]">Pilih Rute</span>
+                            <span class="text-sm font-semibold text-indigo-600">Pilih Jadwal</span>
+                            <span class="text-xs text-gray-500 mt-1">Step 2 dari 3</span>
                         </div>
 
-                        <!-- Connector -->
-                        <div class="w-16 h-1 bg-gray-300"></div>
-
-                        <!-- Step 3 -->
-                        <div class="flex items-center">
+                        <!-- Step 3 - Inactive -->
+                        <div class="flex flex-col items-center flex-1 relative">
                             <div
-                                class="w-8 h-8 bg-gray-300 text-gray-500 rounded-full flex items-center justify-center text-sm font-bold">
-                                3
+                                class="w-12 h-12 bg-gray-200 text-gray-400 rounded-full flex items-center justify-center font-bold shadow mb-2">
+                                <i class="fas fa-chair"></i>
                             </div>
-                            <span class="ml-2 text-sm font-medium text-gray-500">Pilih Kursi</span>
+                            <span class="text-sm font-medium text-gray-400">Pilih Kursi</span>
+                            <span class="text-xs text-gray-400 mt-1">Step 3 dari 3</span>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Step 1 Summary -->
-            <div class="bg-white rounded-lg shadow mb-6 p-4 fade-right animate-on-scroll">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-4">
-                        <div class="text-sm text-gray-600">
-                            <span class="font-medium">{{ $step1Data['kota_asal'] }}</span>
-                            <span class="mx-2">→</span>
-                            <span class="font-medium">{{ $step1Data['kota_tujuan'] }}</span>
+            <div
+                class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl shadow border border-blue-100 mb-6 p-6 fade-right animate-on-scroll">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="flex flex-col md:flex-row md:items-center gap-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md">
+                                <i class="fas fa-route text-blue-600"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs text-gray-600 mb-1">Perjalanan Anda</div>
+                                <div class="font-bold text-gray-900">
+                                    <span class="text-blue-600">{{ $step1Data['kota_asal'] }}</span>
+                                    <i class="fas fa-arrow-right mx-2 text-indigo-600"></i>
+                                    <span class="text-purple-600">{{ $step1Data['kota_tujuan'] }}</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="text-sm text-gray-600">
-                            📅 {{ \Carbon\Carbon::parse($step1Data['tanggal'])->format('d M Y') }}
+                        <div class="hidden md:block w-px h-10 bg-gradient-to-b from-blue-200 to-indigo-200"></div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md">
+                                <i class="fas fa-calendar-alt text-indigo-600"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs text-gray-600 mb-1">Tanggal Keberangkatan</div>
+                                <div class="font-bold text-gray-900">
+                                    {{ \Carbon\Carbon::parse($step1Data['tanggal'])->format('d M Y') }}
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <a href="{{ route('pesan') }}" class="text-blue-600 hover:text-blue-800 text-sm">
+                    <a href="{{ route('pesan') }}"
+                        class="inline-flex items-center gap-2 px-4 py-2.5 bg-white hover:bg-gray-50 text-indigo-600 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg font-semibold text-sm">
+                        <i class="fas fa-edit"></i>
                         Ubah Perjalanan
                     </a>
                 </div>
             </div>
 
             <!-- Main Content -->
-            <div class="bg-white rounded-lg shadow-lg p-8 fade-up animate-on-scroll">
-                <div class="text-center mb-8 zoom-in animate-on-scroll">
-                    <h1 class="text-3xl font-bold text-gray-900 mb-2">Pilih Rute Perjalanan</h1>
-                    <p class="text-gray-600">Pilih jadwal keberangkatan yang tersedia</p>
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 md:p-8 fade-up animate-on-scroll">
+                <!-- Header -->
+                <div class="text-center mb-8">
+                    <div
+                        class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full mb-4">
+                        <i class="fas fa-route text-3xl text-indigo-600"></i>
+                    </div>
+                    <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+                        Pilih <span
+                            class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">Jadwal</span>
+                    </h1>
+                    <p class="text-gray-600">{{ $jadwals->count() }} jadwal tersedia untuk perjalanan Anda</p>
                 </div>
 
                 @if ($jadwals->isEmpty())
                     <div class="text-center py-12">
-                        <div class="text-gray-400 mb-4">
-                            <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 4v10a2 2 0 002 2h4a2 2 0 002-2V11M9 11h6">
-                                </path>
-                            </svg>
+                        <div class="inline-flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full mb-4">
+                            <i class="fas fa-calendar-times text-4xl text-gray-400"></i>
                         </div>
-                        <h3 class="text-lg font-medium text-gray-900 mb-2">Tidak Ada Jadwal Tersedia</h3>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Tidak Ada Jadwal Tersedia</h3>
                         <p class="text-gray-600 mb-6">Belum ada jadwal untuk rute dan tanggal yang dipilih.</p>
                         <a href="{{ route('pesan') }}"
-                            class="inline-flex items-center px-4 py-2 bg-[#FF6B2C] text-white rounded-lg hover:bg-[#E55A1F] focus:ring-2 focus:ring-[#FF6B2C] focus:ring-offset-2 transition-colors">
+                            class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl font-bold">
+                            <i class="fas fa-search"></i>
                             Cari Perjalanan Lain
                         </a>
                     </div>
                 @else
-                    <div class="grid gap-4">
+                    <div class="grid gap-6">
                         @foreach ($jadwals as $jadwal)
                             <div
-                                class="border border-gray-200 rounded-lg p-6 hover:border-blue-300 hover:shadow-md transition-all">
-                                <div class="flex items-center justify-between">
+                                class="group border-2 border-gray-100 rounded-2xl p-6 hover:border-indigo-300 hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-white to-gray-50">
+                                <div class="flex flex-col lg:flex-row gap-6">
+                                    <!-- Journey Info -->
                                     <div class="flex-1">
-                                        <div class="flex items-center space-x-4 mb-3">
-                                            <div class="text-lg font-semibold text-gray-900">
-                                                {{ $jadwal->rute->kota_asal }} → {{ $jadwal->rute->kota_tujuan }}
-                                            </div>
+                                        <!-- Route Header -->
+                                        <div class="flex items-center gap-3 mb-4">
                                             <div
-                                                class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-                                                {{ $jadwal->jam }}
+                                                class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                                                <i class="fas fa-bus text-white text-xl"></i>
+                                            </div>
+                                            <div>
+                                                <div class="font-bold text-lg text-gray-900">
+                                                    {{ $jadwal->rute->kota_asal }} <i
+                                                        class="fas fa-arrow-right text-indigo-600 mx-1"></i>
+                                                    {{ $jadwal->rute->kota_tujuan }}
+                                                </div>
+                                                <div class="text-sm text-gray-600 flex items-center gap-2">
+                                                    <i class="fas fa-info-circle text-blue-500"></i>
+                                                    <span>Travel Langsung - Tanpa Transit</span>
+                                                </div>
                                             </div>
                                         </div>
 
-                                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600">
-                                            <div>
-                                                <span class="font-medium">Tanggal:</span><br>
-                                                {{ \Carbon\Carbon::parse($jadwal->tanggal)->format('d M Y') }}
+                                        <!-- Details Grid -->
+                                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                            <!-- Date -->
+                                            <div class="bg-white rounded-xl p-3 shadow-sm border border-gray-100">
+                                                <div class="flex items-center gap-2 mb-1">
+                                                    <i class="fas fa-calendar text-blue-600"></i>
+                                                    <span class="text-xs text-gray-600 font-medium">Tanggal</span>
+                                                </div>
+                                                <div class="font-bold text-gray-900">
+                                                    {{ \Carbon\Carbon::parse($jadwal->tanggal)->format('d M Y') }}
+                                                </div>
                                             </div>
-                                            <div>
-                                                <span class="font-medium">Jam:</span><br>
-                                                {{ $jadwal->jam }}
+
+                                            <!-- Time -->
+                                            <div class="bg-white rounded-xl p-3 shadow-sm border border-gray-100">
+                                                <div class="flex items-center gap-2 mb-1">
+                                                    <i class="fas fa-clock text-indigo-600"></i>
+                                                    <span class="text-xs text-gray-600 font-medium">Jam</span>
+                                                </div>
+                                                <div class="font-bold text-gray-900">
+                                                    {{ $jadwal->jam }}
+                                                </div>
                                             </div>
-                                            <div>
-                                                <span class="font-medium">Harga:</span><br>
-                                                Rp {{ number_format($jadwal->harga, 0, ',', '.') }}
+
+                                            <!-- Vehicle -->
+                                            <div class="bg-white rounded-xl p-3 shadow-sm border border-gray-100">
+                                                <div class="flex items-center gap-2 mb-1">
+                                                    <i class="fas fa-car text-purple-600"></i>
+                                                    <span class="text-xs text-gray-600 font-medium">Kendaraan</span>
+                                                </div>
+                                                <div class="font-bold text-gray-900">
+                                                    {{ $jadwal->mobil->merk ?? 'N/A' }}
+                                                </div>
                                             </div>
-                                            <div>
-                                                <span class="font-medium">Mobil:</span><br>
-                                                {{ $jadwal->mobil->merk ?? 'N/A' }}
+
+                                            <!-- Price -->
+                                            <div
+                                                class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-3 shadow-sm border border-green-200">
+                                                <div class="flex items-center gap-2 mb-1">
+                                                    <i class="fas fa-tag text-green-600"></i>
+                                                    <span class="text-xs text-gray-600 font-medium">Harga</span>
+                                                </div>
+                                                <div
+                                                    class="font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                                                    Rp {{ number_format($jadwal->harga, 0, ',', '.') }}
+                                                </div>
                                             </div>
+                                        </div>
+
+                                        <!-- Facilities -->
+                                        <div class="mt-4 flex flex-wrap gap-2">
+                                            <span
+                                                class="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
+                                                <i class="fas fa-snowflake"></i> AC
+                                            </span>
+                                            <span
+                                                class="inline-flex items-center gap-1 px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-medium">
+                                                <i class="fas fa-music"></i> Audio
+                                            </span>
+                                            <span
+                                                class="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">
+                                                <i class="fas fa-couch"></i> Kursi Nyaman
+                                            </span>
+                                            <span
+                                                class="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                                                <i class="fas fa-luggage-cart"></i> Bagasi Luas
+                                            </span>
                                         </div>
                                     </div>
 
-                                    <div class="ml-6">
+                                    <!-- Action Button -->
+                                    <div class="flex items-center justify-center lg:justify-end">
                                         <form action="{{ route('booking.step2.process') }}" method="POST">
                                             @csrf
                                             <input type="hidden" name="jadwal_id" value="{{ $jadwal->id }}">
                                             <button type="submit"
-                                                class="inline-flex items-center px-6 py-3 bg-[#FF6B2C] text-white font-semibold rounded-lg hover:bg-[#E55A1F] focus:ring-2 focus:ring-[#FF6B2C] focus:ring-offset-2 transition-colors">
-                                                Pilih & Lanjutkan
-                                                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor"
-                                                    viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M9 5l7 7-7 7"></path>
-                                                </svg>
+                                                class="group-hover:scale-105 inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-2xl font-bold">
+                                                <span>Pilih Jadwal</span>
+                                                <i
+                                                    class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                                            </button>
                                         </form>
                                     </div>
                                 </div>

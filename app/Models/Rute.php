@@ -16,4 +16,10 @@ class Rute extends Model
         'harga_tiket',
         'status_rute',
     ];
+
+    // Relationship: Rute memiliki banyak Jadwal
+    public function jadwals()
+    {
+        return $this->hasMany(Jadwal::class);
+    }
 }

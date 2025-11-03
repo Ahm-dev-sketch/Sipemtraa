@@ -1,63 +1,100 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1 class="text-2xl font-bold mb-6 flex items-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        Edit Supir
-    </h1>
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold flex items-center gap-3">
+            <div class="p-2 bg-blue-100 rounded-lg">
+                <i class="fas fa-user-edit text-blue-600 text-2xl"></i>
+            </div>
+            <div>
+                <div class="text-gray-900">Edit Supir</div>
+                <div class="text-sm text-gray-500 font-normal">Perbarui informasi data supir</div>
+            </div>
+        </h1>
+    </div>
 
-    <div class="bg-white p-6 rounded shadow max-w-lg">
-        <form action="{{ route('admin.supir.update', $supir) }}" method="POST" class="space-y-4">
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-3xl">
+        <!-- Header Form -->
+        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                <i class="fas fa-id-card text-blue-600"></i>
+                Informasi Supir
+            </h2>
+        </div>
+
+        <!-- Form Body -->
+        <form action="{{ route('admin.supir.update', $supir) }}" method="POST" class="p-6">
             @csrf
             @method('PUT')
 
-            {{-- Nama --}}
-            <div>
-                <label for="nama" class="block text-sm font-medium text-gray-700">Nama Supir</label>
-                <input type="text" id="nama" name="nama" value="{{ old('nama', $supir->nama) }}" required
-                       class="mt-1 block w-full border rounded p-2 focus:ring focus:ring-blue-300 focus:outline-none">
-                @error('nama')
-                    <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                @enderror
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {{-- Nama --}}
+                <div class="md:col-span-2">
+                    <label for="nama" class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-user text-gray-400 mr-1"></i>
+                        Nama Supir
+                    </label>
+                    <input type="text" id="nama" name="nama" value="{{ old('nama', $supir->nama) }}" required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
+                    @error('nama')
+                        <p class="mt-1 text-sm text-red-600 flex items-center gap-1">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {{ $message }}
+                        </p>
+                    @enderror
+                </div>
+
+                {{-- Telepon --}}
+                <div class="md:col-span-2">
+                    <label for="telepon" class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-phone text-gray-400 mr-1"></i>
+                        Nomor Telepon
+                    </label>
+                    <input type="text" id="telepon" name="telepon" value="{{ old('telepon', $supir->telepon) }}"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
+                    @error('telepon')
+                        <p class="mt-1 text-sm text-red-600 flex items-center gap-1">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {{ $message }}
+                        </p>
+                    @enderror
+                </div>
+
+                {{-- Mobil --}}
+                <div class="md:col-span-2">
+                    <label for="mobil_id" class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-bus-alt text-gray-400 mr-1"></i>
+                        Mobil yang Dikendarai
+                    </label>
+                    <select id="mobil_id" name="mobil_id" required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
+                        <option value="">-- Pilih Mobil --</option>
+                        @foreach ($mobils as $mobil)
+                            <option value="{{ $mobil->id }}"
+                                {{ old('mobil_id', $supir->mobil_id) == $mobil->id ? 'selected' : '' }}>
+                                {{ $mobil->merk }} - {{ $mobil->nomor_polisi }} ({{ $mobil->jenis }})
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('mobil_id')
+                        <p class="mt-1 text-sm text-red-600 flex items-center gap-1">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {{ $message }}
+                        </p>
+                    @enderror
+                </div>
             </div>
 
-            {{-- Telepon --}}
-            <div>
-                <label for="telepon" class="block text-sm font-medium text-gray-700">Telepon</label>
-                <input type="text" id="telepon" name="telepon" value="{{ old('telepon', $supir->telepon) }}"
-                       class="mt-1 block w-full border rounded p-2 focus:ring focus:ring-blue-300 focus:outline-none">
-                @error('telepon')
-                    <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-
-            {{-- Mobil --}}
-            <div>
-                <label for="mobil_id" class="block text-sm font-medium text-gray-700">Mobil</label>
-                <select id="mobil_id" name="mobil_id" required
-                        class="mt-1 block w-full border rounded p-2 focus:ring focus:ring-blue-300 focus:outline-none">
-                    <option value="">Pilih Mobil</option>
-                    @foreach($mobils as $mobil)
-                        <option value="{{ $mobil->id }}" {{ old('mobil_id', $supir->mobil_id) == $mobil->id ? 'selected' : '' }}>
-                            {{ $mobil->merk }} ({{ $mobil->nomor_polisi }})
-                        </option>
-                    @endforeach
-                </select>
-                @error('mobil_id')
-                    <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-
-            {{-- Tombol Aksi --}}
-            <div class="flex items-center gap-3">
+            {{-- Action Buttons --}}
+            <div class="flex items-center gap-3 mt-8 pt-6 border-t border-gray-200">
                 <button type="submit"
-                        class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">
+                    class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all">
+                    <i class="fas fa-save"></i>
                     Simpan Perubahan
                 </button>
                 <a href="{{ route('admin.supir') }}"
-                   class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition">
+                    class="inline-flex items-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 focus:ring-4 focus:ring-gray-200 transition-all">
+                    <i class="fas fa-times"></i>
                     Batal
                 </a>
             </div>

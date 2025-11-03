@@ -31,9 +31,20 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return Auth::user()->role === 'admin'
-                ? redirect()->route('admin.dashboard')
-                : redirect()->route('home');
+
+            // Check if there's a redirect parameter
+            $redirect = $request->input('redirect');
+
+            if (Auth::user()->role === 'admin') {
+                return redirect()->route('admin.dashboard');
+            }
+
+            // If redirect URL is provided and valid, redirect there
+            if ($redirect && filter_var($redirect, FILTER_VALIDATE_URL)) {
+                return redirect($redirect);
+            }
+
+            return redirect()->route('home');
         }
 
         return back()->withErrors(['whatsapp_number' => 'Nomor WhatsApp atau password salah']);
