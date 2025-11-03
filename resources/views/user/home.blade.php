@@ -78,7 +78,7 @@
                         </div>
 
                         <!-- Image Container with Shadow Enhancement -->
-                        <div class="relative flex items-end justify-center" style="transform: translateY(12px);">
+                        <div class="relative flex items-end justify-center animate-scale-in" style="transform: translateY(12px);">
                             <!-- Ground Shadow -->
                             <div
                                 class="absolute bottom-0 left-1/2 -translate-x-1/2 w-4/5 h-8 bg-gradient-to-t from-blue-900/20 to-transparent rounded-full blur-2xl">
