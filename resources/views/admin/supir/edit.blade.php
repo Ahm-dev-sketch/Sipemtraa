@@ -12,9 +12,7 @@
             </div>
         </h1>
     </div>
-
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-3xl">
-        <!-- Header Form -->
         <div class="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-200">
             <h2 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
                 <i class="fas fa-id-card text-blue-600"></i>
@@ -22,13 +20,11 @@
             </h2>
         </div>
 
-        <!-- Form Body -->
         <form action="{{ route('admin.supir.update', $supir) }}" method="POST" class="p-6">
             @csrf
             @method('PUT')
-
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {{-- Nama --}}
+
                 <div class="md:col-span-2">
                     <label for="nama" class="block text-sm font-semibold text-gray-700 mb-2">
                         <i class="fas fa-user text-gray-400 mr-1"></i>
@@ -44,7 +40,6 @@
                     @enderror
                 </div>
 
-                {{-- Telepon --}}
                 <div class="md:col-span-2">
                     <label for="telepon" class="block text-sm font-semibold text-gray-700 mb-2">
                         <i class="fas fa-phone text-gray-400 mr-1"></i>
@@ -60,7 +55,6 @@
                     @enderror
                 </div>
 
-                {{-- Mobil --}}
                 <div class="md:col-span-2">
                     <label for="mobil_id" class="block text-sm font-semibold text-gray-700 mb-2">
                         <i class="fas fa-bus-alt text-gray-400 mr-1"></i>
@@ -69,12 +63,14 @@
                     <select id="mobil_id" name="mobil_id" required
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
                         <option value="">-- Pilih Mobil --</option>
+
                         @foreach ($mobils as $mobil)
                             <option value="{{ $mobil->id }}"
                                 {{ old('mobil_id', $supir->mobil_id) == $mobil->id ? 'selected' : '' }}>
                                 {{ $mobil->merk }} - {{ $mobil->nomor_polisi }} ({{ $mobil->jenis }})
                             </option>
                         @endforeach
+
                     </select>
                     @error('mobil_id')
                         <p class="mt-1 text-sm text-red-600 flex items-center gap-1">
@@ -85,7 +81,6 @@
                 </div>
             </div>
 
-            {{-- Action Buttons --}}
             <div class="flex items-center gap-3 mt-8 pt-6 border-t border-gray-200">
                 <button type="submit"
                     class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all">
@@ -99,5 +94,6 @@
                 </a>
             </div>
         </form>
+
     </div>
 @endsection

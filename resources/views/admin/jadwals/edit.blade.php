@@ -12,9 +12,7 @@
             </div>
         </h1>
     </div>
-
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-4xl">
-        <!-- Header Form -->
         <div class="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-200">
             <h2 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
                 <i class="fas fa-clipboard-list text-blue-600"></i>
@@ -22,13 +20,11 @@
             </h2>
         </div>
 
-        <!-- Form Body -->
         <form id="formJadwalEdit" action="{{ route('admin.jadwals.update', $jadwal) }}" method="POST" class="p-6">
             @csrf
             @method('PUT')
-
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {{-- Rute --}}
+
                 <div class="md:col-span-2">
                     <label for="rute_id" class="block text-sm font-semibold text-gray-700 mb-2">
                         <i class="fas fa-route text-gray-400 mr-1"></i>
@@ -37,12 +33,14 @@
                     <select id="rute_id" name="rute_id" required
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
                         <option value="" disabled>-- Pilih Rute --</option>
+
                         @foreach ($rutes as $rute)
                             <option value="{{ $rute->id }}"
                                 {{ old('rute_id', $jadwal->rute_id) == $rute->id ? 'selected' : '' }}>
                                 {{ $rute->kota_asal }} → {{ $rute->kota_tujuan }} ({{ $rute->jarak_estimasi }})
                             </option>
                         @endforeach
+
                     </select>
                     @error('rute_id')
                         <p class="mt-1 text-sm text-red-600 flex items-center gap-1">
@@ -52,7 +50,6 @@
                     @enderror
                 </div>
 
-                {{-- Mobil --}}
                 <div class="md:col-span-2">
                     <label for="mobil_id" class="block text-sm font-semibold text-gray-700 mb-2">
                         <i class="fas fa-bus text-gray-400 mr-1"></i>
@@ -61,16 +58,20 @@
                     <select id="mobil_id" name="mobil_id" required
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
                         <option value="" disabled>-- Pilih Mobil --</option>
+
                         @foreach ($mobils as $mobil)
                             <option value="{{ $mobil->id }}"
                                 {{ old('mobil_id', $jadwal->mobil_id) == $mobil->id ? 'selected' : '' }}
                                 data-status="{{ $mobil->status }}">
                                 {{ $mobil->merk }} - {{ $mobil->nomor_polisi }} ({{ $mobil->kapasitas }} kursi)
+
                                 @if ($mobil->status !== 'tersedia')
                                     - [{{ strtoupper($mobil->status) }}]
                                 @endif
+
                             </option>
                         @endforeach
+
                     </select>
                     @error('mobil_id')
                         <p class="mt-1 text-sm text-red-600 flex items-center gap-1">
@@ -80,7 +81,6 @@
                     @enderror
                 </div>
 
-                {{-- Tanggal --}}
                 <div>
                     <label for="tanggal" class="block text-sm font-semibold text-gray-700 mb-2">
                         <i class="fas fa-calendar-day text-gray-400 mr-1"></i>
@@ -97,14 +97,15 @@
                     @enderror
                 </div>
 
-                {{-- Jam --}}
                 <div>
                     <label for="jam" class="block text-sm font-semibold text-gray-700 mb-2">
                         <i class="fas fa-clock text-gray-400 mr-1"></i>
                         Waktu Keberangkatan
                     </label>
-                    <input type="time" id="jam" name="jam" value="{{ old('jam', $jadwal->jam) }}" required
+                    <select id="jam" name="jam" required
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
+                        <option value="{{ old('jam', $jadwal->jam) }}" selected>{{ old('jam', $jadwal->jam) }}</option>
+                    </select>
                     @error('jam')
                         <p class="mt-1 text-sm text-red-600 flex items-center gap-1">
                             <i class="fas fa-exclamation-circle"></i>
@@ -113,7 +114,6 @@
                     @enderror
                 </div>
 
-                {{-- Harga --}}
                 <div class="md:col-span-2">
                     <label for="harga" class="block text-sm font-semibold text-gray-700 mb-2">
                         <i class="fas fa-money-bill-wave text-gray-400 mr-1"></i>
@@ -140,7 +140,6 @@
                 </div>
             </div>
 
-            {{-- Action Buttons --}}
             <div class="flex items-center gap-3 mt-8 pt-6 border-t border-gray-200">
                 <button type="submit"
                     class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all">
@@ -154,5 +153,6 @@
                 </a>
             </div>
         </form>
+
     </div>
 @endsection

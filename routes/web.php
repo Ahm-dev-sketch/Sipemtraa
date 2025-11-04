@@ -35,6 +35,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // AJAX untuk kursi realtime
     Route::get('/jadwal/{id}/seats', [BookingController::class, 'getSeats'])->name('jadwal.seats');
 
+    // API untuk rute data (with rate limiting)
+    Route::middleware('throttle:60,1')->group(function () {
+        Route::get('/api/rute/{id}', [AdminController::class, 'getRuteData'])->name('api.rute.data');
+        Route::get('/api/rute/{id}/jam', [AdminController::class, 'getJamKeberangkatan'])->name('api.rute.jam');
+    });
 
     // Kelola Pelanggan
     Route::get('/pelanggan', [AdminController::class, 'pelanggan'])->name('pelanggan');

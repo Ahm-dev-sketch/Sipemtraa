@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
 @section('page-title', 'Data Pemesanan')
+
 @section('page-subtitle', 'Kelola dan monitor booking pelanggan')
 
 @section('content')
-    <!-- Search and Filter Bar -->
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
+
         <form method="GET" action="{{ route('admin.bookings') }}" class="flex flex-col md:flex-row gap-3">
-            <!-- Search Input -->
             <div class="flex-1">
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -22,8 +22,6 @@
                         class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
                 </div>
             </div>
-
-            <!-- Status Filter -->
             <div class="w-full md:w-40">
                 <select name="status" id="status"
                     class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white">
@@ -33,21 +31,19 @@
                     <option value="batal" {{ request('status') == 'batal' ? 'selected' : '' }}>Dibatalkan</option>
                 </select>
             </div>
-
-            <!-- Route Filter -->
             <div class="w-full md:w-48">
                 <select name="rute_id" id="rute_id"
                     class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white">
                     <option value="">Semua Rute</option>
+
                     @foreach ($rutes ?? [] as $rute)
                         <option value="{{ $rute->id }}" {{ request('rute_id') == $rute->id ? 'selected' : '' }}>
                             {{ $rute->kota_asal }} - {{ $rute->kota_tujuan }}
                         </option>
                     @endforeach
+
                 </select>
             </div>
-
-            <!-- Buttons -->
             <div class="flex gap-2">
                 <button type="submit"
                     class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium flex items-center transition-colors">
@@ -68,9 +64,9 @@
                 </a>
             </div>
         </form>
+
     </div>
 
-    {{-- Desktop View - Table --}}
     <div
         class="hidden lg:block bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden fade-up animate-on-scroll">
         <div class="overflow-x-auto">
@@ -94,6 +90,7 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
+
                     @foreach ($bookings as $booking)
                         <tr class="hover:bg-blue-50 transition-colors duration-150">
                             <td class="px-6 py-4 whitespace-nowrap">
@@ -161,6 +158,7 @@
                                     : ($booking->status == 'batal'
                                         ? 'bg-red-100 text-red-700'
                                         : 'bg-yellow-100 text-yellow-700') }}">
+
                                     @if ($booking->status == 'setuju')
                                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd"
@@ -180,15 +178,18 @@
                                                 clip-rule="evenodd" />
                                         </svg>
                                     @endif
+
                                     {{ ucfirst($booking->status) }}
                                 </span>
                             </td>
                             <td class="px-4 py-2 border border-white">
+
                                 <form action="{{ route('admin.bookings.update', $booking->id) }}" method="POST"
                                     class="flex items-center justify-center gap-2">
                                     @csrf @method('PUT')
                                     <input type="hidden" name="status" id="status_{{ $booking->id }}"
                                         value="">
+
                                     @if ($booking->status !== 'batal' && $booking->payment_status !== 'sudah_bayar')
                                         <button type="submit"
                                             onclick="document.getElementById('status_{{ $booking->id }}').value='setuju'"
@@ -213,19 +214,22 @@
                                     @else
                                         <span class="text-gray-500 text-sm">No Action</span>
                                     @endif
+
                                 </form>
+
                             </td>
                         </tr>
                     @endforeach
+
                 </tbody>
             </table>
         </div>
 
-        {{-- Mobile View - Cards --}}
         <div class="lg:hidden space-y-4 fade-up animate-on-scroll">
+
             @foreach ($bookings as $booking)
                 <div class="bg-white rounded-lg shadow-md border border-gray-200 p-4">
-                    {{-- User Info --}}
+
                     <div class="flex items-center gap-2 mb-3 pb-3 border-b border-gray-200">
                         <svg class="w-5 h-5 text-blue-600 shrink-0" fill="none" stroke="currentColor"
                             viewBox="0 0 24 24">
@@ -238,6 +242,7 @@
                         <span
                             class="px-3 py-1 rounded-full text-xs font-semibold inline-flex items-center gap-1
                         {{ $booking->status == 'setuju' ? 'bg-green-100 text-green-700' : ($booking->status == 'batal' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700') }}">
+
                             @if ($booking->status == 'setuju')
                                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd"
@@ -257,11 +262,11 @@
                                         clip-rule="evenodd" />
                                 </svg>
                             @endif
+
                             {{ ucfirst($booking->status) }}
                         </span>
                     </div>
 
-                    {{-- Booking Details --}}
                     <div class="space-y-2 mb-3">
                         <div class="flex items-center gap-2 text-sm">
                             <svg class="w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor"
@@ -278,7 +283,6 @@
                                 {{ $booking->jadwal->rute ? $booking->jadwal->rute->kota_tujuan : '-' }}
                             </span>
                         </div>
-
                         <div class="flex items-center gap-2 text-sm">
                             <svg class="w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
@@ -289,7 +293,6 @@
                             <span class="text-gray-600">Tanggal:</span>
                             <span class="font-medium text-gray-900">{{ $booking->jadwal_tanggal }}</span>
                         </div>
-
                         <div class="flex items-center gap-2 text-sm">
                             <svg class="w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
@@ -300,7 +303,6 @@
                             <span
                                 class="font-medium text-gray-900">{{ $booking->jadwal ? $booking->jadwal->jam : '-' }}</span>
                         </div>
-
                         <div class="flex items-center gap-2 text-sm">
                             <svg class="w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
@@ -312,7 +314,6 @@
                                 {{ $booking->jadwal->mobil ? $booking->jadwal->mobil->merk . ' (' . $booking->jadwal->mobil->nomor_polisi . ')' : '-' }}
                             </span>
                         </div>
-
                         <div class="flex items-center gap-2 text-sm">
                             <svg class="w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
@@ -325,12 +326,13 @@
                         </div>
                     </div>
 
-                    {{-- Actions --}}
                     <div class="pt-3 border-t border-gray-100">
+
                         <form action="{{ route('admin.bookings.update', $booking->id) }}" method="POST"
                             class="flex items-center justify-center gap-2">
                             @csrf @method('PUT')
                             <input type="hidden" name="status" id="status_mobile_{{ $booking->id }}" value="">
+
                             @if ($booking->status !== 'batal' && $booking->payment_status !== 'sudah_bayar')
                                 <button type="submit"
                                     onclick="document.getElementById('status_mobile_{{ $booking->id }}').value='setuju'"
@@ -355,14 +357,16 @@
                             @else
                                 <span class="text-gray-500 text-sm">No Action</span>
                             @endif
+
                         </form>
+
                     </div>
                 </div>
             @endforeach
+
         </div>
 
-        {{-- Pagination --}}
         <div class="mt-6 flex justify-end">
-            {{ $bookings->links() }}
+            {{ $bookings->links('pagination::tailwind') }}
         </div>
     @endsection

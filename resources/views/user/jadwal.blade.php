@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-    <!-- Page Header -->
     <div class="mb-8 fade-down animate-on-scroll">
         <div class="flex items-center gap-3 mb-2">
             <div class="w-1 h-8 bg-gradient-to-b from-blue-500 via-indigo-500 to-purple-600 rounded-full"></div>
@@ -13,11 +12,10 @@
         <p class="text-gray-600 ml-7">Temukan jadwal perjalanan yang sesuai dengan kebutuhan Anda</p>
     </div>
 
-    {{-- Modern Search Form --}}
+
     <form method="GET" action="{{ route('jadwal') }}" class="mb-8 fade-right animate-on-scroll">
         <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
             <div class="flex flex-col md:flex-row gap-4">
-                <!-- Search Input -->
                 <div class="relative flex-1">
                     <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
                         <i class="fas fa-search text-gray-400"></i>
@@ -28,8 +26,6 @@
                             focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500
                             transition-all duration-200 bg-gray-50 hover:bg-white">
                 </div>
-
-                <!-- Search Button -->
                 <button type="submit"
                     class="group px-8 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white
                         rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300
@@ -42,8 +38,8 @@
         </div>
     </form>
 
+
     @if ($jadwals->isEmpty())
-        <!-- Empty State -->
         <div class="fade-up animate-on-scroll">
             <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-12 text-center">
                 <div
@@ -62,25 +58,20 @@
             </div>
         </div>
     @else
-        {{-- Modern Schedule Cards --}}
         <div class="space-y-6 fade-up animate-on-scroll">
+
             @foreach ($jadwals as $jadwal)
                 <div
                     class="group bg-white rounded-2xl shadow-lg border border-gray-100 hover:shadow-2xl
                     transition-all duration-300 overflow-hidden hover:border-blue-200 hover:-translate-y-1">
-
                     <div class="p-6 md:p-8">
-                        {{-- Route Header with Journey Visual --}}
+
                         <div class="mb-6 pb-6 border-b border-gray-100">
-                            <!-- Route Title -->
                             <div class="flex items-center gap-2 mb-4">
                                 <div class="w-1 h-6 bg-gradient-to-b from-blue-500 to-indigo-600 rounded-full"></div>
                                 <h3 class="text-lg font-bold text-gray-900">Informasi Rute Perjalanan</h3>
                             </div>
-
-                            <!-- Journey Visual - Responsive -->
                             <div class="flex flex-col md:flex-row items-stretch md:items-center gap-4 mb-4">
-                                <!-- Departure -->
                                 <div class="flex-1">
                                     <div
                                         class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border-2 border-blue-200 h-full">
@@ -97,8 +88,6 @@
                                         </div>
                                     </div>
                                 </div>
-
-                                <!-- Journey Indicator -->
                                 <div class="flex md:flex-col items-center justify-center gap-2 px-4 py-2 md:py-0">
                                     <div class="flex md:flex-col items-center gap-2">
                                         <div
@@ -117,8 +106,6 @@
                                         Langsung
                                     </span>
                                 </div>
-
-                                <!-- Destination -->
                                 <div class="flex-1">
                                     <div
                                         class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-4 border-2 border-purple-200 h-full">
@@ -136,8 +123,6 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Additional Route Info -->
                             <div class="flex flex-wrap items-center justify-center gap-3 md:gap-4 text-sm text-gray-600">
                                 <div class="flex items-center gap-2">
                                     <i class="fas fa-road text-blue-600"></i>
@@ -156,9 +141,8 @@
                             </div>
                         </div>
 
-                        {{-- Schedule Info Grid --}}
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                            {{-- Date Card --}}
+
                             <div
                                 class="flex items-center gap-4 p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
                                 <div
@@ -173,7 +157,6 @@
                                 </div>
                             </div>
 
-                            {{-- Time Card --}}
                             <div
                                 class="flex items-center gap-4 p-4 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl border border-indigo-100">
                                 <div
@@ -187,7 +170,6 @@
                                 </div>
                             </div>
 
-                            {{-- Seats Card --}}
                             <div
                                 class="flex items-center gap-4 p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl border border-purple-100">
                                 <div
@@ -203,7 +185,6 @@
                             </div>
                         </div>
 
-                        {{-- Price & Action --}}
                         <div
                             class="flex flex-col md:flex-row items-center justify-between gap-4 pt-6 border-t border-gray-100">
                             <div class="flex items-center gap-3">
@@ -218,8 +199,8 @@
                                     </span>
                                 </div>
                             </div>
-
                             @auth
+
                                 @if (auth()->user()->role === 'user')
                                     <a href="{{ route('booking.quick', $jadwal->id) }}"
                                         class="group inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600
@@ -253,13 +234,14 @@
                     </div>
                 </div>
             @endforeach
+
         </div>
 
-        {{-- Modern Pagination --}}
         <div class="mt-8 flex justify-center fade-up animate-on-scroll">
             <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-2">
-                {{ $jadwals->links() }}
+                {{ $jadwals->links('pagination::tailwind') }}
             </div>
         </div>
     @endif
+
 @endsection

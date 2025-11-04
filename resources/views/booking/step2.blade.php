@@ -3,17 +3,12 @@
 @section('content')
     <div class="min-h-screen py-8">
         <div class="max-w-6xl mx-auto px-4">
-            <!-- Modern Progress Indicator -->
             <div class="mb-8 fade-down animate-on-scroll">
                 <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
                     <div class="flex items-center justify-between relative">
-                        <!-- Progress Line Background -->
                         <div class="absolute top-6 left-0 right-0 h-1 bg-gray-200 -z-10"></div>
-                        <!-- Active Progress Line -->
                         <div class="absolute top-6 left-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-600 to-indigo-600 transition-all duration-500 -z-10"
                             style="width: 50%"></div>
-
-                        <!-- Step 1 - Completed -->
                         <div class="flex flex-col items-center flex-1 relative">
                             <div
                                 class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-full flex items-center justify-center font-bold shadow-lg mb-2 ring-4 ring-green-100">
@@ -22,8 +17,6 @@
                             <span class="text-sm font-semibold text-green-600">Pilih Perjalanan</span>
                             <span class="text-xs text-gray-500 mt-1">Selesai</span>
                         </div>
-
-                        <!-- Step 2 - Active -->
                         <div class="flex flex-col items-center flex-1 relative">
                             <div
                                 class="w-12 h-12 bg-gradient-to-br from-indigo-600 to-purple-600 text-white rounded-full flex items-center justify-center font-bold shadow-lg mb-2 ring-4 ring-indigo-100">
@@ -32,8 +25,6 @@
                             <span class="text-sm font-semibold text-indigo-600">Pilih Jadwal</span>
                             <span class="text-xs text-gray-500 mt-1">Step 2 dari 3</span>
                         </div>
-
-                        <!-- Step 3 - Inactive -->
                         <div class="flex flex-col items-center flex-1 relative">
                             <div
                                 class="w-12 h-12 bg-gray-200 text-gray-400 rounded-full flex items-center justify-center font-bold shadow mb-2">
@@ -45,8 +36,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Step 1 Summary -->
             <div
                 class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl shadow border border-blue-100 mb-6 p-6 fade-right animate-on-scroll">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -84,10 +73,7 @@
                     </a>
                 </div>
             </div>
-
-            <!-- Main Content -->
             <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 md:p-8 fade-up animate-on-scroll">
-                <!-- Header -->
                 <div class="text-center mb-8">
                     <div
                         class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full mb-4">
@@ -115,13 +101,12 @@
                     </div>
                 @else
                     <div class="grid gap-6">
+
                         @foreach ($jadwals as $jadwal)
                             <div
                                 class="group border-2 border-gray-100 rounded-2xl p-6 hover:border-indigo-300 hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-white to-gray-50">
                                 <div class="flex flex-col lg:flex-row gap-6">
-                                    <!-- Journey Info -->
                                     <div class="flex-1">
-                                        <!-- Route Header -->
                                         <div class="flex items-center gap-3 mb-4">
                                             <div
                                                 class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
@@ -139,10 +124,7 @@
                                                 </div>
                                             </div>
                                         </div>
-
-                                        <!-- Details Grid -->
                                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                            <!-- Date -->
                                             <div class="bg-white rounded-xl p-3 shadow-sm border border-gray-100">
                                                 <div class="flex items-center gap-2 mb-1">
                                                     <i class="fas fa-calendar text-blue-600"></i>
@@ -152,8 +134,6 @@
                                                     {{ \Carbon\Carbon::parse($jadwal->tanggal)->format('d M Y') }}
                                                 </div>
                                             </div>
-
-                                            <!-- Time -->
                                             <div class="bg-white rounded-xl p-3 shadow-sm border border-gray-100">
                                                 <div class="flex items-center gap-2 mb-1">
                                                     <i class="fas fa-clock text-indigo-600"></i>
@@ -163,8 +143,6 @@
                                                     {{ $jadwal->jam }}
                                                 </div>
                                             </div>
-
-                                            <!-- Vehicle -->
                                             <div class="bg-white rounded-xl p-3 shadow-sm border border-gray-100">
                                                 <div class="flex items-center gap-2 mb-1">
                                                     <i class="fas fa-car text-purple-600"></i>
@@ -174,8 +152,6 @@
                                                     {{ $jadwal->mobil->merk ?? 'N/A' }}
                                                 </div>
                                             </div>
-
-                                            <!-- Price -->
                                             <div
                                                 class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-3 shadow-sm border border-green-200">
                                                 <div class="flex items-center gap-2 mb-1">
@@ -188,8 +164,6 @@
                                                 </div>
                                             </div>
                                         </div>
-
-                                        <!-- Facilities -->
                                         <div class="mt-4 flex flex-wrap gap-2">
                                             <span
                                                 class="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
@@ -209,9 +183,8 @@
                                             </span>
                                         </div>
                                     </div>
-
-                                    <!-- Action Button -->
                                     <div class="flex items-center justify-center lg:justify-end">
+
                                         <form action="{{ route('booking.step2.process') }}" method="POST">
                                             @csrf
                                             <input type="hidden" name="jadwal_id" value="{{ $jadwal->id }}">
@@ -222,12 +195,15 @@
                                                     class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
                                             </button>
                                         </form>
+
                                     </div>
                                 </div>
                             </div>
                         @endforeach
+
                     </div>
                 @endif
+
             </div>
         </div>
     </div>

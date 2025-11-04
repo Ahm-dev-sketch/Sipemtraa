@@ -156,6 +156,84 @@ class FonnteService
     }
 
     /**
+     * Kirim notifikasi pembatalan booking ke admin
+     *
+     * @param \App\Models\Booking $booking
+     * @return array
+     */
+    public function notifyAdminCancellation($booking)
+    {
+        $adminNumber = config('services.fonnte.admin_number');
+
+        $user = $booking->user;
+        $jadwal = $booking->jadwal;
+        $rute = $jadwal->rute;
+        $mobil = $jadwal->mobil;
+
+        $message = "🚫 *PEMBATALAN BOOKING*\n\n"
+            . "━━━━━━━━━━━━━━━━━━\n"
+            . "👤 *Pelanggan*\n"
+            . "Nama: {$user->name}\n"
+            . "WA: {$user->whatsapp_number}\n\n"
+            . "🚗 *Detail Perjalanan*\n"
+            . "Rute: {$rute->kota_asal} → {$rute->kota_tujuan}\n"
+            . "Tanggal: {$jadwal->tanggal}\n"
+            . "Jam: {$jadwal->jam}\n"
+            . "Kursi: {$booking->seat_number}\n"
+            . "Mobil: {$mobil->merk} ({$mobil->nomor_polisi})\n"
+            . "━━━━━━━━━━━━━━━━━━\n\n"
+            . "💰 Harga: Rp " . number_format($jadwal->harga, 0, ',', '.') . "\n"
+            . "📋 Status: *DIBATALKAN oleh User*\n"
+            . "🕐 Waktu: " . now()->format('d/m/Y H:i') . "\n\n"
+            . "⚠️ Kursi sekarang tersedia kembali.";
+
+        return $this->sendMessage($adminNumber, $message);
+    }
+
+    /**
+     * Kirim notifikasi ke admin tentang booking yang di-cancel otomatis
+     * karena expired (lebih dari 30 menit tidak ada aksi admin)
+     *
+     * @param \App\Models\Booking $booking
+     * @return array Response dari Fonnte API
+     */
+    public function notifyAdminAutoCancellation($booking)
+    {
+        $adminNumber = config('services.fonnte.admin_number');
+
+        $user = $booking->user;
+        $jadwal = $booking->jadwal;
+        $rute = $jadwal->rute;
+        $mobil = $jadwal->mobil;
+
+        $expiryMinutes = config('booking.pending_expiry_minutes', 30);
+        $createdAt = $booking->created_at->format('d/m/Y H:i');
+
+        $message = "⏰ *AUTO-CANCEL: BOOKING EXPIRED*\n\n"
+            . "━━━━━━━━━━━━━━━━━━\n"
+            . "⚠️ Booking otomatis dibatalkan karena\n"
+            . "tidak ada tindakan admin dalam {$expiryMinutes} menit.\n\n"
+            . "👤 *Pelanggan*\n"
+            . "Nama: {$user->name}\n"
+            . "WA: {$user->whatsapp_number}\n\n"
+            . "🚗 *Detail Perjalanan*\n"
+            . "Rute: {$rute->kota_asal} → {$rute->kota_tujuan}\n"
+            . "Tanggal: {$jadwal->tanggal}\n"
+            . "Jam: {$jadwal->jam}\n"
+            . "Kursi: {$booking->seat_number}\n"
+            . "Mobil: {$mobil->merk} ({$mobil->nomor_polisi})\n"
+            . "━━━━━━━━━━━━━━━━━━\n\n"
+            . "💰 Harga: Rp " . number_format($jadwal->harga, 0, ',', '.') . "\n"
+            . "📋 Ticket: {$booking->ticket_number}\n"
+            . "📅 Dibuat: {$createdAt}\n"
+            . "🕐 Auto-Cancel: " . now()->format('d/m/Y H:i') . "\n\n"
+            . "⚠️ Kursi kembali tersedia.\n"
+            . "💡 *Tips*: Proses booking lebih cepat untuk menghindari auto-cancel.";
+
+        return $this->sendMessage($adminNumber, $message);
+    }
+
+    /**
      * Format nomor WhatsApp ke format internasional
      *
      * @param string $number
@@ -171,7 +249,7 @@ class FonnteService
             $number = '62' . substr($number, 1);
         }
 
-        // Jika tidak diawali 62, tambahkan 62
+        // Jika tidak diawali dengan 62, tambahkan 62
         if (substr($number, 0, 2) !== '62') {
             $number = '62' . $number;
         }

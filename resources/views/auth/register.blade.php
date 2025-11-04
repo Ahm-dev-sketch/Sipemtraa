@@ -2,11 +2,8 @@
 
 @section('content')
     <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-        <!-- Animated Background -->
         <div class="absolute inset-0 bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 -z-10"></div>
         <div class="absolute inset-0 bg-grid-pattern opacity-5 -z-10"></div>
-
-        <!-- Floating Elements -->
         <div
             class="absolute top-20 left-10 w-72 h-72 bg-green-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob">
         </div>
@@ -16,13 +13,11 @@
         <div
             class="absolute -bottom-8 left-20 w-72 h-72 bg-teal-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000">
         </div>
-
         <div class="max-w-6xl w-full">
             <div class="bg-white rounded-3xl shadow-2xl overflow-hidden fade-up animate-on-scroll">
                 <div class="flex flex-col md:flex-row">
-                    {{-- Left side: Form --}}
+
                     <div class="md:w-1/2 p-8 md:p-12 fade-right animate-on-scroll">
-                        <!-- Header -->
                         <div class="mb-8">
                             <div
                                 class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-100 to-emerald-100 rounded-2xl mb-4">
@@ -41,26 +36,28 @@
                             </p>
                         </div>
 
-                        {{-- Error Messages --}}
+
                         @if ($errors->any())
                             <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg">
                                 <div class="flex items-start gap-3">
                                     <i class="fas fa-exclamation-circle text-red-500 mt-1"></i>
                                     <div class="flex-1">
                                         <ul class="space-y-1">
+
                                             @foreach ($errors->all() as $error)
                                                 <li class="text-sm text-red-700">{{ $error }}</li>
                                             @endforeach
+
                                         </ul>
                                     </div>
                                 </div>
                             </div>
                         @endif
 
+
                         <form method="POST" action="{{ route('register') }}" class="space-y-5">
                             @csrf
 
-                            {{-- Name --}}
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">
                                     <i class="fas fa-user mr-1 text-green-600"></i>
@@ -83,7 +80,6 @@
                                 @enderror
                             </div>
 
-                            {{-- WhatsApp Number --}}
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">
                                     <i class="fas fa-phone mr-1 text-emerald-600"></i>
@@ -106,7 +102,6 @@
                                 @enderror
                             </div>
 
-                            {{-- Password --}}
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">
                                     <i class="fas fa-lock mr-1 text-teal-600"></i>
@@ -129,7 +124,6 @@
                                 @enderror
                             </div>
 
-                            {{-- Konfirmasi Password --}}
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">
                                     <i class="fas fa-check-circle mr-1 text-green-600"></i>
@@ -147,7 +141,6 @@
                                 </div>
                             </div>
 
-                            {{-- Submit Button --}}
                             <button type="submit"
                                 class="group w-full py-4 px-6 bg-gradient-to-r from-green-600 to-emerald-600
                                     text-white rounded-xl hover:from-green-700 hover:to-emerald-700
@@ -158,7 +151,7 @@
                             </button>
                         </form>
 
-                        {{-- Additional Info --}}
+
                         <div class="mt-6 pt-6 border-t border-gray-200">
                             <p class="text-center text-sm text-gray-600">
                                 Dengan mendaftar, Anda menyetujui
@@ -167,29 +160,21 @@
                         </div>
                     </div>
 
-                    {{-- Right side: Illustration --}}
                     <div
                         class="md:w-1/2 bg-gradient-to-br from-green-600 via-emerald-600 to-teal-600 flex flex-col justify-center items-center p-8 md:p-12 text-white relative overflow-hidden fade-left animate-on-scroll">
-                        <!-- Decorative Elements -->
                         <div class="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-32 -mt-32"></div>
                         <div class="absolute bottom-0 left-0 w-96 h-96 bg-white opacity-5 rounded-full -ml-48 -mb-48"></div>
-
                         <div class="relative z-10 text-center">
-                            <!-- Icon -->
                             <div
                                 class="inline-flex items-center justify-center w-32 h-32 bg-white/10 backdrop-blur-sm rounded-3xl mb-8 border-2 border-white/20 shadow-2xl">
                                 <i class="fas fa-user-check text-7xl"></i>
                             </div>
-
-                            <!-- Title -->
                             <h3 class="text-3xl md:text-4xl font-bold mb-4">
                                 Bergabung Bersama Kami
                             </h3>
                             <p class="text-xl text-green-100 mb-8">
                                 Mulai Perjalanan Anda
                             </p>
-
-                            <!-- Benefits -->
                             <div class="space-y-4 text-left max-w-xs mx-auto">
                                 <div class="flex items-start gap-3">
                                     <div class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center shrink-0">

@@ -10,7 +10,6 @@
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
-/* Animasi Scroll dengan Intersection Observer - Optimized for CLS */
 .animate-on-scroll {
     opacity: 0;
     transition: opacity 0.6s ease;
@@ -21,7 +20,6 @@
     opacity: 1;
 }
 
-/* Exception: Hero images should load instantly */
 img[fetchpriority="high"] {
     opacity: 1 !important;
     transition: none !important;
@@ -60,7 +58,6 @@ img[fetchpriority="high"] {
     transform: translateX(0);
 }
 
-/* Custom Scrollbar for Sidebar */
 .scrollbar-thin::-webkit-scrollbar {
     width: 6px;
 }
@@ -78,33 +75,28 @@ img[fetchpriority="high"] {
     background: rgba(71, 85, 105, 0.8);
 }
 
-/* Firefox scrollbar */
 .scrollbar-thin {
     scrollbar-width: thin;
     scrollbar-color: rgba(71, 85, 105, 0.5) transparent;
 }
 
-/* Mobile optimizations */
 * {
     -webkit-tap-highlight-color: transparent;
 }
 
 @media (max-width: 768px) {
 
-    /* Better touch targets */
     button,
     a {
         min-height: 44px;
         min-width: 44px;
     }
 
-    /* Better table scrolling */
     .overflow-x-auto {
         -webkit-overflow-scrolling: touch;
     }
 }
 
-/* Blob Animation for Hero Section */
 @keyframes blob {
     0% {
         transform: translate(0px, 0px) scale(1);
@@ -136,7 +128,6 @@ img[fetchpriority="high"] {
     animation-delay: 4s;
 }
 
-/* Hero Section Entrance Animations - Page Load Only */
 @keyframes fadeInRight {
     from {
         opacity: 0;
@@ -174,7 +165,6 @@ img[fetchpriority="high"] {
     will-change: opacity, transform;
 }
 
-/* Scale-in animation for images */
 @keyframes scaleIn {
     from {
         opacity: 0;
@@ -193,7 +183,6 @@ img[fetchpriority="high"] {
     opacity: 0;
 }
 
-/* Image optimization - prevent CLS and optimize loading */
 img {
     max-width: 100%;
     height: auto;
@@ -205,4 +194,31 @@ img[width][height] {
 
 img[fetchpriority="high"] {
     content-visibility: auto;
+}
+
+
+img {
+    max-width: 100%;
+    height: auto;
+    content-visibility: auto;
+}
+
+img[width][height] {
+    aspect-ratio: attr(width) / attr(height);
+}
+
+
+img[fetchpriority="high"] {
+    opacity: 1 !important;
+    animation: none !important;
+}
+
+img {
+    opacity: 0;
+    transition: opacity 0.1s ease-in;
+}
+
+img.loaded,
+img[fetchpriority="high"] {
+    opacity: 1;
 }

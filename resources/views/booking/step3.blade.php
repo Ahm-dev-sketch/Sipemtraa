@@ -3,17 +3,12 @@
 @section('content')
     <div class="min-h-screen py-8">
         <div class="max-w-4xl mx-auto px-4">
-            <!-- Modern Progress Indicator -->
             <div class="mb-8 fade-down animate-on-scroll">
                 <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
                     <div class="flex items-center justify-between relative">
-                        <!-- Progress Line Background -->
                         <div class="absolute top-6 left-0 right-0 h-1 bg-gray-200 -z-10"></div>
-                        <!-- Active Progress Line -->
                         <div class="absolute top-6 left-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 transition-all duration-500 -z-10"
                             style="width: 100%"></div>
-
-                        <!-- Step 1 - Completed -->
                         <div class="flex flex-col items-center flex-1 relative">
                             <div
                                 class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-full flex items-center justify-center font-bold shadow-lg mb-2 ring-4 ring-green-100">
@@ -22,8 +17,6 @@
                             <span class="text-sm font-semibold text-green-600">Pilih Perjalanan</span>
                             <span class="text-xs text-gray-500 mt-1">Selesai</span>
                         </div>
-
-                        <!-- Step 2 - Completed -->
                         <div class="flex flex-col items-center flex-1 relative">
                             <div
                                 class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-full flex items-center justify-center font-bold shadow-lg mb-2 ring-4 ring-green-100">
@@ -32,8 +25,6 @@
                             <span class="text-sm font-semibold text-green-600">Pilih Jadwal</span>
                             <span class="text-xs text-gray-500 mt-1">Selesai</span>
                         </div>
-
-                        <!-- Step 3 - Active -->
                         <div class="flex flex-col items-center flex-1 relative">
                             <div
                                 class="w-12 h-12 bg-gradient-to-br from-purple-600 to-pink-600 text-white rounded-full flex items-center justify-center font-bold shadow-lg mb-2 ring-4 ring-purple-100">
@@ -45,8 +36,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Booking Summary -->
             <div
                 class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl shadow-lg border border-purple-100 mb-6 p-6 fade-right animate-on-scroll">
                 <div class="flex items-center gap-3 mb-4">
@@ -108,10 +97,7 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Main Content -->
             <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 md:p-8 fade-up animate-on-scroll">
-                <!-- Header -->
                 <div class="text-center mb-8">
                     <div
                         class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full mb-4">
@@ -123,10 +109,7 @@
                     </h1>
                     <p class="text-gray-600">Pilih kursi yang ingin dipesan (maksimal 7 kursi per transaksi)</p>
                 </div>
-
-                <!-- Seat Layout -->
                 <div class="mb-8 fade-up animate-on-scroll">
-                    <!-- Legend -->
                     <div class="bg-gradient-to-r from-gray-50 to-slate-50 rounded-xl p-4 mb-6 border border-gray-200">
                         <div class="flex items-center gap-2 mb-3">
                             <i class="fas fa-info-circle text-blue-600"></i>
@@ -167,39 +150,31 @@
                     <form id="seat-form" action="{{ route('booking.step3.process') }}" method="POST"
                         data-price-per-seat="{{ $jadwal->harga }}">
                         @csrf
-
-                        <!-- Layout Interior Mobil Hiace -->
                         <div class="flex justify-center mb-6">
                             <div class="relative bg-gradient-to-b from-gray-700 to-gray-800 rounded-3xl p-12 shadow-2xl border-4 border-gray-900"
                                 style="width: 380px;">
-                                <!-- Dashboard/Depan Mobil -->
                                 <div
                                     class="absolute top-0 left-0 right-0 h-8 bg-gray-900 rounded-t-3xl border-b-2 border-gray-600">
                                 </div>
-
-                                <!-- Windshield (Kaca Depan) -->
                                 <div
                                     class="absolute top-8 left-8 right-8 h-2 bg-gradient-to-r from-transparent via-blue-300 to-transparent opacity-40 rounded">
                                 </div>
-
-                                <!-- Grid Layout Kursi -->
                                 <div class="inline-grid gap-4 mt-6" style="grid-template-columns: 64px 64px 64px 64px;">
-
-                                    <!-- Baris 1: Kursi 1 | KOSONG | KOSONG | Supir -->
                                     <label class="cursor-pointer transform transition-all hover:scale-105">
                                         <input type="checkbox" name="seats[]" value="1" id="seat-1"
                                             class="hidden seat-checkbox"
                                             {{ in_array('1', $bookedSeats) ? 'disabled' : '' }}>
                                         <div
                                             class="w-16 h-16 flex items-center justify-center rounded-xl border-3 font-bold shadow-lg transition-all
-        @if (in_array('1', $bookedSeats)) bg-red-600 text-white border-red-700 cursor-not-allowed shadow-red-500/50
+
+@if (in_array('1', $bookedSeats)) bg-red-600 text-white border-red-700 cursor-not-allowed shadow-red-500/50
         @else
-            bg-gradient-to-br from-blue-400 to-blue-500 text-white border-blue-600 hover:from-blue-500 hover:to-blue-600 hover:shadow-xl hover:shadow-blue-500/50 @endif">
+            bg-gradient-to-br from-blue-400 to-blue-500 text-white border-blue-600 hover:from-blue-500 hover:to-blue-600 hover:shadow-xl hover:shadow-blue-500/50 @endif
+">
                                             <span class="text-lg">1</span>
                                         </div>
                                     </label>
                                     <div class="relative">
-                                        <!-- Lorong/Aisle Indicator -->
                                         <div class="w-16 h-16 flex items-center justify-center">
                                             <div class="w-1 h-12 bg-gray-600 rounded-full opacity-30"></div>
                                         </div>
@@ -214,13 +189,12 @@
                                         </svg>
                                         <span class="text-xs font-bold">SUPIR</span>
                                     </div>
-
-                                    <!-- Baris 2: KOSONG | 2 | 3 | 4 -->
                                     <div class="relative">
                                         <div class="w-16 h-16 flex items-center justify-center">
                                             <div class="w-1 h-12 bg-gray-600 rounded-full opacity-30"></div>
                                         </div>
                                     </div>
+
                                     @foreach ([2, 3, 4] as $seat)
                                         <label class="cursor-pointer transform transition-all hover:scale-105">
                                             <input type="checkbox" name="seats[]" value="{{ $seat }}"
@@ -228,24 +202,27 @@
                                                 {{ in_array($seat, $bookedSeats) ? 'disabled' : '' }}>
                                             <div
                                                 class="w-16 h-16 flex items-center justify-center rounded-xl border-3 font-bold shadow-lg transition-all
-        @if (in_array($seat, $bookedSeats)) bg-red-600 text-white border-red-700 cursor-not-allowed shadow-red-500/50
+
+@if (in_array($seat, $bookedSeats)) bg-red-600 text-white border-red-700 cursor-not-allowed shadow-red-500/50
         @else
-            bg-gradient-to-br from-blue-400 to-blue-500 text-white border-blue-600 hover:from-blue-500 hover:to-blue-600 hover:shadow-xl hover:shadow-blue-500/50 @endif">
+            bg-gradient-to-br from-blue-400 to-blue-500 text-white border-blue-600 hover:from-blue-500 hover:to-blue-600 hover:shadow-xl hover:shadow-blue-500/50 @endif
+">
                                                 <span class="text-lg">{{ $seat }}</span>
                                             </div>
                                         </label>
                                     @endforeach
 
-                                    <!-- Baris 3: 5 | LORONG | 6 | 7 -->
                                     <label class="cursor-pointer transform transition-all hover:scale-105">
                                         <input type="checkbox" name="seats[]" value="5" id="seat-5"
                                             class="hidden seat-checkbox"
                                             {{ in_array('5', $bookedSeats) ? 'disabled' : '' }}>
                                         <div
                                             class="w-16 h-16 flex items-center justify-center rounded-xl border-3 font-bold shadow-lg transition-all
-        @if (in_array('5', $bookedSeats)) bg-red-600 text-white border-red-700 cursor-not-allowed shadow-red-500/50
+
+@if (in_array('5', $bookedSeats)) bg-red-600 text-white border-red-700 cursor-not-allowed shadow-red-500/50
         @else
-            bg-gradient-to-br from-blue-400 to-blue-500 text-white border-blue-600 hover:from-blue-500 hover:to-blue-600 hover:shadow-xl hover:shadow-blue-500/50 @endif">
+            bg-gradient-to-br from-blue-400 to-blue-500 text-white border-blue-600 hover:from-blue-500 hover:to-blue-600 hover:shadow-xl hover:shadow-blue-500/50 @endif
+">
                                             <span class="text-lg">5</span>
                                         </div>
                                     </label>
@@ -254,6 +231,7 @@
                                             <div class="w-1 h-12 bg-gray-600 rounded-full opacity-30"></div>
                                         </div>
                                     </div>
+
                                     @foreach ([6, 7] as $seat)
                                         <label class="cursor-pointer transform transition-all hover:scale-105">
                                             <input type="checkbox" name="seats[]" value="{{ $seat }}"
@@ -261,24 +239,27 @@
                                                 {{ in_array($seat, $bookedSeats) ? 'disabled' : '' }}>
                                             <div
                                                 class="w-16 h-16 flex items-center justify-center rounded-xl border-3 font-bold shadow-lg transition-all
-        @if (in_array($seat, $bookedSeats)) bg-red-600 text-white border-red-700 cursor-not-allowed shadow-red-500/50
+
+@if (in_array($seat, $bookedSeats)) bg-red-600 text-white border-red-700 cursor-not-allowed shadow-red-500/50
         @else
-            bg-gradient-to-br from-blue-400 to-blue-500 text-white border-blue-600 hover:from-blue-500 hover:to-blue-600 hover:shadow-xl hover:shadow-blue-500/50 @endif">
+            bg-gradient-to-br from-blue-400 to-blue-500 text-white border-blue-600 hover:from-blue-500 hover:to-blue-600 hover:shadow-xl hover:shadow-blue-500/50 @endif
+">
                                                 <span class="text-lg">{{ $seat }}</span>
                                             </div>
                                         </label>
                                     @endforeach
 
-                                    <!-- Baris 4: 8 | LORONG | 9 | 10 -->
                                     <label class="cursor-pointer transform transition-all hover:scale-105">
                                         <input type="checkbox" name="seats[]" value="8" id="seat-8"
                                             class="hidden seat-checkbox"
                                             {{ in_array('8', $bookedSeats) ? 'disabled' : '' }}>
                                         <div
                                             class="w-16 h-16 flex items-center justify-center rounded-xl border-3 font-bold shadow-lg transition-all
-        @if (in_array('8', $bookedSeats)) bg-red-600 text-white border-red-700 cursor-not-allowed shadow-red-500/50
+
+@if (in_array('8', $bookedSeats)) bg-red-600 text-white border-red-700 cursor-not-allowed shadow-red-500/50
         @else
-            bg-gradient-to-br from-blue-400 to-blue-500 text-white border-blue-600 hover:from-blue-500 hover:to-blue-600 hover:shadow-xl hover:shadow-blue-500/50 @endif">
+            bg-gradient-to-br from-blue-400 to-blue-500 text-white border-blue-600 hover:from-blue-500 hover:to-blue-600 hover:shadow-xl hover:shadow-blue-500/50 @endif
+">
                                             <span class="text-lg">8</span>
                                         </div>
                                     </label>
@@ -287,6 +268,7 @@
                                             <div class="w-1 h-12 bg-gray-600 rounded-full opacity-30"></div>
                                         </div>
                                     </div>
+
                                     @foreach ([9, 10] as $seat)
                                         <label class="cursor-pointer transform transition-all hover:scale-105">
                                             <input type="checkbox" name="seats[]" value="{{ $seat }}"
@@ -294,15 +276,17 @@
                                                 {{ in_array($seat, $bookedSeats) ? 'disabled' : '' }}>
                                             <div
                                                 class="w-16 h-16 flex items-center justify-center rounded-xl border-3 font-bold shadow-lg transition-all
-        @if (in_array($seat, $bookedSeats)) bg-red-600 text-white border-red-700 cursor-not-allowed shadow-red-500/50
+
+@if (in_array($seat, $bookedSeats)) bg-red-600 text-white border-red-700 cursor-not-allowed shadow-red-500/50
         @else
-            bg-gradient-to-br from-blue-400 to-blue-500 text-white border-blue-600 hover:from-blue-500 hover:to-blue-600 hover:shadow-xl hover:shadow-blue-500/50 @endif">
+            bg-gradient-to-br from-blue-400 to-blue-500 text-white border-blue-600 hover:from-blue-500 hover:to-blue-600 hover:shadow-xl hover:shadow-blue-500/50 @endif
+">
                                                 <span class="text-lg">{{ $seat }}</span>
                                             </div>
                                         </label>
                                     @endforeach
 
-                                    <!-- Baris 5: 11 | 12 | 13 | 14 -->
+
                                     @foreach ([11, 12, 13, 14] as $seat)
                                         <label class="cursor-pointer transform transition-all hover:scale-105">
                                             <input type="checkbox" name="seats[]" value="{{ $seat }}"
@@ -310,28 +294,24 @@
                                                 {{ in_array($seat, $bookedSeats) ? 'disabled' : '' }}>
                                             <div
                                                 class="w-16 h-16 flex items-center justify-center rounded-xl border-3 font-bold shadow-lg transition-all
-        @if (in_array($seat, $bookedSeats)) bg-red-600 text-white border-red-700 cursor-not-allowed shadow-red-500/50
+
+@if (in_array($seat, $bookedSeats)) bg-red-600 text-white border-red-700 cursor-not-allowed shadow-red-500/50
         @else
-            bg-gradient-to-br from-blue-400 to-blue-500 text-white border-blue-600 hover:from-blue-500 hover:to-blue-600 hover:shadow-xl hover:shadow-blue-500/50 @endif">
+            bg-gradient-to-br from-blue-400 to-blue-500 text-white border-blue-600 hover:from-blue-500 hover:to-blue-600 hover:shadow-xl hover:shadow-blue-500/50 @endif
+">
                                                 <span class="text-lg">{{ $seat }}</span>
                                             </div>
                                         </label>
                                     @endforeach
 
                                 </div>
-
-                                <!-- Rear Bumper -->
                                 <div
                                     class="absolute bottom-0 left-0 right-0 h-6 bg-gray-900 rounded-b-3xl border-t-2 border-gray-600">
                                 </div>
-
-                                <!-- Side Mirrors Effect -->
                                 <div class="absolute -left-2 top-10 w-4 h-6 bg-gray-900 rounded-l-lg"></div>
                                 <div class="absolute -right-2 top-10 w-4 h-6 bg-gray-900 rounded-r-lg"></div>
                             </div>
                         </div>
-
-                        <!-- Selected Seats Display -->
                         <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 mb-6 border border-blue-200">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-3">
@@ -355,8 +335,6 @@
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Action Buttons -->
                         <div class="flex flex-col sm:flex-row gap-3 pt-6 border-t border-gray-100">
                             <a href="{{ route('booking.step2') }}"
                                 class="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-all duration-300 font-semibold">
@@ -370,6 +348,7 @@
                             </button>
                         </div>
                     </form>
+
                 </div>
             </div>
         </div>

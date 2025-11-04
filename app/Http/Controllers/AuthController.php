@@ -19,7 +19,6 @@ class AuthController extends Controller
         $this->otpService = $otpService;
     }
 
-    // === LOGIN ===
     public function showLogin()
     {
         return view('auth.login');
@@ -32,14 +31,12 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            // Check if there's a redirect parameter
             $redirect = $request->input('redirect');
 
             if (Auth::user()->role === 'admin') {
                 return redirect()->route('admin.dashboard');
             }
 
-            // If redirect URL is provided and valid, redirect there
             if ($redirect && filter_var($redirect, FILTER_VALIDATE_URL)) {
                 return redirect($redirect);
             }
@@ -50,7 +47,6 @@ class AuthController extends Controller
         return back()->withErrors(['whatsapp_number' => 'Nomor WhatsApp atau password salah']);
     }
 
-    // === REGISTER ===
     public function showRegister()
     {
         return view('auth.register');
@@ -64,11 +60,9 @@ class AuthController extends Controller
             'password' => 'required|confirmed|min:6',
         ]);
 
-        // Simpan data registrasi di session untuk verifikasi OTP
         $registrationData = $request->only(['name', 'whatsapp_number', 'password']);
         $request->session()->put('registration_data', $registrationData);
 
-        // Kirim OTP ke WhatsApp (untuk registrasi, set isRegistration=true)
         $result = $this->otpService->sendOtp($request->whatsapp_number, true);
 
         if ($result['success']) {
@@ -78,7 +72,6 @@ class AuthController extends Controller
         return back()->withErrors(['whatsapp_number' => $result['message']]);
     }
 
-    // === REGISTER OTP VERIFICATION ===
     public function showRegisterVerify(Request $request)
     {
         $registrationData = $request->session()->get('registration_data');
@@ -104,27 +97,23 @@ class AuthController extends Controller
             'otp_code' => 'required|string|digits:6',
         ]);
 
-        // Verify OTP
         $otpResult = $this->otpService->verifyOtp($registrationData['whatsapp_number'], $request->otp_code);
 
         if (!$otpResult['success']) {
             return back()->withErrors(['otp_code' => $otpResult['message']]);
         }
 
-        // Buat user account
         $user = User::create([
             'name' => $registrationData['name'],
             'whatsapp_number' => $registrationData['whatsapp_number'],
             'password' => Hash::make($registrationData['password']),
         ]);
 
-        // Hapus data registrasi dari session
         $request->session()->forget('registration_data');
 
         return redirect()->route('login')->with('success', 'Registrasi berhasil! Silakan login dengan akun Anda.');
     }
 
-    // === LOGOUT ===
     public function logout(Request $request)
     {
         Auth::logout();
@@ -134,7 +123,6 @@ class AuthController extends Controller
         return redirect()->route('login')->with('success', 'Berhasil keluar dari akun!');
     }
 
-    // === FORGOT PASSWORD ===
     public function showForgotPasswordForm()
     {
         return view('auth.passwords.wa');
@@ -144,7 +132,6 @@ class AuthController extends Controller
     {
         $request->validate(['whatsapp_number' => 'required|string']);
 
-        // Send OTP via WhatsApp
         $result = $this->otpService->sendOtp($request->whatsapp_number);
 
         if ($result['success']) {
@@ -156,7 +143,6 @@ class AuthController extends Controller
         return back()->withErrors(['whatsapp_number' => $result['message']]);
     }
 
-    // === RESET PASSWORD ===
     public function showResetPasswordForm(Request $request)
     {
         $whatsapp_number = $request->session()->get('reset_whatsapp_number');
@@ -178,26 +164,22 @@ class AuthController extends Controller
             'password' => 'required|string|min:6|confirmed',
         ]);
 
-        // Verify OTP
         $otpResult = $this->otpService->verifyOtp($request->whatsapp_number, $request->otp_code);
 
         if (!$otpResult['success']) {
             return back()->withErrors(['otp_code' => $otpResult['message']]);
         }
 
-        // Find user by whatsapp number
         $user = User::where('whatsapp_number', $request->whatsapp_number)->first();
 
         if (!$user) {
             return back()->withErrors(['whatsapp_number' => 'Nomor WhatsApp tidak terdaftar']);
         }
 
-        // Update password
         $user->password = Hash::make($request->password);
         $user->setRememberToken(Str::random(60));
         $user->save();
 
-        // Clear session
         $request->session()->forget('reset_whatsapp_number');
 
         return redirect()->route('login')->with('success', 'Password berhasil direset! Silakan login dengan password baru Anda.');

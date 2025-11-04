@@ -1,12 +1,14 @@
 @extends('layouts.app')
 
 @section('page-title', 'Data Supir')
+
 @section('page-subtitle', 'Kelola informasi pengemudi')
 
 @section('content')
     <div class="mb-6">
         <div class="flex flex-col lg:flex-row gap-3">
-            {{-- Search Form --}}
+
+
             <form method="GET" action="{{ route('admin.supir') }}" class="flex-1 flex items-center gap-2">
                 <div class="flex items-center border border-gray-300 rounded-lg overflow-hidden shadow-sm flex-1">
                     <input type="text" name="search" value="{{ $search ?? '' }}" placeholder="Cari supir..."
@@ -21,7 +23,7 @@
                     </button>
                 </div>
 
-                {{-- Reset button --}}
+
                 @if (isset($search) && $search)
                     <a href="{{ route('admin.supir') }}"
                         class="text-gray-600 hover:text-gray-800 flex items-center gap-1 text-sm font-medium">
@@ -33,9 +35,10 @@
                         Reset
                     </a>
                 @endif
+
             </form>
 
-            {{-- Tambah Supir --}}
+
             <a href="{{ route('admin.supir.create') }}"
                 class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center justify-center gap-2 transition fade-left animate-on-scroll whitespace-nowrap">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
@@ -47,7 +50,6 @@
         </div>
     </div>
 
-    {{-- Desktop Table View --}}
     <div
         class="hidden lg:block bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden fade-up animate-on-scroll">
         <div class="overflow-x-auto">
@@ -82,6 +84,7 @@
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
+
                                 @if ($supir->telepon)
                                     <div class="flex items-center text-sm text-gray-700">
                                         <i class="fas fa-phone-alt text-gray-400 mr-2"></i>
@@ -90,6 +93,7 @@
                                 @else
                                     <span class="text-gray-400 text-sm">-</span>
                                 @endif
+
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
@@ -110,6 +114,7 @@
                                         title="Edit">
                                         <i class="fas fa-pen text-sm"></i>
                                     </a>
+
                                     <form action="{{ route('admin.supir.destroy', $supir) }}" method="POST"
                                         class="delete-form inline">
                                         @csrf
@@ -120,6 +125,7 @@
                                             <i class="fas fa-trash-alt text-sm"></i>
                                         </button>
                                     </form>
+
                                 </div>
                             </td>
                         </tr>
@@ -139,7 +145,6 @@
         </div>
     </div>
 
-    {{-- Mobile Card View --}}
     <div class="lg:hidden space-y-4 fade-up animate-on-scroll">
         @forelse($supirs as $supir)
             <div class="bg-white rounded-lg shadow p-4">
@@ -149,7 +154,6 @@
                         <p class="text-xs text-gray-500">ID: {{ $supir->id }}</p>
                     </div>
                 </div>
-
                 <div class="space-y-2 text-sm mb-3">
                     <div class="flex items-center gap-2">
                         <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -170,12 +174,12 @@
                         </span>
                     </div>
                 </div>
-
                 <div class="flex gap-2">
                     <a href="{{ route('admin.supir.edit', $supir) }}"
                         class="flex-1 bg-blue-600 text-white text-sm px-3 py-2 rounded hover:bg-blue-700 transition inline-flex items-center justify-center gap-1">
                         <i class="fas fa-pen-to-square"></i> Edit
                     </a>
+
                     <form action="{{ route('admin.supir.destroy', $supir) }}" method="POST" class="flex-1 delete-form">
                         @csrf
                         @method('DELETE')
@@ -184,6 +188,7 @@
                             <i class="fas fa-trash-alt"></i> Hapus
                         </button>
                     </form>
+
                 </div>
             </div>
         @empty
@@ -193,8 +198,7 @@
         @endforelse
     </div>
 
-    {{-- Pagination --}}
     <div class="mt-6 flex justify-end">
-        {{ $supirs->links() }}
+        {{ $supirs->links('pagination::tailwind') }}
     </div>
 @endsection

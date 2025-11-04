@@ -29,4 +29,34 @@ class Booking extends Model
     {
         return $this->belongsTo(Jadwal::class);
     }
+
+    public function scopePending($query)
+    {
+        return $query->where('status', 'pending');
+    }
+
+    public function scopeApproved($query)
+    {
+        return $query->where('status', 'setuju');
+    }
+
+    public function scopeCancelled($query)
+    {
+        return $query->where('status', 'batal');
+    }
+
+    public function scopePaid($query)
+    {
+        return $query->where('payment_status', 'sudah_bayar');
+    }
+
+    public function scopeUnpaid($query)
+    {
+        return $query->where('payment_status', 'belum_bayar');
+    }
+
+    public function scopeForJadwal($query, $jadwalId)
+    {
+        return $query->where('jadwal_id', $jadwalId);
+    }
 }

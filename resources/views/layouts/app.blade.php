@@ -6,94 +6,36 @@
     <title>PT. PELITA TRAN PRIMA</title>
     <link rel="icon" type="image/png" href="{{ asset('asset/logo.webp') }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    {{-- Disable browser image lazy loading intervention --}}
     <meta http-equiv="origin-trial" content="">
-
-    {{-- Preconnect to external resources --}}
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 
-    {{-- Critical CSS inline to prevent render blocking --}}
-    <style>
-        /* Prevent CLS - Reserve space for images */
-        img {
-            max-width: 100%;
-            height: auto;
-            content-visibility: auto;
-        }
-
-        img[width][height] {
-            aspect-ratio: attr(width) / attr(height);
-        }
-
-        /* LCP optimization - ensure hero image container */
-        .min-h-\[600px\] {
-            min-height: 600px;
-        }
-
-        /* Remove fade animation for hero image */
-        img[fetchpriority="high"] {
-            opacity: 1 !important;
-            animation: none !important;
-        }
-
-        /* Fast fade-in for loaded images */
-        img {
-            opacity: 0;
-            transition: opacity 0.1s ease-in;
-        }
-
-        img.loaded,
-        img[fetchpriority="high"] {
-            opacity: 1;
-        }
-    </style>
-
-    {{-- Inline script for instant image loading --}}
-    <script>
-        // Load images instantly on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('img').forEach(img => {
-                if (img.complete) {
-                    img.classList.add('loaded');
-                } else {
-                    img.addEventListener('load', function() {
-                        this.classList.add('loaded');
-                    });
-                }
-            });
-        });
-        // For images that are already in cache
-        window.addEventListener('load', function() {
-            document.querySelectorAll('img[fetchpriority="high"]').forEach(img => {
-                img.style.opacity = '1';
-            });
-        });
-    </script>
-
-    {{-- Preload critical assets for better LCP --}}
     @if (request()->is('/'))
         <link rel="preload" as="image" href="{{ asset('asset/home.webp') }}" fetchpriority="high"
             imagesrcset="{{ asset('asset/home.webp') }} 800w" imagesizes="(max-width: 800px) 100vw, 800px">
     @endif
+
     <link rel="preload" as="image" href="{{ asset('asset/logo.webp') }}">
 
     @if (app()->environment() !== 'testing')
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @endif
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
         media="print" onload="this.media='all'">
     <noscript>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     </noscript>
-
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+
     @if (auth()->check() && auth()->user()->role === 'admin')
         <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
     @endif
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr" defer></script>
 </head>
 
 <body class="bg-gray-100 m-0 p-0">
@@ -102,17 +44,15 @@
         <div data-success-message="{{ session('success') }}" style="display: none;"></div>
     @endif
 
+
     @if (session('error'))
         <div data-error-message="{{ session('error') }}" style="display: none;"></div>
     @endif
 
-    @if (auth()->check() && auth()->user()->role === 'admin')
-        <!-- Admin Layout -->
-        <div class="flex min-h-screen relative">
-            <!-- Overlay (untuk close sidebar saat klik di luar) -->
-            <div id="sidebar-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"></div>
 
-            <!-- Hamburger Button (Fixed Position for Mobile) -->
+    @if (auth()->check() && auth()->user()->role === 'admin')
+        <div class="flex min-h-screen relative">
+            <div id="sidebar-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"></div>
             <button id="menu-toggle"
                 class="md:hidden fixed top-4 left-4 z-60 p-3 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 text-white rounded-xl shadow-lg shadow-blue-500/30 focus:outline-none hover:shadow-xl hover:shadow-blue-500/40 hover:scale-110 active:scale-95 transition-all duration-300"
                 aria-label="Toggle Sidebar">
@@ -121,15 +61,11 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
             </button>
-
-            <!-- Sidebar -->
             <aside id="sidebar"
                 class="w-72 min-h-screen bg-gradient-to-b from-[#0F172A] via-[#1E293B] to-[#0F172A] text-white flex flex-col transform -translate-x-full
                        md:translate-x-0 transition-all duration-500 ease-in-out md:static fixed z-50 top-0 left-0
                        shadow-[4px_0_16px_rgba(0,0,0,0.15)] md:shadow-[6px_0_20px_rgba(0,0,0,0.1)]
                        border-r border-slate-700/20">
-
-                <!-- Brand Header -->
                 <div
                     class="p-5 border-b border-slate-600/20 bg-gradient-to-r from-slate-800/30 to-slate-900/20 backdrop-blur-md">
                     <div class="flex items-center gap-3">
@@ -142,8 +78,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Admin Profile -->
                 <div
                     class="p-4 bg-gradient-to-r from-blue-600/8 via-indigo-600/8 to-purple-600/8 border-b border-slate-600/20 backdrop-blur-md">
                     <div class="flex items-center gap-3">
@@ -165,12 +99,8 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Navigation Menu -->
                 <nav
                     class="flex-1 overflow-y-auto py-4 px-3 space-y-1 scrollbar-thin scrollbar-thumb-slate-600/50 scrollbar-track-transparent hover:scrollbar-thumb-slate-600/70">
-
-                    <!-- Dashboard -->
                     <a href="{{ route('admin.dashboard') }}"
                         class="group flex items-center gap-3 py-2.5 px-3 rounded-xl transition-all duration-300 ease-out {{ request()->routeIs('admin.dashboard') ? 'bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 shadow-lg shadow-blue-500/30 scale-[1.02]' : 'hover:bg-slate-800/50 hover:shadow-sm hover:translate-x-1 hover:border-l-2 hover:border-blue-400/50' }}">
                         <div
@@ -181,15 +111,11 @@
                         <span
                             class="font-medium text-sm {{ request()->routeIs('admin.dashboard') ? 'text-white font-semibold' : 'text-slate-300 group-hover:text-white' }}">Dashboard</span>
                     </a>
-
-                    <!-- Divider -->
                     <div class="py-2">
                         <div class="h-px bg-gradient-to-r from-transparent via-slate-600/30 to-transparent"></div>
                         <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mt-3 mb-2 px-3">
                             Operasional</p>
                     </div>
-
-                    <!-- Data Pemesanan -->
                     @php
                         $pendingBookingsCount = \App\Models\Booking::where('status', 'pending')->count();
                     @endphp
@@ -204,15 +130,15 @@
                             <span
                                 class="font-medium text-sm {{ request()->routeIs('admin.bookings') ? 'text-white font-semibold' : 'text-slate-300 group-hover:text-white' }}">Pemesanan</span>
                         </div>
+
                         @if ($pendingBookingsCount > 0)
                             <span
                                 class="flex items-center justify-center min-w-[22px] h-5.5 px-2 bg-gradient-to-r from-red-500 to-red-600 text-white text-xs font-bold rounded-full shadow-lg shadow-red-500/50 animate-pulse">
                                 {{ $pendingBookingsCount }}
                             </span>
                         @endif
-                    </a>
 
-                    <!-- Penjadwalan -->
+                    </a>
                     <a href="{{ route('admin.jadwals') }}"
                         class="group flex items-center gap-3 py-2.5 px-3 rounded-xl transition-all duration-300 ease-out {{ request()->routeIs('admin.jadwals') ? 'bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 shadow-lg shadow-blue-500/30 scale-[1.02]' : 'hover:bg-slate-800/50 hover:shadow-sm hover:translate-x-1 hover:border-l-2 hover:border-green-400/50' }}">
                         <div
@@ -223,8 +149,6 @@
                         <span
                             class="font-medium text-sm {{ request()->routeIs('admin.jadwals') ? 'text-white font-semibold' : 'text-slate-300 group-hover:text-white' }}">Penjadwalan</span>
                     </a>
-
-                    <!-- Kelola Pembayaran -->
                     @php
                         $belumBayarCount = \App\Models\Booking::where('payment_status', 'belum_bayar')
                             ->where('status', 'setuju')
@@ -245,22 +169,20 @@
                             <span
                                 class="font-medium text-sm {{ request()->routeIs('admin.pembayaran') ? 'text-white font-semibold' : 'text-slate-300 group-hover:text-white' }}">Pembayaran</span>
                         </div>
+
                         @if ($totalPaymentNotif > 0)
                             <span
                                 class="flex items-center justify-center min-w-[22px] h-5.5 px-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs font-bold rounded-full shadow-lg shadow-orange-500/50">
                                 {{ $totalPaymentNotif }}
                             </span>
                         @endif
-                    </a>
 
-                    <!-- Divider -->
+                    </a>
                     <div class="py-2">
                         <div class="h-px bg-gradient-to-r from-transparent via-slate-600/30 to-transparent"></div>
                         <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mt-3 mb-2 px-3">Master
                             Data</p>
                     </div>
-
-                    <!-- Data Pelanggan -->
                     <a href="{{ route('admin.pelanggan') }}"
                         class="group flex items-center gap-3 py-2.5 px-3 rounded-xl transition-all duration-300 ease-out {{ request()->routeIs('admin.pelanggan') ? 'bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 shadow-lg shadow-blue-500/30 scale-[1.02]' : 'hover:bg-slate-800/50 hover:shadow-sm hover:translate-x-1 hover:border-l-2 hover:border-indigo-400/50' }}">
                         <div
@@ -271,8 +193,6 @@
                         <span
                             class="font-medium text-sm {{ request()->routeIs('admin.pelanggan') ? 'text-white font-semibold' : 'text-slate-300 group-hover:text-white' }}">Pelanggan</span>
                     </a>
-
-                    <!-- Data Rute -->
                     <a href="{{ route('admin.rute') }}"
                         class="group flex items-center gap-3 py-2.5 px-3 rounded-xl transition-all duration-300 ease-out {{ request()->routeIs('admin.rute') ? 'bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 shadow-lg shadow-blue-500/30 scale-[1.02]' : 'hover:bg-slate-800/50 hover:shadow-sm hover:translate-x-1 hover:border-l-2 hover:border-cyan-400/50' }}">
                         <div
@@ -284,8 +204,6 @@
                             class="font-medium text-sm {{ request()->routeIs('admin.rute') ? 'text-white font-semibold' : 'text-slate-300 group-hover:text-white' }}">Rute
                             Perjalanan</span>
                     </a>
-
-                    <!-- Data Mobil -->
                     <a href="{{ route('admin.mobil') }}"
                         class="group flex items-center gap-3 py-2.5 px-3 rounded-xl transition-all duration-300 ease-out {{ request()->routeIs('admin.mobil') ? 'bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 shadow-lg shadow-blue-500/30 scale-[1.02]' : 'hover:bg-slate-800/50 hover:shadow-sm hover:translate-x-1 hover:border-l-2 hover:border-teal-400/50' }}">
                         <div
@@ -297,8 +215,6 @@
                             class="font-medium text-sm {{ request()->routeIs('admin.mobil') ? 'text-white font-semibold' : 'text-slate-300 group-hover:text-white' }}">Armada
                             Mobil</span>
                     </a>
-
-                    <!-- Data Supir -->
                     <a href="{{ route('admin.supir') }}"
                         class="group flex items-center gap-3 py-2.5 px-3 rounded-xl transition-all duration-300 ease-out {{ request()->routeIs('admin.supir') ? 'bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 shadow-lg shadow-blue-500/30 scale-[1.02]' : 'hover:bg-slate-800/50 hover:shadow-sm hover:translate-x-1 hover:border-l-2 hover:border-pink-400/50' }}">
                         <div
@@ -310,15 +226,11 @@
                             class="font-medium text-sm {{ request()->routeIs('admin.supir') ? 'text-white font-semibold' : 'text-slate-300 group-hover:text-white' }}">Data
                             Supir</span>
                     </a>
-
-                    <!-- Divider -->
                     <div class="py-2">
                         <div class="h-px bg-gradient-to-r from-transparent via-slate-600/30 to-transparent"></div>
                         <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mt-3 mb-2 px-3">Laporan
                         </p>
                     </div>
-
-                    <!-- Laporan Pendapatan -->
                     <a href="{{ route('admin.laporan') }}"
                         class="group flex items-center gap-3 py-2.5 px-3 rounded-xl transition-all duration-300 ease-out {{ request()->routeIs('admin.laporan') ? 'bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 shadow-lg shadow-blue-500/30 scale-[1.02]' : 'hover:bg-slate-800/50 hover:shadow-sm hover:translate-x-1 hover:border-l-2 hover:border-emerald-400/50' }}">
                         <div
@@ -329,12 +241,10 @@
                         <span
                             class="font-medium text-sm {{ request()->routeIs('admin.laporan') ? 'text-white font-semibold' : 'text-slate-300 group-hover:text-white' }}">Pendapatan</span>
                     </a>
-
                 </nav>
-
-                <!-- Logout Button -->
                 <div
                     class="p-4 border-t border-slate-700/30 bg-gradient-to-r from-slate-900/60 to-slate-800/40 backdrop-blur-sm">
+
                     <form id="logout-form" action="{{ route('logout') }}" method="POST">
                         @csrf
                         <button id="logout-btn" type="button"
@@ -343,15 +253,12 @@
                             <span>Logout</span>
                         </button>
                     </form>
+
                 </div>
             </aside>
-
-            <!-- Main content -->
             <main class="flex-1 bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-50 min-h-screen">
-                <!-- Top Bar -->
                 <div class="bg-white/80 backdrop-blur-sm border-b border-slate-200 shadow-sm sticky top-0 z-30">
                     <div class="px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-3">
-                        <!-- Page Title Section -->
                         <div class="flex items-center gap-2 sm:gap-4 flex-1 min-w-0 ml-14 md:ml-0">
                             <div class="flex items-center gap-2 sm:gap-3 min-w-0">
                                 <div
@@ -367,8 +274,6 @@
                                 </div>
                             </div>
                         </div>
-
-                        <!-- User Info Section -->
                         <div class="flex items-center gap-2 sm:gap-3 shrink-0">
                             <div class="text-right hidden lg:block">
                                 <p class="text-sm font-semibold text-slate-700 truncate max-w-[150px]">
@@ -383,20 +288,16 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Content Area -->
                 <div class="p-4 sm:p-6 md:p-8">
                     @yield('content')
                 </div>
             </main>
         </div>
     @else
-        <!-- User Layout -->
         <nav id="navbar"
             class="bg-white/70 backdrop-blur-xl text-gray-900 shadow-sm fixed top-0 left-0 w-full z-50 transition-all duration-300 border-b border-blue-100/50">
             <div class="container mx-auto flex justify-between items-center px-4 py-3.5 md:px-6">
 
-                {{-- Logo --}}
                 <a href="{{ route('home') }}" class="flex items-center space-x-3 group">
                     <div class="relative">
                         <div
@@ -414,7 +315,6 @@
                     </div>
                 </a>
 
-                {{-- Hamburger mobile --}}
                 <button id="menu-toggle"
                     class="md:hidden focus:outline-none p-2.5 rounded-xl bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 text-white hover:shadow-lg hover:shadow-blue-500/30 hover:scale-105 active:scale-95 transition-all duration-300 shadow-md">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
@@ -423,38 +323,40 @@
                     </svg>
                 </button>
 
-                {{-- Desktop menu --}}
                 <div class="hidden md:flex md:items-center gap-1.5">
                     <a href="{{ route('home') }}"
                         class="relative group px-4 py-2.5 rounded-xl font-medium transition-all duration-300 {{ request()->routeIs('home') ? 'text-blue-600' : 'text-gray-600 hover:text-blue-600' }}">
                         <span class="relative z-10">Home</span>
+
                         @if (request()->routeIs('home'))
                             <div
                                 class="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-indigo-500/5 to-purple-500/5 rounded-xl border border-blue-200/50">
                             </div>
                         @endif
-                    </a>
 
+                    </a>
                     <a href="{{ route('jadwal') }}"
                         class="relative group px-4 py-2.5 rounded-xl font-medium transition-all duration-300 {{ request()->routeIs('jadwal') ? 'text-blue-600' : 'text-gray-600 hover:text-blue-600' }}">
                         <span class="relative z-10">Jadwal</span>
+
                         @if (request()->routeIs('jadwal'))
                             <div
                                 class="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-indigo-500/5 to-purple-500/5 rounded-xl border border-blue-200/50">
                             </div>
                         @endif
-                    </a>
 
+                    </a>
                     <a href="{{ auth()->check() ? route('pesan') : route('login') }}"
                         class="relative group px-4 py-2.5 rounded-xl font-medium transition-all duration-300 {{ request()->routeIs('pesan') ? 'text-blue-600' : 'text-gray-600 hover:text-blue-600' }}">
                         <span class="relative z-10">Pesan Tiket</span>
+
                         @if (request()->routeIs('pesan'))
                             <div
                                 class="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-indigo-500/5 to-purple-500/5 rounded-xl border border-blue-200/50">
                             </div>
                         @endif
-                    </a>
 
+                    </a>
                     <a href="{{ auth()->check() ? route('riwayat') : route('login') }}"
                         class="relative group px-4 py-2.5 rounded-xl font-medium transition-all duration-300 flex items-center gap-2 {{ request()->routeIs('riwayat') ? 'text-blue-600' : 'text-gray-600 hover:text-blue-600' }}">
                         <span class="relative z-10">Riwayat</span>
@@ -464,20 +366,23 @@
                                     ->where('status', 'pending')
                                     ->count();
                             @endphp
+
                             @if ($userPendingCount > 0)
                                 <span
                                     class="relative z-10 bg-gradient-to-r from-red-500 via-pink-500 to-red-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-md animate-pulse">
                                     {{ $userPendingCount }}
                                 </span>
                             @endif
+
                         @endauth
+
                         @if (request()->routeIs('riwayat'))
                             <div
                                 class="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-indigo-500/5 to-purple-500/5 rounded-xl border border-blue-200/50">
                             </div>
                         @endif
-                    </a>
 
+                    </a>
                     @guest
                         <a href="{{ route('login') }}"
                             class="ml-4 px-6 py-2.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-blue-500/30 hover:scale-105 active:scale-95 transition-all duration-300 shadow-md">
@@ -489,11 +394,9 @@
                             $firstName = \Illuminate\Support\Str::before(auth()->user()->name, ' ');
                             $initial = strtoupper(substr(auth()->user()->name, 0, 1));
                         @endphp
-
                         <div class="relative ml-4">
                             <button type="button" id="user-menu-btn"
                                 class="flex items-center gap-3 px-3 py-2 rounded-xl bg-gradient-to-br from-blue-50/50 via-indigo-50/40 to-purple-50/50 border border-blue-200/30 hover:border-blue-300/50 hover:shadow-sm transition-all duration-300 cursor-pointer group backdrop-blur-sm">
-                                <!-- Avatar -->
                                 <div class="relative shrink-0">
                                     <div
                                         class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold text-xs shadow-sm group-hover:shadow-md transition-all duration-300">
@@ -503,7 +406,6 @@
                                         class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-400 rounded-full border-2 border-white">
                                     </div>
                                 </div>
-                                <!-- User Info - Horizontal Layout -->
                                 <div class="hidden sm:flex items-center gap-1">
                                     <span class="text-sm text-gray-500 font-medium">Hi,</span>
                                     <strong class="text-sm text-gray-800 font-semibold">{{ $firstName }}</strong>
@@ -512,10 +414,8 @@
                                     class="fas fa-chevron-down text-gray-400 text-xs group-hover:text-blue-600 transition-colors group-hover:rotate-180 duration-300"></i>
                             </button>
 
-                            {{-- Enhanced Dropdown --}}
                             <div id="user-dropdown"
                                 class="hidden absolute right-0 top-full mt-2 w-60 bg-white/95 backdrop-blur-lg text-gray-700 rounded-xl shadow-2xl border border-gray-200/50 py-2 z-50 transition-all duration-300 opacity-0 scale-95">
-                                <!-- User Profile Header -->
                                 <div
                                     class="px-3 py-3 border-b border-gray-100 bg-gradient-to-r from-blue-50/30 to-indigo-50/30">
                                     <div class="flex items-center gap-2.5">
@@ -533,8 +433,6 @@
                                         </div>
                                     </div>
                                 </div>
-
-                                <!-- Menu Items -->
                                 <div class="py-1.5">
                                     <a href="{{ route('riwayat') }}"
                                         class="flex items-center gap-2.5 px-3 py-2.5 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-200 group">
@@ -559,16 +457,16 @@
                                 </div>
                             </div>
 
-                            {{-- Hidden form --}}
+
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
                                 @csrf
                             </form>
+
                         </div>
                     @endguest
                 </div>
             </div>
 
-            {{-- Mobile Menu --}}
             <div id="menu"
                 class="hidden flex-col bg-white/95 backdrop-blur-lg md:hidden px-4 py-6 space-y-2 border-t border-gray-200 shadow-xl">
                 <a href="{{ route('home') }}"
@@ -592,15 +490,16 @@
                                 ->where('status', 'pending')
                                 ->count();
                         @endphp
+
                         @if ($userPendingCount > 0)
                             <span
                                 class="bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs font-bold px-2.5 py-1 rounded-full min-w-6 text-center shadow-lg animate-pulse">
                                 {{ $userPendingCount }}
                             </span>
                         @endif
+
                     @endauth
                 </a>
-
                 <div class="pt-4 border-t border-gray-200 mt-4">
                     @guest
                         <a href="{{ route('login') }}"
@@ -627,14 +526,15 @@
                             class="w-full px-4 py-3 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-xl hover:from-red-600 hover:to-pink-600 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:scale-[1.02] flex items-center justify-center gap-2">
                             <i class="fas fa-sign-out-alt"></i> Logout
                         </button>
+
                         <form id="logout-form-mobile" action="{{ route('logout') }}" method="POST" class="hidden">
                             @csrf
                         </form>
+
                     @endguest
                 </div>
             </div>
         </nav>
-
         <main class="min-h-screen pt-20 md:pt-24">
             <div class="w-full">
                 <div class="max-w-7xl mx-auto px-6">

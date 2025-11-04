@@ -12,9 +12,7 @@
             </div>
         </h1>
     </div>
-
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-3xl">
-        <!-- Header Form -->
         <div class="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-200">
             <h2 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
                 <i class="fas fa-route text-blue-600"></i>
@@ -22,13 +20,11 @@
             </h2>
         </div>
 
-        <!-- Form Body -->
         <form id="formRuteEdit" action="{{ route('admin.rute.update', $rute) }}" method="POST" class="p-6">
             @csrf
             @method('PUT')
-
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {{-- Kota Asal --}}
+
                 <div>
                     <label for="kota_asal" class="block text-sm font-semibold text-gray-700 mb-2">
                         <i class="fas fa-map-marker-alt text-gray-400 mr-1"></i>
@@ -45,7 +41,6 @@
                     @enderror
                 </div>
 
-                {{-- Kota Tujuan --}}
                 <div>
                     <label for="kota_tujuan" class="block text-sm font-semibold text-gray-700 mb-2">
                         <i class="fas fa-map-marked-alt text-gray-400 mr-1"></i>
@@ -62,7 +57,6 @@
                     @enderror
                 </div>
 
-                {{-- Jarak Estimasi --}}
                 <div>
                     <label for="jarak_estimasi" class="block text-sm font-semibold text-gray-700 mb-2">
                         <i class="fas fa-road text-gray-400 mr-1"></i>
@@ -80,7 +74,6 @@
                     @enderror
                 </div>
 
-                {{-- Harga Tiket --}}
                 <div>
                     <label for="harga_tiket" class="block text-sm font-semibold text-gray-700 mb-2">
                         <i class="fas fa-money-bill-wave text-gray-400 mr-1"></i>
@@ -106,8 +99,23 @@
                     @enderror
                 </div>
 
-                {{-- Status Rute --}}
-                <div class="md:col-span-2">
+                <div>
+                    <label for="jam_keberangkatan" class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-clock text-gray-400 mr-1"></i>
+                        Jam Keberangkatan
+                    </label>
+                    <input type="time" id="jam_keberangkatan" name="jam_keberangkatan"
+                        value="{{ old('jam_keberangkatan', $rute->jam_keberangkatan) }}" required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
+                    @error('jam_keberangkatan')
+                        <p class="mt-1 text-sm text-red-600 flex items-center gap-1">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {{ $message }}
+                        </p>
+                    @enderror
+                </div>
+
+                <div>
                     <label for="status_rute" class="block text-sm font-semibold text-gray-700 mb-2">
                         <i class="fas fa-toggle-on text-gray-400 mr-1"></i>
                         Status Rute
@@ -129,7 +137,6 @@
                 </div>
             </div>
 
-            {{-- Action Buttons --}}
             <div class="flex items-center gap-3 mt-8 pt-6 border-t border-gray-200">
                 <button type="submit"
                     class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all">
@@ -143,5 +150,6 @@
                 </a>
             </div>
         </form>
+
     </div>
 @endsection

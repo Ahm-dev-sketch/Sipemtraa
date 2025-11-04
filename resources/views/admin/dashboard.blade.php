@@ -1,12 +1,11 @@
 @extends('layouts.app')
 
 @section('page-title', 'Dashboard')
+
 @section('page-subtitle', 'Ringkasan data dan statistik sistem')
 
 @section('content')
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
-        <!-- Pendapatan Card -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8 fade-up animate-on-scroll">
         <div
             class="group bg-white rounded-2xl shadow-sm border border-slate-200 hover:shadow-xl hover:border-blue-300 transition-all duration-300 overflow-hidden">
             <div class="p-6">
@@ -41,8 +40,6 @@
             </div>
             <div class="h-1 bg-gradient-to-r from-blue-500 to-blue-600"></div>
         </div>
-
-        <!-- Pemesanan Card -->
         <div
             class="group bg-white rounded-2xl shadow-sm border border-slate-200 hover:shadow-xl hover:border-purple-300 transition-all duration-300 overflow-hidden">
             <div class="p-6">
@@ -63,8 +60,6 @@
             </div>
             <div class="h-1 bg-gradient-to-r from-purple-500 to-purple-600"></div>
         </div>
-
-        <!-- Perjalanan Aktif Card -->
         <div
             class="group bg-white rounded-2xl shadow-sm border border-slate-200 hover:shadow-xl hover:border-green-300 transition-all duration-300 overflow-hidden">
             <div class="p-6">
@@ -85,8 +80,6 @@
             </div>
             <div class="h-1 bg-gradient-to-r from-green-500 to-green-600"></div>
         </div>
-
-        <!-- Total Pelanggan Card -->
         <div
             class="group bg-white rounded-2xl shadow-sm border border-slate-200 hover:shadow-xl hover:border-indigo-300 transition-all duration-300 overflow-hidden">
             <div class="p-6">
@@ -108,10 +101,8 @@
             <div class="h-1 bg-gradient-to-r from-indigo-500 to-indigo-600"></div>
         </div>
     </div>
-
-    <!-- Grafik Pendapatan -->
     <div
-        class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-6 lg:p-8 hover:shadow-lg transition-all duration-300">
+        class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-6 lg:p-8 hover:shadow-lg transition-all duration-300 fade-up animate-on-scroll">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-6">
             <div class="flex items-center gap-3">
                 <div
