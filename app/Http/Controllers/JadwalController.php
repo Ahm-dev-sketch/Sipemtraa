@@ -31,7 +31,8 @@ class JadwalController extends Controller
         $search = $request->input('search');
 
         $jadwals = Jadwal::with('rute')
-            ->where('is_active', true) // Only show active schedules
+            ->where('is_active', true)
+            ->where('tanggal', '>=', Carbon::today()->format('Y-m-d'))
             ->when($search, function ($query, $search) {
                 $query->whereHas('rute', function ($q) use ($search) {
                     $q->where('kota_asal', 'like', "%{$search}%")

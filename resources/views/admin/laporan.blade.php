@@ -1,12 +1,11 @@
 @extends('layouts.app')
 
 @section('page-title', 'Laporan Pendapatan')
+
 @section('page-subtitle', 'Monitor dan analisis pendapatan tiket')
 
 @section('content')
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
-        <!-- Total Pendapatan Card -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8 fade-up animate-on-scroll">
         <div
             class="group bg-white rounded-2xl shadow-sm border border-slate-200 hover:shadow-xl hover:border-emerald-300 transition-all duration-300 overflow-hidden">
             <div class="p-6">
@@ -41,8 +40,6 @@
             </div>
             <div class="h-1 bg-gradient-to-r from-emerald-500 to-emerald-600"></div>
         </div>
-
-        <!-- Pendapatan Bulan Ini Card -->
         <div
             class="group bg-white rounded-2xl shadow-sm border border-slate-200 hover:shadow-xl hover:border-blue-300 transition-all duration-300 overflow-hidden">
             <div class="p-6">
@@ -77,8 +74,6 @@
             </div>
             <div class="h-1 bg-gradient-to-r from-blue-500 to-blue-600"></div>
         </div>
-
-        <!-- Transaksi Selesai Card -->
         <div
             class="group bg-white rounded-2xl shadow-sm border border-slate-200 hover:shadow-xl hover:border-amber-300 transition-all duration-300 overflow-hidden">
             <div class="p-6">
@@ -100,10 +95,7 @@
             <div class="h-1 bg-gradient-to-r from-amber-500 to-amber-600"></div>
         </div>
     </div>
-
-    <!-- Grafik pendapatan -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
-        <!-- Grafik Batang -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-6 hover:shadow-md transition-shadow">
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 mb-4 sm:mb-6">
                 <div class="flex items-center gap-3">
@@ -125,8 +117,6 @@
             <canvas id="chartPendapatanBar" height="100" data-labels="{{ json_encode($labels7Hari) }}"
                 data-data="{{ json_encode($pendapatan7Hari) }}"></canvas>
         </div>
-
-        <!-- Grafik Garis -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-6 hover:shadow-md transition-shadow">
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 mb-4 sm:mb-6">
                 <div class="flex items-center gap-3">
@@ -149,8 +139,6 @@
                 data-data="{{ json_encode($pendapatan7Hari) }}"></canvas>
         </div>
     </div>
-
-    <!-- Grafik Pie -->
     <div class="flex justify-center">
         <div
             class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-6 w-full max-w-md hover:shadow-md transition-shadow">
@@ -172,7 +160,7 @@
                     </div>
                 </div>
             </div>
-            <div class="max-w-sm mx-auto">
+            <div class="max-w-sm mx-auto fade-up animate-on-scroll">
                 <canvas id="chartPendapatanPie" height="280" data-labels="{{ json_encode($labelsBulanIni) }}"
                     data-data="{{ json_encode($pendapatanBulanIniPerHari) }}"></canvas>
             </div>

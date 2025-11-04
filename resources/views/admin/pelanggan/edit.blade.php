@@ -12,9 +12,7 @@
             </div>
         </h1>
     </div>
-
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-3xl">
-        <!-- Header Form -->
         <div class="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-200">
             <h2 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
                 <i class="fas fa-user-friends text-blue-600"></i>
@@ -22,13 +20,11 @@
             </h2>
         </div>
 
-        <!-- Form Body -->
         <form action="{{ route('admin.pelanggan.update', $customer) }}" method="POST" class="p-6">
             @csrf
             @method('PUT')
-
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {{-- Nama --}}
+
                 <div class="md:col-span-2">
                     <label for="name" class="block text-sm font-semibold text-gray-700 mb-2">
                         <i class="fas fa-user text-gray-400 mr-1"></i>
@@ -44,7 +40,6 @@
                     @enderror
                 </div>
 
-                {{-- Nomor WhatsApp --}}
                 <div class="md:col-span-2">
                     <label for="whatsapp_number" class="block text-sm font-semibold text-gray-700 mb-2">
                         <i class="fab fa-whatsapp text-gray-400 mr-1"></i>
@@ -61,7 +56,6 @@
                     @enderror
                 </div>
 
-                {{-- Role --}}
                 <div class="md:col-span-2">
                     <label for="role" class="block text-sm font-semibold text-gray-700 mb-2">
                         <i class="fas fa-user-tag text-gray-400 mr-1"></i>
@@ -83,7 +77,6 @@
                 </div>
             </div>
 
-            {{-- Action Buttons --}}
             <div class="flex items-center gap-3 mt-8 pt-6 border-t border-gray-200">
                 <button type="submit"
                     class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all">
@@ -97,5 +90,6 @@
                 </a>
             </div>
         </form>
+
     </div>
 @endsection

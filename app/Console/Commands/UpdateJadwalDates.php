@@ -30,14 +30,11 @@ class UpdateJadwalDates extends Command
     {
         $this->info('Starting jadwal date update...');
 
-        // Get all active jadwals
         $jadwals = Jadwal::where('is_active', true)->get();
 
         $updated = 0;
         foreach ($jadwals as $jadwal) {
             try {
-                // Calculate new date based on day_offset
-                // day_offset: 0 = hari ini, 1 = besok, 2 = lusa, dst
                 $newDate = Carbon::today()->addDays($jadwal->day_offset);
 
                 // Update tanggal jadwal

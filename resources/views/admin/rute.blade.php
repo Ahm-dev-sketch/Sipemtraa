@@ -1,12 +1,14 @@
 @extends('layouts.app')
 
 @section('page-title', 'Rute Perjalanan')
+
 @section('page-subtitle', 'Kelola rute dan harga tiket')
 
 @section('content')
     <div class="mb-6">
         <div class="flex flex-col lg:flex-row gap-3">
-            {{-- Search Form --}}
+
+
             <form method="GET" action="{{ route('admin.rute') }}" class="flex-1 flex items-center gap-2">
                 <div class="flex items-center border border-gray-300 rounded-lg overflow-hidden shadow-sm flex-1">
                     <input type="text" name="search" value="{{ $search ?? '' }}" placeholder="Cari rute..."
@@ -21,7 +23,6 @@
                     </button>
                 </div>
 
-                <!-- Tombol Reset -->
                 @if (isset($search) && $search)
                     <a href="{{ route('admin.rute') }}"
                         class="text-gray-600 hover:text-gray-800 flex items-center gap-1 text-sm font-medium">
@@ -33,7 +34,9 @@
                         Reset
                     </a>
                 @endif
+
             </form>
+
             <a href="{{ route('admin.rute.create') }}"
                 class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center justify-center gap-2 transition fade-left animate-on-scroll whitespace-nowrap">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
@@ -45,7 +48,6 @@
         </div>
     </div>
 
-    {{-- Desktop Table View --}}
     <div
         class="hidden lg:block bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden fade-up animate-on-scroll">
         <div class="overflow-x-auto">
@@ -57,6 +59,8 @@
                             Perjalanan</th>
                         <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Jarak /
                             Estimasi</th>
+                        <th class="px-6 py-4 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">Jam
+                            Keberangkatan</th>
                         <th class="px-6 py-4 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">Harga
                             Tiket</th>
                         <th class="px-6 py-4 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
@@ -92,6 +96,12 @@
                                     {{ $rute->jarak_estimasi }}
                                 </div>
                             </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                <div class="inline-flex items-center px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg">
+                                    <i class="fas fa-clock mr-2 text-xs"></i>
+                                    <span class="text-sm font-semibold">{{ $rute->jam_keberangkatan ?? '-' }}</span>
+                                </div>
+                            </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right">
                                 <div class="text-sm font-semibold text-green-600">
                                     Rp {{ number_format(preg_replace('/[^\d]/', '', $rute->harga_tiket), 0, ',', '.') }}
@@ -111,6 +121,7 @@
                                         title="Edit">
                                         <i class="fas fa-pen text-sm"></i>
                                     </a>
+
                                     <form action="{{ route('admin.rute.destroy', $rute) }}" method="POST"
                                         class="delete-form inline">
                                         @csrf
@@ -121,6 +132,7 @@
                                             <i class="fas fa-trash-alt text-sm"></i>
                                         </button>
                                     </form>
+
                                 </div>
                             </td>
                         </tr>
@@ -139,7 +151,6 @@
             </table>
         </div>
 
-        {{-- Mobile Card View --}}
         <div class="lg:hidden space-y-4 fade-up animate-on-scroll">
             @forelse($rutes as $rute)
                 <div class="bg-white rounded-lg shadow p-4">
@@ -154,7 +165,6 @@
                             {{ $rute->status_rute }}
                         </span>
                     </div>
-
                     <div class="space-y-2 text-sm mb-3">
                         <div class="flex items-center gap-2">
                             <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -173,12 +183,12 @@
                                 {{ number_format(preg_replace('/[^\d]/', '', $rute->harga_tiket), 0, ',', '.') }}</span>
                         </div>
                     </div>
-
                     <div class="flex gap-2">
                         <a href="{{ route('admin.rute.edit', $rute) }}"
                             class="flex-1 bg-blue-600 text-white text-sm px-3 py-2 rounded hover:bg-blue-700 transition inline-flex items-center justify-center gap-1">
                             <i class="fas fa-pen-to-square"></i> Edit
                         </a>
+
                         <form action="{{ route('admin.rute.destroy', $rute) }}" method="POST"
                             class="flex-1 delete-form">
                             @csrf
@@ -188,6 +198,7 @@
                                 <i class="fas fa-trash-alt"></i> Hapus
                             </button>
                         </form>
+
                     </div>
                 </div>
             @empty
@@ -197,8 +208,7 @@
             @endforelse
         </div>
 
-        {{-- Pagination --}}
         <div class="mt-6 flex justify-end">
-            {{ $rutes->links() }}
+            {{ $rutes->links('pagination::tailwind') }}
         </div>
     @endsection

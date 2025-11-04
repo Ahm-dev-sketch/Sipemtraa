@@ -12,10 +12,8 @@ use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
-    // Dashboard Admin
     public function dashboard()
     {
-        // Hitung total pendapatan bulan ini dari booking yang disetujui dan sudah bayar
         $totalPendapatanBulanIni = Booking::where('status', 'setuju')
             ->where('payment_status', 'sudah_bayar')
             ->whereMonth('created_at', now()->month)
@@ -26,19 +24,15 @@ class AdminController extends Controller
                 return $booking->jadwal->harga;
             });
 
-        // Hitung jumlah pemesanan bulan ini
         $jumlahPemesananBulanIni = Booking::whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)
             ->count();
 
-        // Hitung perjalanan aktif (jadwal yang tanggalnya >= hari ini)
         $perjalananAktif = Jadwal::where('tanggal', '>=', now()->format('Y-m-d'))
             ->count();
 
-        // Hitung total pelanggan (hanya user, bukan admin)
         $totalPelanggan = User::where('role', 'user')->count();
 
-        // Hitung pendapatan 7 hari terakhir untuk chart (hanya yang sudah bayar)
         $pendapatan7Hari = [];
         $labels7Hari = [];
 
@@ -71,12 +65,11 @@ class AdminController extends Controller
         ]);
     }
 
-    // Kelola Jadwal (list)
     public function jadwals(Request $request)
     {
         $search = $request->input('search');
 
-        $jadwals = Jadwal::with('rute')
+        $jadwals = Jadwal::with(['rute', 'mobil'])
             ->when($search, function ($query, $search) {
                 return $query->whereHas('rute', function ($q) use ($search) {
                     $q->where('kota_asal', 'like', "%{$search}%")
@@ -90,15 +83,21 @@ class AdminController extends Controller
         return view('admin.jadwals', compact('jadwals', 'search'));
     }
 
-    // Form tambah jadwal
     public function createJadwal()
     {
-        $rutes = \App\Models\Rute::all();
+        $rutes = \App\Models\Rute::all()
+            ->groupBy(function ($item) {
+                return $item->kota_asal . '|' . $item->kota_tujuan;
+            })
+            ->map(function ($group) {
+                return $group->first();
+            })
+            ->values();
+
         $mobils = \App\Models\Mobil::all();
         return view('admin.jadwals.create', compact('rutes', 'mobils'));
     }
 
-    // Simpan jadwal baru
     public function storeJadwal(Request $request)
     {
         $request->validate([
@@ -116,19 +115,16 @@ class AdminController extends Controller
             'day_offset.max' => 'Offset maksimal 7 hari ke depan.',
         ]);
 
-        // CRITICAL FIX: Validasi status rute
         $rute = \App\Models\Rute::findOrFail($request->rute_id);
         if ($rute->status_rute !== 'aktif') {
             return back()->withErrors(['rute_id' => 'Rute tidak aktif. Status saat ini: ' . $rute->status_rute]);
         }
 
-        // CRITICAL FIX: Validasi status mobil
         $mobil = \App\Models\Mobil::findOrFail($request->mobil_id);
         if ($mobil->status !== 'aktif') {
             return back()->withErrors(['mobil_id' => 'Mobil tidak aktif. Status saat ini: ' . $mobil->status]);
         }
 
-        // CRITICAL FIX: Cek konflik jadwal untuk mobil yang sama
         $conflict = Jadwal::where('mobil_id', $request->mobil_id)
             ->where('tanggal', $request->tanggal)
             ->where('jam', $request->jam)
@@ -145,51 +141,48 @@ class AdminController extends Controller
             'jam' => $request->jam,
             'harga' => $request->harga,
             'day_offset' => (string)($request->day_offset ?? 0),
-            'is_active' => $request->has('is_active') ? true : false,
+            'is_active' => true,
             'notes' => $request->notes,
         ]);
 
-        return redirect()->route('admin.jadwals')->with('success', 'Jadwal berhasil ditambahkan');
+        return redirect()->route('admin.jadwals')->with('success', 'Jadwal berhasil ditambahkan dan langsung aktif');
     }
 
-    // Form edit jadwal
     public function editJadwal(Jadwal $jadwal)
     {
-        $rutes = \App\Models\Rute::all();
+        $rutes = \App\Models\Rute::all()
+            ->groupBy(function ($item) {
+                return $item->kota_asal . '|' . $item->kota_tujuan;
+            })
+            ->map(function ($group) {
+                return $group->first();
+            })
+            ->values();
+
         $mobils = \App\Models\Mobil::all();
         return view('admin.jadwals.edit', compact('jadwal', 'rutes', 'mobils'));
     }
 
-    // Update jadwal
     public function updateJadwal(Request $request, Jadwal $jadwal)
     {
         $request->validate([
             'rute_id' => 'required|exists:rutes,id',
             'mobil_id' => 'required|exists:mobils,id',
-            'tanggal' => 'required|date',
+            'tanggal' => 'required|date|after_or_equal:today',
             'jam' => 'required',
-            'harga' => 'required|integer|min:0',
-            'day_offset' => 'nullable|integer|min:0|max:7',
-            'is_active' => 'nullable|boolean',
-            'notes' => 'nullable|string|max:500',
-        ], [
-            'harga.min' => 'Harga tidak boleh negatif.',
-            'day_offset.max' => 'Offset maksimal 7 hari ke depan.',
+            'harga' => 'required|numeric|min:0',
         ]);
 
-        // CRITICAL FIX: Validasi status rute
         $rute = \App\Models\Rute::findOrFail($request->rute_id);
         if ($rute->status_rute !== 'aktif') {
             return back()->withErrors(['rute_id' => 'Rute tidak aktif. Status saat ini: ' . $rute->status_rute]);
         }
 
-        // CRITICAL FIX: Validasi status mobil
         $mobil = \App\Models\Mobil::findOrFail($request->mobil_id);
         if ($mobil->status !== 'aktif') {
             return back()->withErrors(['mobil_id' => 'Mobil tidak aktif. Status saat ini: ' . $mobil->status]);
         }
 
-        // CRITICAL FIX: Cek konflik jadwal jika mobil, tanggal, atau jam berubah
         if (
             $request->mobil_id != $jadwal->mobil_id ||
             $request->tanggal != $jadwal->tanggal ||
@@ -197,7 +190,7 @@ class AdminController extends Controller
         ) {
 
             $conflict = Jadwal::where('mobil_id', $request->mobil_id)
-                ->where('id', '!=', $jadwal->id) // Exclude current jadwal
+                ->where('id', '!=', $jadwal->id)
                 ->where('tanggal', $request->tanggal)
                 ->where('jam', $request->jam)
                 ->exists();
@@ -221,7 +214,6 @@ class AdminController extends Controller
         return redirect()->route('admin.jadwals')->with('success', 'Jadwal berhasil diperbarui');
     }
 
-    // Toggle status jadwal (aktif/nonaktif)
     public function toggleJadwalStatus(Jadwal $jadwal)
     {
         $jadwal->update([
@@ -232,10 +224,8 @@ class AdminController extends Controller
         return back()->with('success', "Jadwal berhasil {$status}");
     }
 
-    // Hapus jadwal
     public function destroyJadwal(Jadwal $jadwal)
     {
-        // Cek apakah ada booking terkait
         if ($jadwal->bookings()->exists()) {
             return back()->with('error', 'Tidak dapat menghapus jadwal karena ada booking terkait. Hapus booking terlebih dahulu.');
         }
@@ -270,7 +260,6 @@ class AdminController extends Controller
                             $subQ->where('merk', 'like', "%{$search}%")
                                 ->orWhere('nomor_polisi', 'like', "%{$search}%")
                         )
-                        // gunakan kolom dari tabel bookings
                         ->orWhere('jadwal_tanggal', 'like', "%{$search}%")
                         ->orWhere('jadwal_jam', 'like', "%{$search}%")
                         ->orWhere('seat_number', 'like', "%{$search}%")
@@ -291,7 +280,6 @@ class AdminController extends Controller
         return view('admin.bookings', compact('bookings', 'search', 'status', 'rute_id', 'rutes'));
     }
 
-    // Kelola Pelanggan
     public function pelanggan(Request $request)
     {
         $search = $request->input('search');
@@ -305,13 +293,11 @@ class AdminController extends Controller
         return view('admin.pelanggan', compact('users', 'search'));
     }
 
-    // Form edit pelanggan
     public function editPelanggan(User $customer)
     {
         return view('admin.pelanggan.edit', compact('customer'));
     }
 
-    // Update pelanggan
     public function updatePelanggan(Request $request, User $customer)
     {
         $request->validate([
@@ -325,13 +311,11 @@ class AdminController extends Controller
         return redirect()->route('admin.pelanggan')->with('success', 'Data pelanggan berhasil diperbarui');
     }
 
-    // Form tambah pelanggan
     public function createPelanggan()
     {
         return view('admin.pelanggan.create');
     }
 
-    // Simpan pelanggan baru
     public function storePelanggan(Request $request)
     {
         $request->validate([
@@ -349,10 +333,8 @@ class AdminController extends Controller
         return redirect()->route('admin.pelanggan')->with('success', 'Berhasil Menambahkan');
     }
 
-    // Hapus pelanggan
     public function destroyPelanggan(User $customer)
     {
-        // Cek apakah ada booking terkait
         if ($customer->bookings()->exists()) {
             return back()->with('error', 'Tidak dapat menghapus pelanggan karena ada booking terkait. Hapus booking terlebih dahulu atau ubah status booking.');
         }
@@ -361,10 +343,8 @@ class AdminController extends Controller
         return back()->with('success', 'Pelanggan berhasil dihapus');
     }
 
-    // Laporan pendapatan
     public function laporan()
     {
-        // Hitung total pendapatan (hanya yang sudah bayar)
         $totalPendapatan = Booking::where('status', 'setuju')
             ->where('payment_status', 'sudah_bayar')
             ->with('jadwal')
@@ -373,7 +353,6 @@ class AdminController extends Controller
                 return $booking->jadwal->harga;
             });
 
-        // Hitung pendapatan bulan ini (hanya yang sudah bayar)
         $pendapatanBulanIni = Booking::where('status', 'setuju')
             ->where('payment_status', 'sudah_bayar')
             ->whereMonth('created_at', now()->month)
@@ -384,12 +363,10 @@ class AdminController extends Controller
                 return $booking->jadwal->harga;
             });
 
-        // Hitung transaksi selesai (hanya yang sudah bayar)
         $transaksiSelesai = Booking::where('status', 'setuju')
             ->where('payment_status', 'sudah_bayar')
             ->count();
 
-        // Hitung pendapatan 7 hari terakhir untuk chart (hanya yang sudah bayar)
         $pendapatan7Hari = [];
         $labels7Hari = [];
 
@@ -409,23 +386,28 @@ class AdminController extends Controller
             $pendapatan7Hari[] = $pendapatanHari;
         }
 
-        // Hitung pendapatan bulan ini per hari untuk pie chart
         $pendapatanBulanIniPerHari = [];
         $labelsBulanIni = [];
 
         $daysInMonth = now()->daysInMonth;
-        for ($day = 1; $day <= $daysInMonth; $day++) {
-            $date = now()->setDay($day);
-            $labelsBulanIni[] = $date->format('d');
 
-            $pendapatanHari = Booking::where('status', 'setuju')
-                ->where('payment_status', 'sudah_bayar')
-                ->whereDate('created_at', $date->format('Y-m-d'))
-                ->with('jadwal')
-                ->get()
-                ->sum(function ($booking) {
-                    return $booking->jadwal->harga;
-                });
+        $bookingsThisMonth = Booking::where('status', 'setuju')
+            ->where('payment_status', 'sudah_bayar')
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->with('jadwal')
+            ->get()
+            ->groupBy(function ($booking) {
+                return \Carbon\Carbon::parse($booking->created_at)->format('d');
+            });
+
+        for ($day = 1; $day <= $daysInMonth; $day++) {
+            $dayStr = str_pad($day, 2, '0', STR_PAD_LEFT);
+            $labelsBulanIni[] = $dayStr;
+
+            $pendapatanHari = $bookingsThisMonth->get($dayStr, collect())->sum(function ($booking) {
+                return $booking->jadwal->harga;
+            });
 
             $pendapatanBulanIniPerHari[] = $pendapatanHari;
         }
@@ -440,8 +422,6 @@ class AdminController extends Controller
             'labelsBulanIni' => $labelsBulanIni,
         ]);
     }
-
-    // Data Rute
     public function rute(Request $request)
     {
         $search = $request->input('search');
@@ -461,13 +441,11 @@ class AdminController extends Controller
         return view('admin.rute', compact('rutes', 'search'));
     }
 
-    // Form tambah rute
     public function createRute()
     {
         return view('admin.rute.create');
     }
 
-    // Simpan rute baru
     public function storeRute(Request $request)
     {
         $request->validate([
@@ -475,10 +453,12 @@ class AdminController extends Controller
             'kota_tujuan' => 'required|string|max:255|different:kota_asal',
             'jarak_estimasi' => 'required|string|max:255',
             'harga_tiket' => 'required|numeric|min:0',
+            'jam_keberangkatan' => 'required|date_format:H:i',
             'status_rute' => 'required|string|in:aktif,nonaktif',
         ], [
             'kota_tujuan.different' => 'Kota tujuan harus berbeda dengan kota asal.',
             'harga_tiket.numeric' => 'Harga tiket harus berupa angka.',
+            'jam_keberangkatan.date_format' => 'Format jam keberangkatan tidak valid.',
         ]);
 
         \App\Models\Rute::create($request->only([
@@ -486,19 +466,18 @@ class AdminController extends Controller
             'kota_tujuan',
             'jarak_estimasi',
             'harga_tiket',
+            'jam_keberangkatan',
             'status_rute',
         ]));
 
         return redirect()->route('admin.rute')->with('success', 'Rute berhasil ditambahkan');
     }
 
-    // Form edit rute
     public function editRute(\App\Models\Rute $rute)
     {
         return view('admin.rute.edit', compact('rute'));
     }
 
-    // Update rute
     public function updateRute(Request $request, \App\Models\Rute $rute)
     {
         $request->validate([
@@ -506,10 +485,12 @@ class AdminController extends Controller
             'kota_tujuan' => 'required|string|max:255|different:kota_asal',
             'jarak_estimasi' => 'required|string|max:255',
             'harga_tiket' => 'required|numeric|min:0',
+            'jam_keberangkatan' => 'required|date_format:H:i',
             'status_rute' => 'required|string|in:aktif,nonaktif',
         ], [
             'kota_tujuan.different' => 'Kota tujuan harus berbeda dengan kota asal.',
             'harga_tiket.numeric' => 'Harga tiket harus berupa angka.',
+            'jam_keberangkatan.date_format' => 'Format jam keberangkatan tidak valid.',
         ]);
 
         $rute->update($request->only([
@@ -517,13 +498,13 @@ class AdminController extends Controller
             'kota_tujuan',
             'jarak_estimasi',
             'harga_tiket',
+            'jam_keberangkatan',
             'status_rute',
         ]));
 
         return redirect()->route('admin.rute')->with('success', 'Rute berhasil diperbarui');
     }
 
-    // Hapus rute
     public function destroyRute(\App\Models\Rute $rute)
     {
         // Cek apakah ada jadwal terkait
@@ -535,7 +516,6 @@ class AdminController extends Controller
         return back()->with('success', 'Rute berhasil dihapus');
     }
 
-    // Data Mobil
     public function mobil(Request $request)
     {
         $search = $request->input('search');
@@ -554,13 +534,11 @@ class AdminController extends Controller
         return view('admin.mobil', compact('mobils', 'search'));
     }
 
-    // Form tambah mobil
     public function createMobil()
     {
         return view('admin.mobil.create');
     }
 
-    // Simpan mobil baru
     public function storeMobil(Request $request)
     {
         $request->validate([
@@ -587,13 +565,11 @@ class AdminController extends Controller
         return redirect()->route('admin.mobil')->with('success', 'Mobil berhasil ditambahkan');
     }
 
-    // Form edit mobil
     public function editMobil(\App\Models\Mobil $mobil)
     {
         return view('admin.mobil.edit', compact('mobil'));
     }
 
-    // Update mobil
     public function updateMobil(Request $request, \App\Models\Mobil $mobil)
     {
         $request->validate([
@@ -620,24 +596,20 @@ class AdminController extends Controller
         return redirect()->route('admin.mobil')->with('success', 'Mobil berhasil diperbarui');
     }
 
-    // Hapus mobil
     public function destroyMobil(\App\Models\Mobil $mobil)
     {
-        // Cek apakah ada jadwal terkait
-        if ($mobil->jadwals()->exists()) {
-            return back()->with('error', 'Tidak dapat menghapus mobil karena ada jadwal terkait. Hapus jadwal terlebih dahulu.');
+        if ($mobil->supir()->exists()) {
+            return back()->with('error', 'Tidak dapat menghapus mobil karena ada supir terkait. Hapus atau pindahkan supir terlebih dahulu.');
         }
 
-        // Cek apakah ada supir terkait
-        if ($mobil->supir()->exists()) {
-            return back()->with('error', 'Tidak dapat menghapus mobil karena ada supir terkait. Hapus supir terlebih dahulu.');
+        if ($mobil->jadwals()->exists()) {
+            return back()->with('error', 'Tidak dapat menghapus mobil karena ada jadwal terkait. Hapus jadwal terlebih dahulu.');
         }
 
         $mobil->delete();
         return back()->with('success', 'Mobil berhasil dihapus');
     }
 
-    // Data Supir
     public function supir(Request $request)
     {
         $search = $request->input('search');
@@ -658,14 +630,12 @@ class AdminController extends Controller
         return view('admin.supir', compact('supirs', 'search'));
     }
 
-    // Form tambah supir
     public function createSupir()
     {
         $mobils = \App\Models\Mobil::whereDoesntHave('supir')->get();
         return view('admin.supir.create', compact('mobils'));
     }
 
-    // Simpan supir baru
     public function storeSupir(Request $request)
     {
         $request->validate([
@@ -683,7 +653,6 @@ class AdminController extends Controller
         return redirect()->route('admin.supir')->with('success', 'Supir berhasil ditambahkan');
     }
 
-    // Form edit supir
     public function editSupir(\App\Models\Supir $supir)
     {
         $mobils = \App\Models\Mobil::whereDoesntHave('supir')
@@ -692,7 +661,6 @@ class AdminController extends Controller
         return view('admin.supir.edit', compact('supir', 'mobils'));
     }
 
-    // Update supir
     public function updateSupir(Request $request, \App\Models\Supir $supir)
     {
         $request->validate([
@@ -710,7 +678,6 @@ class AdminController extends Controller
         return redirect()->route('admin.supir')->with('success', 'Supir berhasil diperbarui');
     }
 
-    // Hapus supir
     public function destroySupir(\App\Models\Supir $supir)
     {
         // Cek apakah mobilnya masih punya jadwal aktif
@@ -722,7 +689,6 @@ class AdminController extends Controller
         return back()->with('success', 'Supir berhasil dihapus');
     }
 
-    // Update status booking
     public function updateBooking(Request $request, Booking $booking)
     {
         Log::info('Update booking called', [
@@ -737,7 +703,6 @@ class AdminController extends Controller
             'status' => 'required|in:pending,setuju,batal'
         ]);
 
-        // CRITICAL FIX: Prevent status change if payment already processed
         if ($booking->payment_status === 'sudah_bayar') {
             Log::warning('Attempt to modify paid booking blocked', [
                 'booking_id' => $booking->id,
@@ -749,11 +714,9 @@ class AdminController extends Controller
         $oldStatus = $booking->status;
 
         try {
-            // Update status untuk semua kasus (setuju, pending, atau batal)
             $booking->update(['status' => $request->status]);
 
-            // Jika status diubah menjadi setuju, ubah payment_status menjadi belum_bayar (default)
-            if ($request->status === 'setuju') {
+            if ($request->status === 'setuju' && is_null($booking->payment_status)) {
                 $booking->update(['payment_status' => 'belum_bayar']);
             }
 
@@ -773,13 +736,11 @@ class AdminController extends Controller
             return back()->with('error', 'Gagal memperbarui status booking: ' . $e->getMessage());
         }
 
-        // Kirim notifikasi whatsapp jika status berubah
         if ($oldStatus !== $request->status) {
             try {
                 $fonnteService = app(\App\Services\FonnteService::class);
                 $fonnteService->notifyBookingStatusUpdate($booking);
             } catch (\Exception $e) {
-                // Log error jika whatsapp gagal dikirim, tapi tetap lanjutkan proses
                 Log::error('Gagal mengirim Fonnte notifikasi: ' . $e->getMessage());
             }
         }
@@ -787,7 +748,6 @@ class AdminController extends Controller
         return back()->with('success', 'Status booking diperbarui!');
     }
 
-    // Kelola Pembayaran
     public function pembayaran(Request $request)
     {
         $search = $request->input('search');
@@ -817,7 +777,6 @@ class AdminController extends Controller
         return view('admin.pembayaran', compact('bookings', 'search', 'payment_status'));
     }
 
-    // Update status pembayaran
     public function updatePembayaran(Request $request, Booking $booking)
     {
         $request->validate([
@@ -827,5 +786,52 @@ class AdminController extends Controller
         $booking->update(['payment_status' => $request->payment_status]);
 
         return back()->with('success', 'Status pembayaran diperbarui!');
+    }
+
+    public function getJamKeberangkatan($ruteId)
+    {
+        try {
+            $rute = \App\Models\Rute::findOrFail($ruteId);
+
+            $jamKeberangkatan = \App\Models\Rute::where('kota_asal', $rute->kota_asal)
+                ->where('kota_tujuan', $rute->kota_tujuan)
+                ->where('status_rute', 'aktif')
+                ->whereNotNull('jam_keberangkatan')
+                ->pluck('jam_keberangkatan')
+                ->unique()
+                ->sort()
+                ->values();
+
+            return response()->json([
+                'success' => true,
+                'jam_keberangkatan' => $jamKeberangkatan
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Rute tidak ditemukan'
+            ], 404);
+        }
+    }
+
+    public function getRuteData($ruteId)
+    {
+        try {
+            $rute = \App\Models\Rute::findOrFail($ruteId);
+
+            return response()->json([
+                'success' => true,
+                'harga_tiket' => $rute->harga_tiket,
+                'jam_keberangkatan' => [$rute->jam_keberangkatan],
+                'kota_asal' => $rute->kota_asal,
+                'kota_tujuan' => $rute->kota_tujuan,
+                'status_rute' => $rute->status_rute
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Rute tidak ditemukan'
+            ], 404);
+        }
     }
 }

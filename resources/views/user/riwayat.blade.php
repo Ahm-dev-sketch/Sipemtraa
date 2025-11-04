@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-    <!-- Page Header -->
     <div class="mb-8 fade-down animate-on-scroll">
         <div class="flex items-center gap-3 mb-2">
             <div class="w-1 h-8 bg-gradient-to-b from-blue-500 via-indigo-500 to-purple-600 rounded-full"></div>
@@ -13,10 +12,8 @@
         <p class="text-gray-600 ml-7">Kelola dan pantau semua pemesanan tiket perjalanan Anda</p>
     </div>
 
-    <!-- Modern Search and Filter Bar -->
     <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8 fade-right animate-on-scroll">
         <form method="GET" action="{{ route('riwayat') }}" class="flex flex-col gap-4">
-            <!-- Row 1: Search Input -->
             <div class="relative">
                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <i class="fas fa-search text-gray-400"></i>
@@ -26,9 +23,7 @@
                     class="w-full pl-11 pr-4 py-3.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm bg-gray-50 hover:bg-white transition-all duration-200">
             </div>
 
-            <!-- Row 2: Filters -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <!-- Status Filter -->
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                         <i class="fas fa-list-check text-gray-400"></i>
@@ -45,7 +40,6 @@
                     </div>
                 </div>
 
-                <!-- Payment Status Filter -->
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                         <i class="fas fa-wallet text-gray-400"></i>
@@ -63,7 +57,6 @@
                     </div>
                 </div>
 
-                <!-- Action Buttons -->
                 <div class="flex gap-2">
                     <button type="submit"
                         class="flex-1 group px-6 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 font-semibold text-sm flex items-center justify-center gap-2">
@@ -80,7 +73,6 @@
     </div>
 
     @if ($bookings->isEmpty())
-        <!-- Empty State -->
         <div class="fade-up animate-on-scroll">
             <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-12 text-center">
                 <div
@@ -99,13 +91,11 @@
             </div>
         </div>
     @else
-        <!-- Booking Timeline -->
         <div class="space-y-6 fade-up animate-on-scroll">
             @foreach ($bookings as $booking)
                 <div
                     class="group bg-white rounded-2xl shadow-lg border border-gray-100 hover:shadow-2xl transition-all duration-300 overflow-hidden hover:border-blue-200">
 
-                    <!-- Status Ribbon -->
                     <div
                         class="px-6 py-4 border-b border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-3
                         {{ $booking->status == 'setuju' && $booking->payment_status == 'sudah_bayar' ? 'bg-gradient-to-r from-green-50 to-emerald-50' : '' }}
@@ -113,7 +103,6 @@
                         {{ $booking->status == 'batal' ? 'bg-gradient-to-r from-red-50 to-rose-50' : '' }}
                         {{ $booking->status == 'setuju' && $booking->payment_status == 'belum_bayar' ? 'bg-gradient-to-r from-blue-50 to-indigo-50' : '' }}">
 
-                        <!-- Ticket Info -->
                         <div class="flex-1">
                             <div class="flex items-center gap-2 mb-1">
                                 <i class="fas fa-ticket-alt text-blue-600"></i>
@@ -126,7 +115,6 @@
                             </div>
                         </div>
 
-                        <!-- Status Badge -->
                         <div>
                             @if ($booking->status == 'setuju' && $booking->payment_status == 'sudah_bayar')
                                 <span
@@ -156,18 +144,14 @@
                         </div>
                     </div>
 
-                    <!-- Booking Details -->
                     <div class="p-6 md:p-8">
-                        <!-- Route Info with Enhanced Journey Visual -->
                         <div class="mb-6">
                             <div class="flex items-center gap-2 mb-4">
                                 <div class="w-1 h-6 bg-gradient-to-b from-blue-500 to-indigo-600 rounded-full"></div>
                                 <h4 class="font-bold text-gray-900">Informasi Rute Perjalanan</h4>
                             </div>
 
-                            <!-- Journey Visual - Responsive -->
                             <div class="flex flex-col md:flex-row items-stretch md:items-center gap-4 mb-4">
-                                <!-- Departure -->
                                 <div class="flex-1">
                                     <div
                                         class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border-2 border-blue-200 h-full">
@@ -185,7 +169,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Journey Indicator -->
                                 <div class="flex md:flex-col items-center justify-center gap-2 px-4 py-2 md:py-0">
                                     <div class="flex md:flex-col items-center gap-2">
                                         <div
@@ -205,7 +188,6 @@
                                     </span>
                                 </div>
 
-                                <!-- Destination -->
                                 <div class="flex-1">
                                     <div
                                         class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-4 border-2 border-purple-200 h-full">
@@ -224,7 +206,6 @@
                                 </div>
                             </div>
 
-                            <!-- Additional Route Info -->
                             <div class="flex flex-wrap items-center justify-center gap-3 md:gap-4 text-sm text-gray-600">
                                 <div class="flex items-center gap-2">
                                     <i class="fas fa-road text-blue-600"></i>
@@ -243,11 +224,8 @@
                             </div>
                         </div>
 
-                        <!-- Details Grid -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                            <!-- Left Column -->
                             <div class="space-y-4">
-                                <!-- Schedule -->
                                 <div class="flex items-start gap-3">
                                     <div
                                         class="shrink-0 w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -263,7 +241,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Vehicle -->
                                 <div class="flex items-start gap-3">
                                     <div
                                         class="shrink-0 w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
@@ -276,7 +253,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Driver -->
                                 <div class="flex items-start gap-3">
                                     <div
                                         class="shrink-0 w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
@@ -290,9 +266,7 @@
                                 </div>
                             </div>
 
-                            <!-- Right Column -->
                             <div class="space-y-4">
-                                <!-- Passenger -->
                                 <div class="flex items-start gap-3">
                                     <div
                                         class="shrink-0 w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
@@ -304,7 +278,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Seat -->
                                 <div class="flex items-start gap-3">
                                     <div
                                         class="shrink-0 w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
@@ -316,7 +289,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Payment Status -->
                                 <div class="flex items-start gap-3">
                                     <div
                                         class="shrink-0 w-10 h-10 {{ $booking->payment_status == 'sudah_bayar' ? 'bg-green-100' : 'bg-red-100' }} rounded-lg flex items-center justify-center">
@@ -335,7 +307,6 @@
                         </div>
                     </div>
 
-                    <!-- Footer: Price & Actions -->
                     <div
                         class="px-6 md:px-8 py-6 bg-gray-50 border-t border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div class="flex items-center gap-3">
@@ -352,7 +323,6 @@
                             </div>
                         </div>
 
-                        <!-- Action Buttons -->
                         <div class="flex gap-2 w-full md:w-auto">
                             @if ($booking->status == 'setuju' && $booking->payment_status == 'sudah_bayar')
                                 <a href="{{ route('booking.download.ticket', $booking) }}" target="_blank"
@@ -378,10 +348,9 @@
             @endforeach
         </div>
 
-        {{-- Modern Pagination --}}
         <div class="mt-8 flex justify-center fade-up animate-on-scroll">
             <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-2">
-                {{ $bookings->links() }}
+                {{ $bookings->links('pagination::tailwind') }}
             </div>
         </div>
     @endif

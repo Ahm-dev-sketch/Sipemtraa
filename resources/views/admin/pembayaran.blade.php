@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
 @section('page-title', 'Kelola Pembayaran')
+
 @section('page-subtitle', 'Monitor dan konfirmasi pembayaran tiket')
 
 @section('content')
-    <!-- Search and Filter Bar -->
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
+
         <form method="GET" action="{{ route('admin.pembayaran') }}" class="flex flex-col md:flex-row gap-3">
-            <!-- Search Input -->
             <div class="flex-1">
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -22,10 +22,6 @@
                         class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
                 </div>
             </div>
-
-
-
-            <!-- Payment Status Filter -->
             <div class="w-full md:w-44">
                 <select name="payment_status" id="payment_status"
                     class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white">
@@ -36,10 +32,6 @@
                         Bayar</option>
                 </select>
             </div>
-
-
-
-            <!-- Buttons -->
             <div class="flex gap-2">
                 <button type="submit"
                     class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium flex items-center transition-colors">
@@ -60,9 +52,9 @@
                 </a>
             </div>
         </form>
+
     </div>
 
-    {{-- Desktop View - Table --}}
     <div
         class="hidden lg:block bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden fade-up animate-on-scroll">
         <div class="overflow-x-auto">
@@ -144,6 +136,7 @@
                                     : ($booking->status == 'batal'
                                         ? 'bg-red-100 text-red-700'
                                         : 'bg-yellow-100 text-yellow-700') }}">
+
                                     @if ($booking->status == 'setuju')
                                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd"
@@ -163,6 +156,7 @@
                                                 clip-rule="evenodd" />
                                         </svg>
                                     @endif
+
                                     {{ ucfirst($booking->status) }}
                                 </span>
                             </td>
@@ -174,11 +168,13 @@
                                 </span>
                             </td>
                             <td class="px-4 py-2 border border-white">
+
                                 <form action="{{ route('admin.pembayaran.update', $booking) }}" method="POST"
                                     class="flex items-center justify-center gap-2">
                                     @csrf @method('PUT')
                                     <input type="hidden" name="payment_status" id="payment_status_{{ $booking->id }}"
                                         value="">
+
                                     @if ($booking->payment_status !== 'sudah_bayar')
                                         <button type="submit"
                                             onclick="document.getElementById('payment_status_{{ $booking->id }}').value='sudah_bayar'"
@@ -195,7 +191,9 @@
                                             </svg>
                                         </a>
                                     @endif
+
                                 </form>
+
                             </td>
                         </tr>
                     @empty
@@ -209,11 +207,10 @@
             </table>
         </div>
 
-        {{-- Mobile View - Cards --}}
         <div class="lg:hidden space-y-4 fade-up animate-on-scroll">
             @forelse($bookings as $booking)
                 <div class="bg-white rounded-lg shadow-md border border-gray-200 p-4">
-                    {{-- Header with Ticket Number --}}
+
                     <div class="flex items-center justify-between mb-3 pb-3 border-b border-gray-200">
                         <div>
                             <div class="text-xs text-gray-500">Ticket Number</div>
@@ -223,6 +220,7 @@
                             <span
                                 class="px-2 py-1 rounded-full text-xs font-semibold inline-flex items-center gap-1
                             {{ $booking->status == 'setuju' ? 'bg-green-100 text-green-700' : ($booking->status == 'batal' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700') }}">
+
                                 @if ($booking->status == 'setuju')
                                     <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd"
@@ -242,6 +240,7 @@
                                             clip-rule="evenodd" />
                                     </svg>
                                 @endif
+
                                 {{ ucfirst($booking->status) }}
                             </span>
                             <span
@@ -252,7 +251,6 @@
                         </div>
                     </div>
 
-                    {{-- Customer Info --}}
                     <div class="space-y-2 mb-3">
                         <div class="flex items-center gap-2 text-sm">
                             <svg class="w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor"
@@ -263,7 +261,6 @@
                             <span class="text-gray-600">Pelanggan:</span>
                             <span class="font-medium text-gray-900">{{ $booking->user->name }}</span>
                         </div>
-
                         <div class="flex items-center gap-2 text-sm">
                             <svg class="w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
@@ -278,7 +275,6 @@
                                 {{ $booking->jadwal->rute->kota_asal }} → {{ $booking->jadwal->rute->kota_tujuan }}
                             </span>
                         </div>
-
                         <div class="flex items-center gap-2 text-sm">
                             <svg class="w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
@@ -291,7 +287,6 @@
                                 {{ \Carbon\Carbon::parse($booking->jadwal->tanggal)->format('d M Y') }}
                             </span>
                         </div>
-
                         <div class="flex items-center gap-2 text-sm">
                             <svg class="w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
@@ -301,7 +296,6 @@
                             <span class="text-gray-600">Jam:</span>
                             <span class="font-medium text-gray-900">{{ $booking->jadwal->jam }}</span>
                         </div>
-
                         <div class="flex items-center gap-2 text-sm">
                             <svg class="w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
@@ -314,13 +308,14 @@
                         </div>
                     </div>
 
-                    {{-- Actions --}}
                     <div class="pt-3 border-t border-gray-100">
+
                         <form action="{{ route('admin.pembayaran.update', $booking) }}" method="POST"
                             class="flex items-center justify-center gap-2">
                             @csrf @method('PUT')
                             <input type="hidden" name="payment_status" id="payment_status_mobile_{{ $booking->id }}"
                                 value="">
+
                             @if ($booking->payment_status !== 'sudah_bayar')
                                 <button type="submit"
                                     onclick="document.getElementById('payment_status_mobile_{{ $booking->id }}').value='sudah_bayar'"
@@ -343,7 +338,9 @@
                                     Download Tiket
                                 </a>
                             @endif
+
                         </form>
+
                     </div>
                 </div>
             @empty
@@ -353,8 +350,7 @@
             @endforelse
         </div>
 
-        {{-- Pagination --}}
         <div class="mt-6 flex justify-end">
-            {{ $bookings->links() }}
+            {{ $bookings->links('pagination::tailwind') }}
         </div>
     @endsection

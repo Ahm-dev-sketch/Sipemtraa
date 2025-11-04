@@ -1,16 +1,19 @@
 @extends('layouts.app')
 
 @section('page-title', 'Penjadwalan')
+
 @section('page-subtitle', 'Kelola jadwal perjalanan dan ketersediaan')
 
 @section('content')
+
     @if (session('success'))
         <div data-success-message="{{ session('success') }}" style="display: none;"></div>
     @endif
 
     <div class="mb-6">
         <div class="flex flex-col lg:flex-row gap-3">
-            {{-- Search Form --}}
+
+
             <form method="GET" action="{{ route('admin.jadwals') }}" class="flex-1 flex items-center gap-2">
                 <div class="flex items-center border border-gray-300 rounded-lg overflow-hidden shadow-sm flex-1">
                     <input type="text" name="search" value="{{ $search ?? '' }}" placeholder="Cari jadwal..."
@@ -25,7 +28,6 @@
                     </button>
                 </div>
 
-                <!-- Tombol Reset -->
                 @if (isset($search) && $search)
                     <a href="{{ route('admin.jadwals') }}"
                         class="text-gray-600 hover:text-gray-800 flex items-center gap-1 text-sm font-medium">
@@ -37,6 +39,7 @@
                         Reset
                     </a>
                 @endif
+
             </form>
 
             <a href="{{ route('admin.jadwals.create') }}"
@@ -50,7 +53,6 @@
         </div>
     </div>
 
-    {{-- Desktop Table View --}}
     <div
         class="hidden lg:block bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden fade-up animate-on-scroll">
         <div class="overflow-x-auto">
@@ -111,7 +113,7 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                                 <div class="flex justify-center gap-2">
-                                    <!-- Toggle Status -->
+
                                     <form action="{{ route('admin.jadwals.toggle', $jadwal) }}" method="POST"
                                         class="inline">
                                         @csrf
@@ -129,6 +131,7 @@
                                         title="Edit">
                                         <i class="fas fa-pen text-sm"></i>
                                     </a>
+
                                     <form action="{{ route('admin.jadwals.destroy', $jadwal) }}" method="POST"
                                         class="delete-form inline">
                                         @csrf
@@ -139,6 +142,7 @@
                                             <i class="fas fa-trash-alt text-sm"></i>
                                         </button>
                                     </form>
+
                                 </div>
                             </td>
                         </tr>
@@ -157,7 +161,6 @@
             </table>
         </div>
 
-        {{-- Mobile Card View --}}
         <div class="lg:hidden space-y-4 fade-up animate-on-scroll">
             @forelse($jadwals as $jadwal)
                 <div class="bg-white rounded-lg shadow p-4">
@@ -172,7 +175,6 @@
                             Rp {{ number_format($jadwal->harga, 0, ',', '.') }}
                         </span>
                     </div>
-
                     <div class="space-y-2 text-sm mb-3">
                         <div class="flex items-center gap-2">
                             <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -192,9 +194,8 @@
                             <span class="text-gray-700">{{ $jadwal->jam }} WIB</span>
                         </div>
                     </div>
-
                     <div class="flex gap-2">
-                        <!-- Toggle Status -->
+
                         <form action="{{ route('admin.jadwals.toggle', $jadwal) }}" method="POST" class="flex-1">
                             @csrf
                             @method('PATCH')
@@ -209,6 +210,7 @@
                             class="flex-1 bg-blue-600 text-white text-sm px-3 py-2 rounded hover:bg-blue-700 transition inline-flex items-center justify-center gap-1">
                             <i class="fas fa-pen-to-square"></i> Edit
                         </a>
+
                         <form action="{{ route('admin.jadwals.destroy', $jadwal) }}" method="POST"
                             class="flex-1 delete-form">
                             @csrf
@@ -218,6 +220,7 @@
                                 <i class="fas fa-trash-alt"></i> Hapus
                             </button>
                         </form>
+
                     </div>
                 </div>
             @empty
@@ -227,8 +230,7 @@
             @endforelse
         </div>
 
-        {{-- Pagination --}}
         <div class="mt-4 flex justify-end w-full pr-4">
-            {{ $jadwals->links() }}
+            {{ $jadwals->links('pagination::tailwind') }}
         </div>
     @endsection

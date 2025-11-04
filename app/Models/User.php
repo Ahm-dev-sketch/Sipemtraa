@@ -24,9 +24,6 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     */
     protected function casts(): array
     {
         return [
@@ -34,9 +31,6 @@ class User extends Authenticatable
         ];
     }
 
-    /**
-     * Relasi ke Booking
-     */
     public function bookings()
     {
         return $this->hasMany(Booking::class);

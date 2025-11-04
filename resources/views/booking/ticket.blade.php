@@ -126,9 +126,6 @@
             color: #991b1b;
         }
 
-
-
-        /* ======== QR SECTION ======== */
         .qr-code {
             text-align: center;
             margin: 12px 0 8px;
@@ -194,9 +191,8 @@
             <h1>E-Ticket Travel</h1>
             <div class="ticket-number">No. Tiket: {{ $booking->ticket_number }}</div>
         </div>
-
         <div class="ticket-body">
-            {{-- Informasi Penumpang --}}
+
             <div class="info-line">
                 <strong>Nama Penumpang:</strong>
                 <span>{{ $booking->user->name }}</span>
@@ -207,7 +203,7 @@
             </div>
             <div class="info-line">
                 <strong>Rute:</strong>
-                <span>{{ $booking->jadwal->rute->kota_asal }} → {{ $booking->jadwal->rute->kota_tujuan }}</span>
+                <span>{{ $booking->jadwal->rute->kota_asal }} - {{ $booking->jadwal->rute->kota_tujuan }}</span>
             </div>
             <div class="info-line">
                 <strong>Keberangkatan:</strong>
@@ -226,14 +222,13 @@
                 <strong>Harga:</strong>
                 <span>Rp {{ number_format($booking->jadwal->harga, 0, ',', '.') }}</span>
             </div>
-
             <div class="ticket-divider"></div>
 
-            {{-- Status Booking --}}
             <div class="info-line">
                 <strong>Status Booking:</strong>
                 <span
                     class="status-badge {{ $booking->status == 'setuju' ? 'status-approved' : ($booking->status == 'batal' ? 'status-cancelled' : 'status-pending') }}">
+
                     @if ($booking->status == 'setuju')
                         <svg style="width: 10px; height: 10px;" fill="none" stroke="currentColor"
                             viewBox="0 0 24 24">
@@ -253,11 +248,11 @@
                                 d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
                     @endif
+
                     {{ ucfirst($booking->status) }}
                 </span>
             </div>
 
-            {{-- Status Pembayaran --}}
             <div class="info-line">
                 <strong>Status Pembayaran:</strong>
                 <span
@@ -265,16 +260,13 @@
                     {{ $booking->payment_status == 'sudah_bayar' ? 'Sudah Bayar' : 'Belum Bayar' }}
                 </span>
             </div>
-
             <div class="qr-code">
                 <div class="qr-box">
                     <div class="ticket-number">{{ $booking->ticket_number }}</div>
                     <small>Nomor Tiket</small>
                 </div>
             </div>
-
             <div class="ticket-divider"></div>
-
             <div class="note">
                 <p><strong>Perhatian:</strong> Tunjukkan e-ticket ini saat naik kendaraan. Tiket dicetak pada
                     {{ \Carbon\Carbon::now()->format('d M Y, H:i') }}</p>

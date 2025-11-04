@@ -12,9 +12,7 @@
             </div>
         </h1>
     </div>
-
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-3xl">
-        <!-- Header Form -->
         <div class="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-200">
             <h2 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
                 <i class="fas fa-bus-alt text-blue-600"></i>
@@ -22,13 +20,11 @@
             </h2>
         </div>
 
-        <!-- Form Body -->
         <form action="{{ route('admin.mobil.update', $mobil) }}" method="POST" class="p-6">
             @csrf
             @method('PUT')
-
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {{-- Nomor Polisi --}}
+
                 <div class="md:col-span-2">
                     <label for="nomor_polisi" class="block text-sm font-semibold text-gray-700 mb-2">
                         <i class="fas fa-id-card text-gray-400 mr-1"></i>
@@ -45,7 +41,6 @@
                     @enderror
                 </div>
 
-                {{-- Merk --}}
                 <div>
                     <label for="merk" class="block text-sm font-semibold text-gray-700 mb-2">
                         <i class="fas fa-tag text-gray-400 mr-1"></i>
@@ -61,7 +56,6 @@
                     @enderror
                 </div>
 
-                {{-- Jenis --}}
                 <div>
                     <label for="jenis" class="block text-sm font-semibold text-gray-700 mb-2">
                         <i class="fas fa-car text-gray-400 mr-1"></i>
@@ -77,7 +71,6 @@
                     @enderror
                 </div>
 
-                {{-- Kapasitas --}}
                 <div>
                     <label for="kapasitas" class="block text-sm font-semibold text-gray-700 mb-2">
                         <i class="fas fa-users text-gray-400 mr-1"></i>
@@ -94,7 +87,6 @@
                     @enderror
                 </div>
 
-                {{-- Tahun --}}
                 <div>
                     <label for="tahun" class="block text-sm font-semibold text-gray-700 mb-2">
                         <i class="fas fa-calendar text-gray-400 mr-1"></i>
@@ -111,7 +103,6 @@
                     @enderror
                 </div>
 
-                {{-- Status --}}
                 <div class="md:col-span-2">
                     <label for="status" class="block text-sm font-semibold text-gray-700 mb-2">
                         <i class="fas fa-toggle-on text-gray-400 mr-1"></i>
@@ -133,7 +124,6 @@
                 </div>
             </div>
 
-            {{-- Action Buttons --}}
             <div class="flex items-center gap-3 mt-8 pt-6 border-t border-gray-200">
                 <button type="submit"
                     class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all">
@@ -147,5 +137,6 @@
                 </a>
             </div>
         </form>
+
     </div>
 @endsection
