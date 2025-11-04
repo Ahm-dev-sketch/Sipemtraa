@@ -182,7 +182,8 @@
                                 </div>
                                 <div>
                                     <p class="text-xs text-gray-600 font-medium mb-0.5">Waktu Keberangkatan</p>
-                                    <p class="font-bold text-gray-900 text-sm">{{ $jadwal->jam }} WIB</p>
+                                    <p class="font-bold text-gray-900 text-sm">
+                                        {{ \Carbon\Carbon::parse($jadwal->jam)->format('H:i') }} WIB
                                 </div>
                             </div>
 
