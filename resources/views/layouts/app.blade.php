@@ -70,7 +70,7 @@
                     class="p-5 border-b border-slate-600/20 bg-gradient-to-r from-slate-800/30 to-slate-900/20 backdrop-blur-md">
                     <div class="flex items-center gap-3">
                         <img src="{{ asset('asset/logo.webp') }}" alt="Logo"
-                            class="h-12 w-12 rounded-xl object-cover ring-2 ring-blue-400/30 shadow-md shadow-blue-500/10 transition-all duration-300 hover:ring-blue-400/50 hover:shadow-lg hover:shadow-blue-500/20"
+                            class="h-12 w-12 rounded-full object-cover ring-2 ring-blue-400/30 shadow-md shadow-blue-500/10 transition-all duration-300 hover:ring-blue-400/50 hover:shadow-lg hover:shadow-blue-500/20"
                             width="48" height="48" loading="lazy">
                         <div>
                             <h1 class="text-base font-bold text-white leading-tight tracking-tight">PT. PELITA</h1>
