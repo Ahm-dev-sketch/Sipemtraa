@@ -54,7 +54,8 @@ class BookingController extends Controller
             $query->where('status', $request->status);
         }
 
-        if ($request->filled('is_paid')) {
+        // Filter payment status (form sends `payment_status`)
+        if ($request->filled('payment_status')) {
             $query->where('payment_status', $request->payment_status);
         }
 
