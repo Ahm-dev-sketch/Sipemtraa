@@ -275,7 +275,15 @@ class AdminController extends Controller
             ->paginate(10)
             ->appends(request()->query());
 
-        $rutes = \App\Models\Rute::select('id', 'kota_asal', 'kota_tujuan')->get();
+        $rutes = \App\Models\Rute::select('id', 'kota_asal', 'kota_tujuan')
+            ->get()
+            ->groupBy(function ($item) {
+                return $item->kota_asal . '|' . $item->kota_tujuan;
+            })
+            ->map(function ($group) {
+                return $group->first();
+            })
+            ->values();
 
         return view('admin.bookings', compact('bookings', 'search', 'status', 'rute_id', 'rutes'));
     }
