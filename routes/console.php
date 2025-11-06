@@ -8,9 +8,9 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-// Schedule to auto-update jadwal dates every day at midnight
+// Schedule to auto-update jadwal dates every day at midnight (00:00)
 Schedule::command('jadwal:update-dates')
-    ->dailyAt('00:01') // Run at 12:01 AM every day
+    ->dailyAt('00:00') // Run at 12:00 AM (midnight) every day
     ->withoutOverlapping()
     ->timezone('Asia/Jakarta');
 
