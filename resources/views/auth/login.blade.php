@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+    <!-- Login Page Container -->
     <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         <div class="absolute inset-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 -z-10"></div>
         <div class="absolute inset-0 bg-grid-pattern opacity-5 -z-10"></div>
@@ -14,9 +15,11 @@
             class="absolute -bottom-8 left-20 w-72 h-72 bg-indigo-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000">
         </div>
         <div class="max-w-6xl w-full">
+            <!-- Login Form Card -->
             <div class="bg-white rounded-3xl shadow-2xl overflow-hidden fade-up animate-on-scroll">
                 <div class="flex flex-col md:flex-row">
 
+                    <!-- Login Form Section -->
                     <div class="md:w-1/2 p-8 md:p-12 fade-right animate-on-scroll">
                         <div class="mb-8">
                             <div
@@ -122,6 +125,7 @@
                         </div>
                     </div>
 
+                    <!-- Company Info Section -->
                     <div
                         class="md:w-1/2 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 flex flex-col justify-center items-center p-8 md:p-12 text-white relative overflow-hidden fade-left animate-on-scroll">
                         <div class="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-32 -mt-32"></div>

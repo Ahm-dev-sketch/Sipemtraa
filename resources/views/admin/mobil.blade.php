@@ -5,6 +5,7 @@
 @section('page-subtitle', 'Kelola data kendaraan dan kapasitas')
 
 @section('content')
+    <!-- Header section dengan search dan tombol tambah mobil -->
     <div class="mb-6">
         <div class="flex flex-col lg:flex-row gap-3">
 
@@ -50,6 +51,7 @@
         </div>
     </div>
 
+    <!-- Table view untuk desktop: Tabel daftar mobil dengan kolom ID, nomor plat, jenis, kapasitas, tahun/merk, status, dan aksi -->
     <div
         class="hidden lg:block bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden fade-up animate-on-scroll">
         <div class="overflow-x-auto">
@@ -141,6 +143,7 @@
         </div>
     </div>
 
+    <!-- Card view untuk mobile: Tampilan kartu untuk setiap mobil dengan informasi dan tombol aksi -->
     <div class="lg:hidden space-y-4 fade-up animate-on-scroll">
         @forelse($mobils as $mobil)
             <div class="bg-white rounded-lg shadow p-4">
@@ -195,7 +198,8 @@
         @endforelse
     </div>
 
-    <div class="mt-6 flex justify-end">
-        {{ $mobils->links('pagination::tailwind') }}
+    <!-- Pagination section: Navigasi halaman untuk daftar mobil -->
+    <div class="mt-6 flex justify-center lg:justify-end">
+        {{ $mobils->links('vendor.pagination.compact') }}
     </div>
 @endsection

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+// Import model dan library yang diperlukan
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
@@ -10,10 +11,16 @@ use App\Models\Jadwal;
 use App\Models\Booking;
 use Illuminate\Http\Request;
 
+/**
+ * Controller untuk mengelola panel admin sistem pemesanan tiket travel
+ * Menangani dashboard, manajemen jadwal, booking, pelanggan, rute, mobil, dan supir
+ */
 class AdminController extends Controller
 {
+    // Menampilkan dashboard admin dengan statistik utama
     public function dashboard()
     {
+        // Hitung total pendapatan bulan ini dari booking yang sudah disetujui dan dibayar
         $totalPendapatanBulanIni = Booking::where('status', 'setuju')
             ->where('payment_status', 'sudah_bayar')
             ->whereMonth('created_at', now()->month)
@@ -24,15 +31,19 @@ class AdminController extends Controller
                 return $booking->jadwal->harga;
             });
 
+        // Hitung jumlah pemesanan bulan ini
         $jumlahPemesananBulanIni = Booking::whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)
             ->count();
 
+        // Hitung jumlah perjalanan aktif (jadwal yang belum lewat)
         $perjalananAktif = Jadwal::where('tanggal', '>=', now()->format('Y-m-d'))
             ->count();
 
+        // Hitung total pelanggan (user dengan role 'user')
         $totalPelanggan = User::where('role', 'user')->count();
 
+        // Hitung pendapatan 7 hari terakhir untuk chart
         $pendapatan7Hari = [];
         $labels7Hari = [];
 
@@ -65,6 +76,7 @@ class AdminController extends Controller
         ]);
     }
 
+    // Menampilkan daftar jadwal dengan fitur pencarian
     public function jadwals(Request $request)
     {
         $search = $request->input('search');
@@ -83,8 +95,10 @@ class AdminController extends Controller
         return view('admin.jadwals', compact('jadwals', 'search'));
     }
 
+    // Menampilkan form tambah jadwal baru
     public function createJadwal()
     {
+        // Ambil rute yang unik berdasarkan kombinasi kota asal-tujuan
         $rutes = \App\Models\Rute::all()
             ->groupBy(function ($item) {
                 return $item->kota_asal . '|' . $item->kota_tujuan;
@@ -98,6 +112,7 @@ class AdminController extends Controller
         return view('admin.jadwals.create', compact('rutes', 'mobils'));
     }
 
+    // Menyimpan jadwal baru ke database
     public function storeJadwal(Request $request)
     {
         $request->validate([
@@ -115,16 +130,19 @@ class AdminController extends Controller
             'day_offset.max' => 'Offset maksimal 7 hari ke depan.',
         ]);
 
+        // Validasi status rute
         $rute = \App\Models\Rute::findOrFail($request->rute_id);
         if ($rute->status_rute !== 'aktif') {
             return back()->withErrors(['rute_id' => 'Rute tidak aktif. Status saat ini: ' . $rute->status_rute]);
         }
 
+        // Validasi status mobil
         $mobil = \App\Models\Mobil::findOrFail($request->mobil_id);
         if ($mobil->status !== 'aktif') {
             return back()->withErrors(['mobil_id' => 'Mobil tidak aktif. Status saat ini: ' . $mobil->status]);
         }
 
+        // Cek konflik jadwal mobil
         $conflict = Jadwal::where('mobil_id', $request->mobil_id)
             ->where('tanggal', $request->tanggal)
             ->where('jam', $request->jam)
@@ -134,6 +152,7 @@ class AdminController extends Controller
             return back()->withErrors(['mobil_id' => 'Mobil sudah dijadwalkan di waktu yang sama.']);
         }
 
+        // Buat jadwal baru
         Jadwal::create([
             'rute_id' => $request->rute_id,
             'mobil_id' => $request->mobil_id,
@@ -148,8 +167,10 @@ class AdminController extends Controller
         return redirect()->route('admin.jadwals')->with('success', 'Jadwal berhasil ditambahkan dan langsung aktif');
     }
 
+    // Menampilkan form edit jadwal
     public function editJadwal(Jadwal $jadwal)
     {
+        // Ambil rute yang unik berdasarkan kombinasi kota asal-tujuan
         $rutes = \App\Models\Rute::all()
             ->groupBy(function ($item) {
                 return $item->kota_asal . '|' . $item->kota_tujuan;
@@ -163,6 +184,7 @@ class AdminController extends Controller
         return view('admin.jadwals.edit', compact('jadwal', 'rutes', 'mobils'));
     }
 
+    // Update data jadwal di database
     public function updateJadwal(Request $request, Jadwal $jadwal)
     {
         $request->validate([
@@ -173,16 +195,19 @@ class AdminController extends Controller
             'harga' => 'required|numeric|min:0',
         ]);
 
+        // Validasi status rute
         $rute = \App\Models\Rute::findOrFail($request->rute_id);
         if ($rute->status_rute !== 'aktif') {
             return back()->withErrors(['rute_id' => 'Rute tidak aktif. Status saat ini: ' . $rute->status_rute]);
         }
 
+        // Validasi status mobil
         $mobil = \App\Models\Mobil::findOrFail($request->mobil_id);
         if ($mobil->status !== 'aktif') {
             return back()->withErrors(['mobil_id' => 'Mobil tidak aktif. Status saat ini: ' . $mobil->status]);
         }
 
+        // Cek konflik jadwal jika ada perubahan mobil/tanggal/jam
         if (
             $request->mobil_id != $jadwal->mobil_id ||
             $request->tanggal != $jadwal->tanggal ||
@@ -200,6 +225,7 @@ class AdminController extends Controller
             }
         }
 
+        // Update jadwal
         $jadwal->update([
             'rute_id' => $request->rute_id,
             'mobil_id' => $request->mobil_id,
@@ -214,6 +240,7 @@ class AdminController extends Controller
         return redirect()->route('admin.jadwals')->with('success', 'Jadwal berhasil diperbarui');
     }
 
+    // Toggle status aktif/nonaktif jadwal
     public function toggleJadwalStatus(Jadwal $jadwal)
     {
         $jadwal->update([
@@ -224,6 +251,7 @@ class AdminController extends Controller
         return back()->with('success', "Jadwal berhasil {$status}");
     }
 
+    // Hapus jadwal dari database
     public function destroyJadwal(Jadwal $jadwal)
     {
         if ($jadwal->bookings()->exists()) {
@@ -234,6 +262,7 @@ class AdminController extends Controller
         return back()->with('success', 'Jadwal berhasil dihapus');
     }
 
+    // Menampilkan daftar booking dengan filter pencarian
     public function bookings(Request $request)
     {
         $search  = $request->input('search');
@@ -275,6 +304,7 @@ class AdminController extends Controller
             ->paginate(10)
             ->appends(request()->query());
 
+        // Ambil rute untuk filter dropdown
         $rutes = \App\Models\Rute::select('id', 'kota_asal', 'kota_tujuan')
             ->get()
             ->groupBy(function ($item) {
@@ -288,6 +318,7 @@ class AdminController extends Controller
         return view('admin.bookings', compact('bookings', 'search', 'status', 'rute_id', 'rutes'));
     }
 
+    // Menampilkan daftar pelanggan dengan fitur pencarian
     public function pelanggan(Request $request)
     {
         $search = $request->input('search');
@@ -301,11 +332,13 @@ class AdminController extends Controller
         return view('admin.pelanggan', compact('users', 'search'));
     }
 
+    // Menampilkan form edit pelanggan
     public function editPelanggan(User $customer)
     {
         return view('admin.pelanggan.edit', compact('customer'));
     }
 
+    // Update data pelanggan di database
     public function updatePelanggan(Request $request, User $customer)
     {
         $request->validate([
@@ -319,11 +352,13 @@ class AdminController extends Controller
         return redirect()->route('admin.pelanggan')->with('success', 'Data pelanggan berhasil diperbarui');
     }
 
+    // Menampilkan form tambah pelanggan baru
     public function createPelanggan()
     {
         return view('admin.pelanggan.create');
     }
 
+    // Menyimpan pelanggan baru ke database
     public function storePelanggan(Request $request)
     {
         $request->validate([
@@ -341,6 +376,7 @@ class AdminController extends Controller
         return redirect()->route('admin.pelanggan')->with('success', 'Berhasil Menambahkan');
     }
 
+    // Hapus pelanggan dari database
     public function destroyPelanggan(User $customer)
     {
         if ($customer->bookings()->exists()) {
@@ -351,8 +387,10 @@ class AdminController extends Controller
         return back()->with('success', 'Pelanggan berhasil dihapus');
     }
 
+    // Menampilkan halaman laporan dengan statistik pendapatan
     public function laporan()
     {
+        // Hitung total pendapatan keseluruhan
         $totalPendapatan = Booking::where('status', 'setuju')
             ->where('payment_status', 'sudah_bayar')
             ->with('jadwal')
@@ -361,6 +399,7 @@ class AdminController extends Controller
                 return $booking->jadwal->harga;
             });
 
+        // Hitung pendapatan bulan ini
         $pendapatanBulanIni = Booking::where('status', 'setuju')
             ->where('payment_status', 'sudah_bayar')
             ->whereMonth('created_at', now()->month)
@@ -371,10 +410,12 @@ class AdminController extends Controller
                 return $booking->jadwal->harga;
             });
 
+        // Hitung jumlah transaksi selesai
         $transaksiSelesai = Booking::where('status', 'setuju')
             ->where('payment_status', 'sudah_bayar')
             ->count();
 
+        // Hitung pendapatan 7 hari terakhir untuk chart
         $pendapatan7Hari = [];
         $labels7Hari = [];
 
@@ -394,6 +435,7 @@ class AdminController extends Controller
             $pendapatan7Hari[] = $pendapatanHari;
         }
 
+        // Hitung pendapatan bulan ini per hari
         $pendapatanBulanIniPerHari = [];
         $labelsBulanIni = [];
 
@@ -430,6 +472,8 @@ class AdminController extends Controller
             'labelsBulanIni' => $labelsBulanIni,
         ]);
     }
+
+    // Menampilkan daftar rute dengan fitur pencarian
     public function rute(Request $request)
     {
         $search = $request->input('search');
@@ -449,11 +493,13 @@ class AdminController extends Controller
         return view('admin.rute', compact('rutes', 'search'));
     }
 
+    // Menampilkan form tambah rute baru
     public function createRute()
     {
         return view('admin.rute.create');
     }
 
+    // Menyimpan rute baru ke database
     public function storeRute(Request $request)
     {
         $request->validate([
@@ -481,11 +527,13 @@ class AdminController extends Controller
         return redirect()->route('admin.rute')->with('success', 'Rute berhasil ditambahkan');
     }
 
+    // Menampilkan form edit rute
     public function editRute(\App\Models\Rute $rute)
     {
         return view('admin.rute.edit', compact('rute'));
     }
 
+    // Update data rute di database
     public function updateRute(Request $request, \App\Models\Rute $rute)
     {
         $request->validate([
@@ -513,6 +561,7 @@ class AdminController extends Controller
         return redirect()->route('admin.rute')->with('success', 'Rute berhasil diperbarui');
     }
 
+    // Hapus rute dari database
     public function destroyRute(\App\Models\Rute $rute)
     {
         // Cek apakah ada jadwal terkait
@@ -524,6 +573,7 @@ class AdminController extends Controller
         return back()->with('success', 'Rute berhasil dihapus');
     }
 
+    // Menampilkan daftar mobil dengan fitur pencarian
     public function mobil(Request $request)
     {
         $search = $request->input('search');
@@ -542,11 +592,13 @@ class AdminController extends Controller
         return view('admin.mobil', compact('mobils', 'search'));
     }
 
+    // Menampilkan form tambah mobil baru
     public function createMobil()
     {
         return view('admin.mobil.create');
     }
 
+    // Menyimpan mobil baru ke database
     public function storeMobil(Request $request)
     {
         $request->validate([
@@ -573,11 +625,13 @@ class AdminController extends Controller
         return redirect()->route('admin.mobil')->with('success', 'Mobil berhasil ditambahkan');
     }
 
+    // Menampilkan form edit mobil
     public function editMobil(\App\Models\Mobil $mobil)
     {
         return view('admin.mobil.edit', compact('mobil'));
     }
 
+    // Update data mobil di database
     public function updateMobil(Request $request, \App\Models\Mobil $mobil)
     {
         $request->validate([
@@ -604,6 +658,7 @@ class AdminController extends Controller
         return redirect()->route('admin.mobil')->with('success', 'Mobil berhasil diperbarui');
     }
 
+    // Hapus mobil dari database
     public function destroyMobil(\App\Models\Mobil $mobil)
     {
         if ($mobil->supir()->exists()) {
@@ -618,6 +673,7 @@ class AdminController extends Controller
         return back()->with('success', 'Mobil berhasil dihapus');
     }
 
+    // Menampilkan daftar supir dengan fitur pencarian
     public function supir(Request $request)
     {
         $search = $request->input('search');
@@ -638,12 +694,14 @@ class AdminController extends Controller
         return view('admin.supir', compact('supirs', 'search'));
     }
 
+    // Menampilkan form tambah supir baru
     public function createSupir()
     {
         $mobils = \App\Models\Mobil::whereDoesntHave('supir')->get();
         return view('admin.supir.create', compact('mobils'));
     }
 
+    // Menyimpan supir baru ke database
     public function storeSupir(Request $request)
     {
         $request->validate([
@@ -661,6 +719,7 @@ class AdminController extends Controller
         return redirect()->route('admin.supir')->with('success', 'Supir berhasil ditambahkan');
     }
 
+    // Menampilkan form edit supir
     public function editSupir(\App\Models\Supir $supir)
     {
         $mobils = \App\Models\Mobil::whereDoesntHave('supir')
@@ -669,6 +728,7 @@ class AdminController extends Controller
         return view('admin.supir.edit', compact('supir', 'mobils'));
     }
 
+    // Update data supir di database
     public function updateSupir(Request $request, \App\Models\Supir $supir)
     {
         $request->validate([
@@ -686,6 +746,7 @@ class AdminController extends Controller
         return redirect()->route('admin.supir')->with('success', 'Supir berhasil diperbarui');
     }
 
+    // Hapus supir dari database
     public function destroySupir(\App\Models\Supir $supir)
     {
         // Cek apakah mobilnya masih punya jadwal aktif
@@ -697,6 +758,7 @@ class AdminController extends Controller
         return back()->with('success', 'Supir berhasil dihapus');
     }
 
+    // Update status booking
     public function updateBooking(Request $request, Booking $booking)
     {
         Log::info('Update booking called', [
@@ -756,6 +818,7 @@ class AdminController extends Controller
         return back()->with('success', 'Status booking diperbarui!');
     }
 
+    // Menampilkan daftar pembayaran dengan filter pencarian
     public function pembayaran(Request $request)
     {
         $search = $request->input('search');
@@ -785,6 +848,7 @@ class AdminController extends Controller
         return view('admin.pembayaran', compact('bookings', 'search', 'payment_status'));
     }
 
+    // Update status pembayaran booking
     public function updatePembayaran(Request $request, Booking $booking)
     {
         $request->validate([
@@ -796,6 +860,7 @@ class AdminController extends Controller
         return back()->with('success', 'Status pembayaran diperbarui!');
     }
 
+    // Mendapatkan jam keberangkatan berdasarkan rute
     public function getJamKeberangkatan($ruteId)
     {
         try {
@@ -822,6 +887,7 @@ class AdminController extends Controller
         }
     }
 
+    // Mendapatkan data rute berdasarkan ID
     public function getRuteData($ruteId)
     {
         try {

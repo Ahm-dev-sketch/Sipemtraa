@@ -5,6 +5,7 @@
 @section('page-subtitle', 'Kelola rute dan harga tiket')
 
 @section('content')
+    <!-- Header section: Bagian header dengan search dan tombol tambah rute -->
     <div class="mb-6">
         <div class="flex flex-col lg:flex-row gap-3">
 
@@ -48,6 +49,7 @@
         </div>
     </div>
 
+    <!-- Table view untuk desktop: Tabel daftar rute dengan kolom ID, rute perjalanan, jarak/estimasi, jam keberangkatan, harga tiket, status, dan aksi -->
     <div
         class="hidden lg:block bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden fade-up animate-on-scroll">
         <div class="overflow-x-auto">
@@ -151,6 +153,7 @@
             </table>
         </div>
 
+        <!-- Card view untuk mobile: Tampilan kartu untuk setiap rute dengan informasi dan tombol aksi -->
         <div class="lg:hidden space-y-4 fade-up animate-on-scroll">
             @forelse($rutes as $rute)
                 <div class="bg-white rounded-lg shadow p-4">
@@ -208,7 +211,8 @@
             @endforelse
         </div>
 
-        <div class="mt-6 flex justify-end">
-            {{ $rutes->links('pagination::tailwind') }}
+        <!-- Pagination section: Navigasi halaman untuk daftar rute -->
+        <div class="mt-6 flex justify-center lg:justify-end">
+            {{ $rutes->links('vendor.pagination.compact') }}
         </div>
     @endsection

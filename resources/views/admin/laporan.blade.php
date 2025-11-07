@@ -5,6 +5,7 @@
 @section('page-subtitle', 'Monitor dan analisis pendapatan tiket')
 
 @section('content')
+    <!-- Revenue Stats Cards Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8 fade-up animate-on-scroll">
         <div
             class="group bg-white rounded-2xl shadow-sm border border-slate-200 hover:shadow-xl hover:border-emerald-300 transition-all duration-300 overflow-hidden">
@@ -30,6 +31,7 @@
                 <div>
                     <p class="text-sm font-medium text-slate-500 mb-1">Total Pendapatan</p>
                     <p id="total-revenue-amount" class="text-2xl font-bold text-slate-800 mb-1">
+                        <!-- Format total pendapatan menggunakan number_format: Menampilkan total pendapatan dengan format Rupiah -->
                         Rp {{ number_format($totalPendapatan, 0, ',', '.') }}
                     </p>
                     <div class="flex items-center gap-1 text-xs text-emerald-600">
@@ -64,6 +66,7 @@
                 <div>
                     <p class="text-sm font-medium text-slate-500 mb-1">Pendapatan Bulan Ini</p>
                     <p id="monthly-revenue-amount" class="text-2xl font-bold text-slate-800 mb-1">
+                        <!-- Format pendapatan bulan ini menggunakan number_format: Menampilkan pendapatan bulan ini dengan format Rupiah -->
                         Rp {{ number_format($pendapatanBulanIni, 0, ',', '.') }}
                     </p>
                     <div class="flex items-center gap-1 text-xs text-blue-600">
@@ -95,6 +98,7 @@
             <div class="h-1 bg-gradient-to-r from-amber-500 to-amber-600"></div>
         </div>
     </div>
+    <!-- Charts Section -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-6 hover:shadow-md transition-shadow">
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 mb-4 sm:mb-6">
@@ -139,6 +143,7 @@
                 data-data="{{ json_encode($pendapatan7Hari) }}"></canvas>
         </div>
     </div>
+    <!-- Pie Chart Section -->
     <div class="flex justify-center">
         <div
             class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-6 w-full max-w-md hover:shadow-md transition-shadow">

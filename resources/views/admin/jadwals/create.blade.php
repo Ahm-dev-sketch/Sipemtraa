@@ -2,6 +2,7 @@
 
 
 @section('content')
+    <!-- Header section untuk halaman create jadwal -->
     <div class="mb-6">
         <h1 class="text-2xl font-bold flex items-center gap-3">
             <div class="p-2 bg-green-100 rounded-lg">
@@ -13,7 +14,9 @@
             </div>
         </h1>
     </div>
+    <!-- Container form utama -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-4xl">
+        <!-- Header form -->
         <div class="bg-gradient-to-r from-green-50 to-emerald-50 px-6 py-4 border-b border-gray-200">
             <h2 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
                 <i class="fas fa-clipboard-list text-green-600"></i>
@@ -21,10 +24,13 @@
             </h2>
         </div>
 
+        <!-- Form untuk membuat jadwal baru -->
         <form id="formJadwal" action="{{ route('admin.jadwals.store') }}" method="POST" class="p-6">
             @csrf
+            <!-- Grid layout untuk form fields -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
+                <!-- Field untuk memilih rute perjalanan -->
                 <div class="md:col-span-2">
                     <label for="rute_id" class="block text-sm font-semibold text-gray-700 mb-2">
                         <i class="fas fa-route text-gray-400 mr-1"></i>
@@ -49,6 +55,7 @@
                     @enderror
                 </div>
 
+                <!-- Field untuk memilih kendaraan -->
                 <div class="md:col-span-2">
                     <label for="mobil_id" class="block text-sm font-semibold text-gray-700 mb-2">
                         <i class="fas fa-bus text-gray-400 mr-1"></i>
@@ -73,6 +80,7 @@
                     @enderror
                 </div>
 
+                <!-- Field untuk memilih tanggal keberangkatan -->
                 <div>
                     <label for="tanggal" class="block text-sm font-semibold text-gray-700 mb-2">
                         <i class="fas fa-calendar-day text-gray-400 mr-1"></i>
@@ -88,6 +96,7 @@
                     @enderror
                 </div>
 
+                <!-- Field untuk memilih waktu keberangkatan -->
                 <div>
                     <label for="jam" class="block text-sm font-semibold text-gray-700 mb-2">
                         <i class="fas fa-clock text-gray-400 mr-1"></i>
@@ -105,6 +114,7 @@
                     @enderror
                 </div>
 
+                <!-- Field untuk input harga tiket -->
                 <div class="md:col-span-2">
                     <label for="harga" class="block text-sm font-semibold text-gray-700 mb-2">
                         <i class="fas fa-money-bill-wave text-gray-400 mr-1"></i>
@@ -130,6 +140,7 @@
                 </div>
             </div>
 
+            <!-- Action buttons untuk submit dan cancel -->
             <div class="flex items-center gap-3 mt-8 pt-6 border-t border-gray-200">
                 <button type="submit"
                     class="inline-flex items-center gap-2 px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 focus:ring-4 focus:ring-green-200 transition-all">

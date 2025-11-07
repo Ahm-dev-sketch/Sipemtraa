@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+    <!-- HEADER HALAMAN - Judul dan deskripsi halaman jadwal keberangkatan -->
     <div class="mb-8 fade-down animate-on-scroll">
         <div class="flex items-center gap-3 mb-2">
             <div class="w-1 h-8 bg-gradient-to-b from-blue-500 via-indigo-500 to-purple-600 rounded-full"></div>
@@ -12,7 +13,7 @@
         <p class="text-gray-600 ml-7">Temukan jadwal perjalanan yang sesuai dengan kebutuhan Anda</p>
     </div>
 
-
+    <!-- FORM PENCARIAN - Form untuk mencari jadwal berdasarkan berbagai kriteria -->
     <form method="GET" action="{{ route('jadwal') }}" class="mb-8 fade-right animate-on-scroll">
         <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
             <div class="flex flex-col md:flex-row gap-4">
@@ -38,7 +39,7 @@
         </div>
     </form>
 
-
+    <!-- PESAN KOSONG - Tampilan ketika tidak ada jadwal yang ditemukan -->
     @if ($jadwals->isEmpty())
         <div class="fade-up animate-on-scroll">
             <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-12 text-center">
@@ -58,14 +59,17 @@
             </div>
         </div>
     @else
+        <!-- DAFTAR JADWAL - Loop untuk menampilkan setiap jadwal yang tersedia -->
         <div class="space-y-6 fade-up animate-on-scroll">
 
             @foreach ($jadwals as $jadwal)
+                <!-- KARTU JADWAL - Container untuk setiap jadwal perjalanan -->
                 <div
                     class="group bg-white rounded-2xl shadow-lg border border-gray-100 hover:shadow-2xl
                     transition-all duration-300 overflow-hidden hover:border-blue-200 hover:-translate-y-1">
                     <div class="p-6 md:p-8">
 
+                        <!-- INFORMASI RUTE - Bagian yang menampilkan detail rute perjalanan -->
                         <div class="mb-6 pb-6 border-b border-gray-100">
                             <div class="flex items-center gap-2 mb-4">
                                 <div class="w-1 h-6 bg-gradient-to-b from-blue-500 to-indigo-600 rounded-full"></div>
@@ -141,6 +145,7 @@
                             </div>
                         </div>
 
+                        <!-- DETAIL JADWAL - Grid yang menampilkan tanggal, waktu, dan kapasitas -->
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
 
                             <div
@@ -185,6 +190,7 @@
                             </div>
                         </div>
 
+                        <!-- HARGA DAN TOMBOL AKSI - Bagian harga dan tombol booking berdasarkan status login -->
                         <div
                             class="flex flex-col md:flex-row items-center justify-between gap-4 pt-6 border-t border-gray-100">
                             <div class="flex items-center gap-3">
@@ -237,9 +243,10 @@
 
         </div>
 
+        <!-- PAGINATION - Navigasi halaman untuk daftar jadwal -->
         <div class="mt-8 flex justify-center fade-up animate-on-scroll">
             <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-2">
-                {{ $jadwals->links('pagination::tailwind') }}
+                {{ $jadwals->links('vendor.pagination.compact') }}
             </div>
         </div>
     @endif

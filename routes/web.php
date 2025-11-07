@@ -7,12 +7,18 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\Admin\AdminController;
 
+/**
+ * File Route Web Laravel
+ * Menentukan semua routing untuk aplikasi web pemesanan tiket travel
+ */
 
-// ==================== ADMIN ROUTES ====================
+// ADMIN ROUTES
+// Route untuk panel admin dengan middleware auth dan admin
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    // Dashboard admin
     Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
 
-    // Kelola Jadwal
+    // Kelola Jadwal - CRUD operations untuk jadwal perjalanan
     Route::get('/jadwals', [AdminController::class, 'jadwals'])->name('jadwals');
     Route::get('/jadwals/create', [AdminController::class, 'createJadwal'])->name('jadwals.create');
     Route::post('/jadwals', [AdminController::class, 'storeJadwal'])->name('jadwals.store');
@@ -21,27 +27,27 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::patch('/jadwals/{jadwal}/toggle', [AdminController::class, 'toggleJadwalStatus'])->name('jadwals.toggle');
     Route::delete('/jadwals/{jadwal}', [AdminController::class, 'destroyJadwal'])->name('jadwals.destroy');
 
-    // Kelola Booking
+    // Kelola Booking - Manajemen booking dan status
     Route::get('/bookings', [AdminController::class, 'bookings'])->name('bookings');
     Route::put('/bookings/{booking}', [AdminController::class, 'updateBooking'])->name('bookings.update');
 
-    // CRITICAL FIX: Move booking status update to admin routes
+    // CRITICAL FIX: Route update status booking dipindah ke admin untuk keamanan
     Route::patch('/bookings/{booking}/status', [BookingController::class, 'updateStatus'])->name('bookings.update.status');
 
-    // Kelola Pembayaran
+    // Kelola Pembayaran - Manajemen status pembayaran booking
     Route::get('/pembayaran', [AdminController::class, 'pembayaran'])->name('pembayaran');
     Route::put('/pembayaran/{booking}', [AdminController::class, 'updatePembayaran'])->name('pembayaran.update');
 
-    // AJAX untuk kursi realtime
+    // AJAX untuk mendapatkan data kursi real-time
     Route::get('/jadwal/{id}/seats', [BookingController::class, 'getSeats'])->name('jadwal.seats');
 
-    // API untuk rute data (with rate limiting)
+    // API untuk data rute dengan rate limiting
     Route::middleware('throttle:60,1')->group(function () {
         Route::get('/api/rute/{id}', [AdminController::class, 'getRuteData'])->name('api.rute.data');
         Route::get('/api/rute/{id}/jam', [AdminController::class, 'getJamKeberangkatan'])->name('api.rute.jam');
     });
 
-    // Kelola Pelanggan
+    // Kelola Pelanggan - CRUD operations untuk data pelanggan
     Route::get('/pelanggan', [AdminController::class, 'pelanggan'])->name('pelanggan');
     Route::get('/pelanggan/create', [AdminController::class, 'createPelanggan'])->name('pelanggan.create');
     Route::post('/pelanggan', [AdminController::class, 'storePelanggan'])->name('pelanggan.store');
@@ -49,10 +55,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('/pelanggan/{customer}', [AdminController::class, 'updatePelanggan'])->name('pelanggan.update');
     Route::delete('/pelanggan/{customer}', [AdminController::class, 'destroyPelanggan'])->name('pelanggan.destroy');
 
-    // Laporan Pendapatan (tambahan fix)
+    // Laporan Pendapatan - Halaman laporan statistik pendapatan
     Route::get('/laporan', [AdminController::class, 'laporan'])->name('laporan');
 
-    // Data Rute
+    // Data Rute - CRUD operations untuk data rute perjalanan
     Route::get('/rute', [AdminController::class, 'rute'])->name('rute');
     Route::get('/rute/create', [AdminController::class, 'createRute'])->name('rute.create');
     Route::post('/rute', [AdminController::class, 'storeRute'])->name('rute.store');
@@ -60,7 +66,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('/rute/{rute}', [AdminController::class, 'updateRute'])->name('rute.update');
     Route::delete('/rute/{rute}', [AdminController::class, 'destroyRute'])->name('rute.destroy');
 
-    // Data Mobil
+    // Data Mobil - CRUD operations untuk data mobil
     Route::get('/mobil', [AdminController::class, 'mobil'])->name('mobil');
     Route::get('/mobil/create', [AdminController::class, 'createMobil'])->name('mobil.create');
     Route::post('/mobil', [AdminController::class, 'storeMobil'])->name('mobil.store');
@@ -68,7 +74,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('/mobil/{mobil}', [AdminController::class, 'updateMobil'])->name('mobil.update');
     Route::delete('/mobil/{mobil}', [AdminController::class, 'destroyMobil'])->name('mobil.destroy');
 
-    // Data Supir
+    // Data Supir - CRUD operations untuk data supir
     Route::get('/supir', [AdminController::class, 'supir'])->name('supir');
     Route::get('/supir/create', [AdminController::class, 'createSupir'])->name('supir.create');
     Route::post('/supir', [AdminController::class, 'storeSupir'])->name('supir.store');
@@ -77,15 +83,17 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('/supir/{supir}', [AdminController::class, 'destroySupir'])->name('supir.destroy');
 });
 
-// ==================== USER ROUTES ====================
+// USER ROUTES
+// Import controller untuk user routes
 use App\Http\Controllers\HomeController;
 
+// Halaman utama website
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
-// Public pages
+// Public pages - halaman yang dapat diakses tanpa login
 Route::get('/jadwal', [JadwalController::class, 'index'])->name('jadwal');
 
-// Auth
+// Authentication routes - login, register, logout
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
@@ -94,15 +102,15 @@ Route::get('/register/verify', [AuthController::class, 'showRegisterVerify'])->n
 Route::post('/register/verify', [AuthController::class, 'verifyRegisterOtp'])->name('register.verify.submit')->middleware('throttle:5,1'); // Max 5x per menit
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Forgot & Reset Password
+// Forgot & Reset Password routes
 Route::get('password/reset', [AuthController::class, 'showForgotPasswordForm'])->name('password.request');
 Route::post('password/email', [AuthController::class, 'sendResetLink'])->name('password.email')->middleware('throttle:3,10'); // Max 3x dalam 10 menit (karena kirim OTP)
 Route::get('password/reset/confirm', [AuthController::class, 'showResetPasswordForm'])->name('password.reset');
 Route::post('password/reset/confirm', [AuthController::class, 'resetPassword'])->name('password.update')->middleware('throttle:5,1'); // Max 5x per menit
 
-// Protected pages
+// Protected pages - halaman yang memerlukan autentikasi
 Route::middleware('auth')->group(function () {
-    // Multi-step booking wizard
+    // Multi-step booking wizard - proses pemesanan tiket bertahap
     Route::get('/pesan-tiket', [BookingController::class, 'wizardStep1'])->name('pesan');
     Route::post('/pesan-tiket/step1', [BookingController::class, 'processStep1'])->name('booking.step1');
     Route::get('/pesan-tiket/step2', [BookingController::class, 'wizardStep2'])->name('booking.step2');
@@ -110,19 +118,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/pesan-tiket/step3', [BookingController::class, 'wizardStep3'])->name('booking.step3');
     Route::post('/pesan-tiket/step3', [BookingController::class, 'processStep3'])->name('booking.step3.process');
 
-    // Quick booking - langsung ke step3 dengan jadwal_id
+    // Quick booking - pemesanan cepat langsung ke step3 dengan jadwal_id
     Route::get('/pesan-tiket/quick/{jadwal}', [BookingController::class, 'quickBooking'])->name('booking.quick');
 
+    // Riwayat booking user
     Route::get('/riwayat', [BookingController::class, 'index'])->name('riwayat');
 
+    // Batal booking
     Route::post('/booking/{id}/cancel', [BookingController::class, 'cancel'])->name('booking.cancel');
 
-
-    // Legacy route for backward compatibility
+    // Legacy route untuk backward compatibility
     Route::post('/pesan-tiket', [BookingController::class, 'store'])->name('booking.store');
-
-    // REMOVED: Route moved to admin middleware group for security
-    // Route::patch('/booking/{booking}/status', [BookingController::class, 'updateStatus'])->name('booking.update.status');
 
     // Download e-ticket
     Route::get('/booking/{booking}/download-ticket', [BookingController::class, 'downloadTicket'])->name('booking.download.ticket');
@@ -130,6 +136,6 @@ Route::middleware('auth')->group(function () {
     // View e-ticket
     Route::get('/booking/{ticketNumber}/ticket', [BookingController::class, 'viewTicket'])->name('booking.ticket');
 
-    // Added route for fetching booked seats dynamically
+    // Route untuk mendapatkan data kursi yang sudah dipesan secara dinamis
     Route::get('/jadwal/{jadwal}/seats', [JadwalController::class, 'getBookedSeats']);
 });

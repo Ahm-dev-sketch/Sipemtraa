@@ -7,11 +7,16 @@ use App\Models\Booking;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
+/**
+ * Controller untuk mengelola jadwal perjalanan travel
+ * Menangani tampilan jadwal dan informasi kursi yang sudah dipesan
+ */
 class JadwalController extends Controller
 {
-
+    // Mengambil data kursi yang sudah dipesan untuk jadwal tertentu
     public function getBookedSeats($jadwal_id)
     {
+        // Threshold 30 menit untuk booking pending yang masih valid
         $threshold = Carbon::now()->subMinutes(30);
 
         $bookedSeats = Booking::where('jadwal_id', $jadwal_id)
@@ -26,10 +31,12 @@ class JadwalController extends Controller
 
         return response()->json($bookedSeats);
     }
+    // Menampilkan daftar jadwal perjalanan dengan fitur pencarian
     public function index(Request $request)
     {
         $search = $request->input('search');
 
+        // Query jadwal aktif dengan relasi rute, filter tanggal hari ini ke depan
         $jadwals = Jadwal::with('rute')
             ->where('is_active', true)
             ->where('tanggal', '>=', Carbon::today()->format('Y-m-d'))

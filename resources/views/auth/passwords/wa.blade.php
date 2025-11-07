@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+    <!-- Forgot Password Form Section: Form untuk meminta reset password dengan input nomor WhatsApp untuk menerima OTP -->
     <div
         class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-teal-50 via-cyan-50 to-blue-50 relative overflow-hidden">
 

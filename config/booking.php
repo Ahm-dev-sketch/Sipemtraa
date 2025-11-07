@@ -19,7 +19,7 @@ return [
 
     /*
     * Batas waktu pemesanan sebelum keberangkatan (dalam jam)
-    * Default: 1 jam sebelum keberangkatan
+    * Default: 2 jam sebelum keberangkatan
     */
     'booking_close_hours' => env('BOOKING_CLOSE_HOURS', 2),
 

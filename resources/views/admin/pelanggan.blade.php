@@ -5,6 +5,7 @@
 @section('page-subtitle', 'Kelola informasi pengguna terdaftar')
 
 @section('content')
+    <!-- Header section dengan search dan tombol tambah pelanggan -->
     <div class="mb-6">
         <div class="flex flex-col lg:flex-row gap-3">
 
@@ -48,6 +49,7 @@
         </div>
     </div>
 
+    <!-- Table view untuk desktop: Tabel daftar pelanggan dengan kolom ID, nama, WhatsApp, role, dan aksi -->
     <div
         class="hidden lg:block bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden fade-up animate-on-scroll">
         <div class="overflow-x-auto">
@@ -133,6 +135,7 @@
         </div>
     </div>
 
+    <!-- Card view untuk mobile: Tampilan kartu untuk setiap pelanggan dengan informasi dan tombol aksi -->
     <div class="lg:hidden space-y-4 fade-up animate-on-scroll">
         @forelse($users as $user)
             <div class="bg-white rounded-lg shadow p-4">
@@ -178,7 +181,8 @@
         @endforelse
     </div>
 
-    <div class="mt-6 flex justify-end">
-        {{ $users->links('pagination::tailwind') }}
+    <!-- Pagination section: Navigasi halaman untuk daftar pelanggan -->
+    <div class="mt-6 flex justify-center lg:justify-end">
+        {{ $users->links('vendor.pagination.compact') }}
     </div>
 @endsection

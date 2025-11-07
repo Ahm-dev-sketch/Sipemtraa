@@ -5,7 +5,9 @@
 @section('page-subtitle', 'Ringkasan data dan statistik sistem')
 
 @section('content')
+    <!-- Stats Cards Grid: Grid kartu statistik dashboard admin -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8 fade-up animate-on-scroll">
+        <!-- Revenue Card -->
         <div
             class="group bg-white rounded-2xl shadow-sm border border-slate-200 hover:shadow-xl hover:border-blue-300 transition-all duration-300 overflow-hidden">
             <div class="p-6">
@@ -30,6 +32,7 @@
                 <div>
                     <p class="text-sm font-medium text-slate-500 mb-1">Pendapatan Bulan Ini</p>
                     <p id="revenue-amount" class="text-2xl font-bold text-slate-800 mb-1">
+                        <!-- Format pendapatan menggunakan number_format: Menampilkan pendapatan bulan ini dengan format Rupiah -->
                         Rp {{ number_format($totalPendapatanBulanIni, 0, ',', '.') }}
                     </p>
                     <div class="flex items-center gap-1 text-xs text-green-600">
@@ -40,6 +43,7 @@
             </div>
             <div class="h-1 bg-gradient-to-r from-blue-500 to-blue-600"></div>
         </div>
+        <!-- Bookings Card -->
         <div
             class="group bg-white rounded-2xl shadow-sm border border-slate-200 hover:shadow-xl hover:border-purple-300 transition-all duration-300 overflow-hidden">
             <div class="p-6">
@@ -60,6 +64,7 @@
             </div>
             <div class="h-1 bg-gradient-to-r from-purple-500 to-purple-600"></div>
         </div>
+        <!-- Active Trips Card -->
         <div
             class="group bg-white rounded-2xl shadow-sm border border-slate-200 hover:shadow-xl hover:border-green-300 transition-all duration-300 overflow-hidden">
             <div class="p-6">
@@ -80,6 +85,7 @@
             </div>
             <div class="h-1 bg-gradient-to-r from-green-500 to-green-600"></div>
         </div>
+        <!-- Total Customers Card -->
         <div
             class="group bg-white rounded-2xl shadow-sm border border-slate-200 hover:shadow-xl hover:border-indigo-300 transition-all duration-300 overflow-hidden">
             <div class="p-6">
@@ -101,6 +107,7 @@
             <div class="h-1 bg-gradient-to-r from-indigo-500 to-indigo-600"></div>
         </div>
     </div>
+    <!-- Revenue Chart Section: Bagian grafik pendapatan 7 hari terakhir -->
     <div
         class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-6 lg:p-8 hover:shadow-lg transition-all duration-300 fade-up animate-on-scroll">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-6">

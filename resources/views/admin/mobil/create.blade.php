@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+    <!-- Header section untuk halaman create mobil -->
     <div class="mb-6">
         <h1 class="text-2xl font-bold flex items-center gap-3">
             <div class="p-2 bg-green-100 rounded-lg">
@@ -12,7 +13,9 @@
             </div>
         </h1>
     </div>
+    <!-- Container form utama -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-3xl">
+        <!-- Header form -->
         <div class="bg-gradient-to-r from-green-50 to-emerald-50 px-6 py-4 border-b border-gray-200">
             <h2 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
                 <i class="fas fa-bus-alt text-green-600"></i>
@@ -20,10 +23,13 @@
             </h2>
         </div>
 
+        <!-- Form untuk membuat mobil baru -->
         <form id="formMobil" action="{{ route('admin.mobil.store') }}" method="POST" class="p-6">
             @csrf
+            <!-- Grid layout untuk form fields -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
+                <!-- Field untuk input nomor polisi -->
                 <div class="md:col-span-2">
                     <label for="nomor_polisi" class="block text-sm font-semibold text-gray-700 mb-2">
                         <i class="fas fa-id-card text-gray-400 mr-1"></i>
@@ -40,6 +46,7 @@
                     @enderror
                 </div>
 
+                <!-- Field untuk input merk mobil -->
                 <div>
                     <label for="merk" class="block text-sm font-semibold text-gray-700 mb-2">
                         <i class="fas fa-tag text-gray-400 mr-1"></i>
@@ -56,6 +63,7 @@
                     @enderror
                 </div>
 
+                <!-- Field untuk input jenis mobil -->
                 <div>
                     <label for="jenis" class="block text-sm font-semibold text-gray-700 mb-2">
                         <i class="fas fa-car text-gray-400 mr-1"></i>
@@ -72,6 +80,7 @@
                     @enderror
                 </div>
 
+                <!-- Field untuk input kapasitas penumpang -->
                 <div>
                     <label for="kapasitas" class="block text-sm font-semibold text-gray-700 mb-2">
                         <i class="fas fa-users text-gray-400 mr-1"></i>
@@ -88,6 +97,7 @@
                     @enderror
                 </div>
 
+                <!-- Field untuk input tahun produksi -->
                 <div>
                     <label for="tahun" class="block text-sm font-semibold text-gray-700 mb-2">
                         <i class="fas fa-calendar text-gray-400 mr-1"></i>
@@ -104,6 +114,7 @@
                     @enderror
                 </div>
 
+                <!-- Field untuk memilih status operasional -->
                 <div class="md:col-span-2">
                     <label for="status" class="block text-sm font-semibold text-gray-700 mb-2">
                         <i class="fas fa-toggle-on text-gray-400 mr-1"></i>
@@ -124,6 +135,7 @@
                 </div>
             </div>
 
+            <!-- Action buttons untuk submit dan cancel -->
             <div class="flex items-center gap-3 mt-8 pt-6 border-t border-gray-200">
                 <button type="submit"
                     class="inline-flex items-center gap-2 px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 focus:ring-4 focus:ring-green-200 transition-all">

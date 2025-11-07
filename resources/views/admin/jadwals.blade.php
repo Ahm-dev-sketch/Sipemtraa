@@ -6,14 +6,16 @@
 
 @section('content')
 
+    <!-- PESAN SUKSES - Menampilkan notifikasi sukses dari session -->
     @if (session('success'))
         <div data-success-message="{{ session('success') }}" style="display: none;"></div>
     @endif
 
+    <!-- HEADER DAN PENCARIAN - Bagian header dengan form pencarian dan tombol tambah -->
     <div class="mb-6">
         <div class="flex flex-col lg:flex-row gap-3">
 
-
+            <!-- FORM PENCARIAN - Form untuk mencari jadwal berdasarkan kata kunci -->
             <form method="GET" action="{{ route('admin.jadwals') }}" class="flex-1 flex items-center gap-2">
                 <div class="flex items-center border border-gray-300 rounded-lg overflow-hidden shadow-sm flex-1">
                     <input type="text" name="search" value="{{ $search ?? '' }}" placeholder="Cari jadwal..."
@@ -28,6 +30,7 @@
                     </button>
                 </div>
 
+                <!-- TOMBOL RESET PENCARIAN - Muncul jika ada pencarian aktif -->
                 @if (isset($search) && $search)
                     <a href="{{ route('admin.jadwals') }}"
                         class="text-gray-600 hover:text-gray-800 flex items-center gap-1 text-sm font-medium">
@@ -42,6 +45,7 @@
 
             </form>
 
+            <!-- TOMBOL TAMBAH JADWAL - Link ke halaman create jadwal baru -->
             <a href="{{ route('admin.jadwals.create') }}"
                 class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center justify-center gap-2 transition fade-left animate-on-scroll whitespace-nowrap">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
@@ -53,6 +57,7 @@
         </div>
     </div>
 
+    <!-- TABEL JADWAL DESKTOP - Tabel untuk menampilkan daftar jadwal pada layar besar -->
     <div
         class="hidden lg:block bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden fade-up animate-on-scroll">
         <div class="overflow-x-auto">
@@ -161,6 +166,7 @@
             </table>
         </div>
 
+        <!-- TAMPILAN MOBILE - Tampilan kartu untuk perangkat mobile -->
         <div class="lg:hidden space-y-4 fade-up animate-on-scroll">
             @forelse($jadwals as $jadwal)
                 <div class="bg-white rounded-lg shadow p-4">
@@ -230,7 +236,8 @@
             @endforelse
         </div>
 
-        <div class="mt-4 flex justify-end w-full pr-4">
-            {{ $jadwals->links('pagination::tailwind') }}
+        <!-- PAGINATION - Navigasi halaman untuk tabel jadwal -->
+        <div class="mt-4 flex justify-center lg:justify-end w-full pr-4">
+            {{ $jadwals->links('vendor.pagination.compact') }}
         </div>
     @endsection

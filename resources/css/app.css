@@ -10,6 +10,7 @@
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
+/* ANIMASI SCROLL */
 .animate-on-scroll {
     opacity: 0;
     transition: opacity 0.6s ease;
@@ -58,6 +59,7 @@ img[fetchpriority="high"] {
     transform: translateX(0);
 }
 
+/* CUSTOM SCROLLBAR */
 .scrollbar-thin::-webkit-scrollbar {
     width: 6px;
 }
@@ -80,6 +82,7 @@ img[fetchpriority="high"] {
     scrollbar-color: rgba(71, 85, 105, 0.5) transparent;
 }
 
+/* MOBILE OPTIMIZATION */
 * {
     -webkit-tap-highlight-color: transparent;
 }
@@ -97,6 +100,7 @@ img[fetchpriority="high"] {
     }
 }
 
+/* ANIMASI BLOB */
 @keyframes blob {
     0% {
         transform: translate(0px, 0px) scale(1);
@@ -128,6 +132,7 @@ img[fetchpriority="high"] {
     animation-delay: 4s;
 }
 
+/* ANIMASI FADE IN */
 @keyframes fadeInRight {
     from {
         opacity: 0;
@@ -165,6 +170,7 @@ img[fetchpriority="high"] {
     will-change: opacity, transform;
 }
 
+/* ANIMASI SCALE IN */
 @keyframes scaleIn {
     from {
         opacity: 0;
@@ -183,6 +189,7 @@ img[fetchpriority="high"] {
     opacity: 0;
 }
 
+/* IMAGE OPTIMIZATION */
 img {
     max-width: 100%;
     height: auto;
@@ -196,7 +203,6 @@ img[fetchpriority="high"] {
     content-visibility: auto;
 }
 
-
 img {
     max-width: 100%;
     height: auto;
@@ -206,7 +212,6 @@ img {
 img[width][height] {
     aspect-ratio: attr(width) / attr(height);
 }
-
 
 img[fetchpriority="high"] {
     opacity: 1 !important;
@@ -221,4 +226,68 @@ img {
 img.loaded,
 img[fetchpriority="high"] {
     opacity: 1;
+}
+
+/* 3D HOME IMAGE STYLES */
+.home-3d-wrapper {
+    -webkit-perspective: 1200px;
+    perspective: 1200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.home-3d-card {
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+    transition: transform 350ms cubic-bezier(.2, .9, .2, 1), box-shadow 350ms ease;
+    will-change: transform;
+    border-radius: 1rem;
+    max-width: 900px;
+}
+
+.home-3d-img {
+    display: block;
+    border-radius: 1rem;
+    transform: translateZ(40px) scale(1);
+    transition: transform 350ms cubic-bezier(.2, .9, .2, 1), filter 350ms ease;
+    backface-visibility: hidden;
+}
+
+.home-3d-glare {
+    position: absolute;
+    inset: 0;
+    border-radius: 1rem;
+    background: linear-gradient(120deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.05) 30%, rgba(255, 255, 255, 0) 60%);
+    mix-blend-mode: screen;
+    opacity: 0;
+    transition: opacity 300ms ease, transform 300ms ease;
+    pointer-events: none;
+}
+
+.home-3d-card:hover {
+    box-shadow: 0 30px 80px rgba(18, 36, 80, 0.18);
+}
+
+.home-3d-card:hover .home-3d-glare {
+    opacity: 1;
+    transform: translateZ(80px) rotate(10deg);
+}
+
+@keyframes homeFloat {
+    0% {
+        transform: translateY(0) rotateX(0);
+    }
+
+    50% {
+        transform: translateY(-6px) rotateX(0.5deg);
+    }
+
+    100% {
+        transform: translateY(0) rotateX(0);
+    }
+}
+
+.home-3d-card {
+    animation: homeFloat 6s ease-in-out infinite;
 }
