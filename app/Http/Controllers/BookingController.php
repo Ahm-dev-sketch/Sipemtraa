@@ -13,10 +13,14 @@ use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 
+/**
+ * Controller untuk mengelola sistem pemesanan tiket travel
+ * Menangani proses booking wizard, pembatalan, dan manajemen tiket
+ */
 class BookingController extends Controller
 {
     /**
-     * Check if user is authorized to access booking
+     * Memeriksa apakah user memiliki otorisasi untuk mengakses booking
      */
     private function authorizeBooking(Booking $booking): void
     {
@@ -25,6 +29,7 @@ class BookingController extends Controller
         }
     }
 
+    // Generate nomor tiket unik
     private function generateTicketNumber(): string
     {
         do {
@@ -34,11 +39,13 @@ class BookingController extends Controller
         return $ticketNumber;
     }
 
+    // Menampilkan riwayat booking pengguna dengan filter pencarian
     public function index(Request $request)
     {
         $query = Booking::with(['jadwal.rute', 'jadwal.mobil.supir', 'user'])
             ->where('user_id', Auth::id());
 
+        // Filter berdasarkan pencarian
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -50,22 +57,22 @@ class BookingController extends Controller
             });
         }
 
+        // Filter berdasarkan status booking
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
-        // Filter payment status (form sends `payment_status`)
+        // Filter berdasarkan status pembayaran
         if ($request->filled('payment_status')) {
             $query->where('payment_status', $request->payment_status);
         }
-
-
 
         $bookings = $query->orderBy('created_at', 'desc')->paginate(10)->appends($request->query());
 
         return view('user.riwayat', compact('bookings'));
     }
 
+    // Menampilkan form pemesanan tiket (legacy method)
     public function create($jadwal_id = null)
     {
         $jadwals = Jadwal::where('tanggal', '>=', Carbon::today()->format('Y-m-d'))
@@ -75,6 +82,7 @@ class BookingController extends Controller
         return view('user.pesan', compact('jadwals', 'jadwal_id'));
     }
 
+    // Langkah 1 wizard booking: Pilih kota asal, tujuan, dan tanggal
     public function wizardStep1()
     {
         $kotaAwal = \App\Models\Rute::distinct()->pluck('kota_asal')->sort();
@@ -83,6 +91,7 @@ class BookingController extends Controller
         return view('booking.step1', compact('kotaAwal', 'kotaTujuan'));
     }
 
+    // Memproses data langkah 1 dan menyimpan ke session
     public function processStep1(Request $request)
     {
         $request->validate([
@@ -91,6 +100,7 @@ class BookingController extends Controller
             'tanggal' => 'required|date|after_or_equal:today',
         ]);
 
+        // Simpan data step 1 ke session
         session([
             'booking_step1' => [
                 'kota_asal' => $request->kota_awal,
@@ -102,6 +112,7 @@ class BookingController extends Controller
         return redirect()->route('booking.step2');
     }
 
+    // Langkah 2 wizard booking: Pilih jadwal perjalanan
     public function wizardStep2()
     {
         $step1Data = session('booking_step1');
@@ -110,10 +121,12 @@ class BookingController extends Controller
             return redirect()->route('pesan')->with('error', 'Silakan mulai dari langkah pertama');
         }
 
+        // Cari rute yang sesuai dengan pilihan user
         $routes = \App\Models\Rute::where('kota_asal', $step1Data['kota_asal'])
             ->where('kota_tujuan', $step1Data['kota_tujuan'])
             ->get();
 
+        // Ambil jadwal yang tersedia untuk tanggal tersebut
         $jadwals = Jadwal::whereIn('rute_id', $routes->pluck('id'))
             ->where('tanggal', $step1Data['tanggal'])
             ->where('tanggal', '>=', Carbon::today()->format('Y-m-d'))
@@ -125,6 +138,7 @@ class BookingController extends Controller
         return view('booking.step2', compact('jadwals', 'step1Data'));
     }
 
+    // Memproses pilihan jadwal dan lanjut ke step 3
     public function processStep2(Request $request)
     {
         $request->validate([
@@ -133,6 +147,7 @@ class BookingController extends Controller
 
         $jadwal = Jadwal::findOrFail($request->jadwal_id);
 
+        // Simpan data step 2 ke session
         session([
             'booking_step2' => [
                 'jadwal_id' => $jadwal->id,
@@ -143,10 +158,12 @@ class BookingController extends Controller
         return redirect()->route('booking.step3');
     }
 
+    // Booking cepat langsung dari halaman jadwal
     public function quickBooking(Jadwal $jadwal)
     {
         $jadwal->load(['mobil.supir', 'rute']);
 
+        // Buat data step 1 dari jadwal yang dipilih
         $step1Data = [
             'kota_asal' => $jadwal->rute->kota_asal,
             'kota_tujuan' => $jadwal->rute->kota_tujuan,
@@ -157,12 +174,14 @@ class BookingController extends Controller
             'jadwal' => $jadwal,
         ];
 
+        // Simpan ke session dan langsung ke step 3
         session(['booking_step1' => $step1Data]);
         session(['booking_step2' => $step2Data]);
 
         return redirect()->route('booking.step3');
     }
 
+    // Langkah 3 wizard booking: Pilih kursi
     public function wizardStep3()
     {
         $step1Data = session('booking_step1');
@@ -174,6 +193,7 @@ class BookingController extends Controller
 
         $jadwal = \App\Models\Jadwal::with('mobil.supir')->find($step2Data['jadwal']->id);
 
+        // Ambil kursi yang sudah dipesan dengan threshold 30 menit
         $threshold = \Carbon\Carbon::now()->subMinutes(config('booking.pending_expiry_minutes', 30));
         $bookedSeats = Booking::where('jadwal_id', $jadwal->id)
             ->where(function ($query) use ($threshold) {
@@ -186,11 +206,13 @@ class BookingController extends Controller
             ->pluck('seat_number')
             ->toArray();
 
-        $seats = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'A9', 'A10', 'A11', 'A12', 'A13'];
+        // Daftar kursi yang tersedia (1-14)
+        $seats = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14'];
 
         return view('booking.step3', compact('jadwal', 'seats', 'bookedSeats', 'step1Data', 'step2Data'));
     }
 
+    // Memproses booking akhir dan menyimpan ke database
     public function processStep3(Request $request)
     {
         $step1Data = session('booking_step1');
@@ -206,6 +228,7 @@ class BookingController extends Controller
 
         $jadwal = Jadwal::with('mobil')->findOrFail($step2Data['jadwal']->id);
 
+        // Cek batas waktu pemesanan (2 jam sebelum keberangkatan)
         $waktuKeberangkatan = \Carbon\Carbon::parse($jadwal->getRawOriginal('tanggal') . ' ' . $jadwal->jam);
         $batasPesan = $waktuKeberangkatan->copy()->subHours(config('booking.booking_close_hours', 1));
         $waktuSekarang = \Carbon\Carbon::now();
@@ -216,12 +239,14 @@ class BookingController extends Controller
         }
 
         try {
+            // Proses booking dalam database transaction untuk konsistensi
             $firstBooking = DB::transaction(function () use ($request, $jadwal) {
                 $jadwalLocked = Jadwal::lockForUpdate()->find($jadwal->id);
 
                 $threshold = \Carbon\Carbon::now()->subMinutes(config('booking.pending_expiry_minutes', 30));
                 $firstBooking = null;
 
+                // Cek apakah user sudah memiliki booking pending untuk jadwal ini
                 $existingPendingBooking = Booking::where('user_id', \Illuminate\Support\Facades\Auth::id())
                     ->where('jadwal_id', $jadwal->id)
                     ->where('status', 'pending')
@@ -231,7 +256,9 @@ class BookingController extends Controller
                     throw new \Exception('Anda masih memiliki pesanan yang menunggu persetujuan admin untuk jadwal ini. Silahkan batalkan pesanan sebelumnya.');
                 }
 
+                // Proses setiap kursi yang dipilih
                 foreach ($request->seats as $seat) {
+                    // Hitung total booking yang valid
                     $existingBookingsCount = Booking::where('jadwal_id', $jadwal->id)
                         ->where(function ($query) use ($threshold) {
                             $query->where('status', 'setuju')
@@ -247,6 +274,7 @@ class BookingController extends Controller
                         throw new \Exception('Kapasitas penuh! Tidak ada kursi tersisa.');
                     }
 
+                    // Cek apakah kursi sudah dipesan
                     $existingBooking = Booking::where('jadwal_id', $jadwal->id)
                         ->where('seat_number', $seat)
                         ->where(function ($query) use ($threshold) {
@@ -263,6 +291,7 @@ class BookingController extends Controller
                         throw new \Exception("Kursi $seat sudah dipesan oleh pengguna lain.");
                     }
 
+                    // Buat booking baru
                     $booking = Booking::create([
                         'user_id' => \Illuminate\Support\Facades\Auth::id(),
                         'jadwal_id' => $jadwal->id,
@@ -311,6 +340,7 @@ class BookingController extends Controller
         }
     }
 
+    // Menampilkan halaman pemilihan kursi (legacy method)
     public function pilihKursi($jadwal_id)
     {
         $jadwal = Jadwal::findOrFail($jadwal_id);
@@ -327,11 +357,12 @@ class BookingController extends Controller
             ->pluck('seat_number')
             ->toArray();
 
-        $seats = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'A9', 'A10', 'A11', 'A12', 'A13'];
+        $seats = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14'];
 
         return view('booking.kursi', compact('jadwal', 'seats', 'bookedSeats'));
     }
 
+    // Proses booking langsung (legacy method)
     public function store(Request $request)
     {
         $request->validate([
@@ -341,10 +372,12 @@ class BookingController extends Controller
 
         $jadwal = Jadwal::findOrFail($request->jadwal_id);
 
+        // Cek batas waktu pemesanan
         $waktuKeberangkatan = Carbon::parse($jadwal->getRawOriginal('tanggal') . ' ' . $jadwal->jam);
         $batasPesan = $waktuKeberangkatan->copy()->subHour();
         $waktuSekarang = Carbon::now();
 
+        // Log untuk debugging
         Log::info('Booking Time Check:', [
             'waktu_keberangkatan' => $waktuKeberangkatan->format('Y-m-d H:i:s'),
             'batas_pesan' => $batasPesan->format('Y-m-d H:i:s'),
@@ -429,6 +462,7 @@ class BookingController extends Controller
         }
     }
 
+    // Update status booking oleh admin
     public function updateStatus(Request $request, Booking $booking)
     {
         if (Auth::user()->role !== 'admin') {
@@ -439,6 +473,7 @@ class BookingController extends Controller
             'status' => 'required|in:pending,setuju,batal'
         ]);
 
+        // Cek jika booking sudah dibayar, tidak boleh diubah statusnya
         if ($booking->payment_status === 'sudah_bayar' && $request->status !== $booking->status) {
             return back()->with('error', 'Tidak dapat mengubah status pesanan yang sudah dibayar. Kelola di menu Pembayaran.');
         }
@@ -449,6 +484,7 @@ class BookingController extends Controller
             'status' => $request->status
         ]);
 
+        // Log perubahan status
         Log::info('Booking status updated', [
             'booking_id' => $booking->id,
             'admin_id' => Auth::id(),
@@ -460,6 +496,7 @@ class BookingController extends Controller
         return back()->with('success', 'Status berhasil diperbarui');
     }
 
+    // API endpoint untuk mendapatkan kursi yang sudah dipesan (untuk AJAX)
     public function getSeats($id)
     {
         $threshold = \Carbon\Carbon::now()->subMinutes(config('booking.pending_expiry_minutes', 30));
@@ -477,6 +514,7 @@ class BookingController extends Controller
         return response()->json($bookedSeats);
     }
 
+    // Download tiket dalam format PDF
     public function downloadTicket(Booking $booking)
     {
         $this->authorizeBooking($booking);
@@ -490,6 +528,7 @@ class BookingController extends Controller
         return $pdf->download('e-ticket-' . $booking->ticket_number . '.pdf');
     }
 
+    // Menampilkan tiket dalam format HTML (untuk preview)
     public function viewTicket($ticketNumber)
     {
         $booking = Booking::where('ticket_number', $ticketNumber)->with('jadwal.rute', 'user')->firstOrFail();
@@ -504,6 +543,7 @@ class BookingController extends Controller
     }
 
 
+    // Membatalkan booking oleh user
     public function cancel($id)
     {
         $booking = Booking::findOrFail($id);
@@ -514,6 +554,7 @@ class BookingController extends Controller
             return back()->with('error', 'Pesanan tidak dapat dibatalkan karena sudah diproses.');
         }
 
+        // Cek batas waktu pembatalan (2 jam sebelum keberangkatan)
         $waktuKeberangkatan = \Carbon\Carbon::parse($booking->jadwal_tanggal . ' ' . $booking->jadwal_jam);
         $batasCancel = $waktuKeberangkatan->copy()->subHours(config('booking.cancel_close_hours', 2));
         $waktuSekarang = \Carbon\Carbon::now();
@@ -525,6 +566,7 @@ class BookingController extends Controller
 
         $booking->update(['status' => 'batal']);
 
+        // Kirim notifikasi ke admin
         try {
             $fonnteService = app(\App\Services\FonnteService::class);
             $fonnteService->notifyAdminCancellation($booking);

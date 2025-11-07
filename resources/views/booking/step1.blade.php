@@ -1,8 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
+    <!-- Container utama halaman booking step 1 -->
     <div class="min-h-screen py-8">
         <div class="max-w-4xl mx-auto px-4">
+            <!-- Progress indicator step booking -->
             <div class="mb-8 fade-down animate-on-scroll">
                 <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
                     <div class="flex items-center justify-between relative">
@@ -36,6 +38,7 @@
                     </div>
                 </div>
             </div>
+            <!-- Form container untuk memilih perjalanan -->
             <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 md:p-8 fade-up animate-on-scroll">
                 <div class="text-center mb-8">
                     <div
@@ -51,6 +54,7 @@
 
                 <form action="{{ route('booking.step1') }}" method="POST" class="max-w-2xl mx-auto">
                     @csrf
+                    <!-- Section untuk memilih rute perjalanan -->
                     <div class="mb-8">
                         <div class="flex items-center gap-2 mb-4">
                             <div class="w-1 h-6 bg-gradient-to-b from-blue-500 to-indigo-600 rounded-full"></div>
@@ -123,6 +127,7 @@
                             </div>
                         </div>
                     </div>
+                    <!-- Section untuk memilih tanggal keberangkatan -->
                     <div class="mb-8">
                         <div class="flex items-center gap-2 mb-4">
                             <div class="w-1 h-6 bg-gradient-to-b from-indigo-500 to-purple-600 rounded-full"></div>
@@ -147,6 +152,7 @@
                             Pilih tanggal mulai dari hari ini
                         </p>
                     </div>
+                    <!-- Action buttons untuk navigasi -->
                     <div class="flex flex-col sm:flex-row gap-3 pt-6 border-t border-gray-100">
                         <a href="{{ route('jadwal') }}"
                             class="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-all duration-300 font-semibold">

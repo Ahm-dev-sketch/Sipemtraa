@@ -39,6 +39,7 @@
 </head>
 
 <body class="bg-gray-100 m-0 p-0">
+    <!-- Body Section: Container utama dengan background dan struktur layout responsif -->
 
     @if (session('success'))
         <div data-success-message="{{ session('success') }}" style="display: none;"></div>
@@ -51,11 +52,14 @@
 
 
     @if (auth()->check() && auth()->user()->role === 'admin')
+        <!-- Admin Layout Container: Layout khusus admin dengan sidebar navigasi dan main content area -->
         <div class="flex min-h-screen relative">
-            <div id="sidebar-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"></div>
+            <div id="sidebar-overlay"
+                class="hidden fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden pointer-events-none"
+                aria-hidden="true"></div>
             <button id="menu-toggle"
-                class="md:hidden fixed top-4 left-4 z-60 p-3 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 text-white rounded-xl shadow-lg shadow-blue-500/30 focus:outline-none hover:shadow-xl hover:shadow-blue-500/40 hover:scale-110 active:scale-95 transition-all duration-300"
-                aria-label="Toggle Sidebar">
+                class="md:hidden fixed top-4 left-4 z-50 p-3 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 text-white rounded-xl shadow-lg shadow-blue-500/30 focus:outline-none hover:shadow-xl hover:shadow-blue-500/40 hover:scale-110 active:scale-95 transition-all duration-300"
+                aria-label="Toggle Sidebar" aria-expanded="false">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor" stroke-width="2.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
@@ -294,6 +298,7 @@
             </main>
         </div>
     @else
+        <!-- User Layout Container: Layout untuk user biasa dengan navbar navigasi dan main content -->
         <nav id="navbar"
             class="bg-white/70 backdrop-blur-xl text-gray-900 shadow-sm fixed top-0 left-0 w-full z-50 transition-all duration-300 border-b border-blue-100/50">
             <div class="container mx-auto flex justify-between items-center px-4 py-3.5 md:px-6">
@@ -535,7 +540,9 @@
                 </div>
             </div>
         </nav>
+        <!-- Main Content Area: Area konten utama dengan padding top untuk navbar -->
         <main class="min-h-screen pt-20 md:pt-24">
+            <!-- Content Wrapper: Wrapper untuk konten dengan max-width dan padding -->
             <div class="w-full">
                 <div class="max-w-7xl mx-auto px-6">
                     @yield('content')
@@ -544,10 +551,12 @@
         </main>
     @endif
 
+    <!-- Footer Section: Footer opsional yang dapat di-include oleh halaman tertentu -->
     @hasSection('footer')
         @yield('footer')
     @endif
 
+    <!-- Scripts Stack: Area untuk menambahkan script tambahan dari halaman-halaman -->
     @stack('scripts')
 </body>
 

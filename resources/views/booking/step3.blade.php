@@ -1,8 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
+    <!-- Container utama halaman booking step 3 -->
     <div class="min-h-screen py-8">
         <div class="max-w-4xl mx-auto px-4">
+            <!-- Progress indicator step booking -->
             <div class="mb-8 fade-down animate-on-scroll">
                 <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
                     <div class="flex items-center justify-between relative">
@@ -36,6 +38,7 @@
                     </div>
                 </div>
             </div>
+            <!-- Summary detail pemesanan -->
             <div
                 class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl shadow-lg border border-purple-100 mb-6 p-6 fade-right animate-on-scroll">
                 <div class="flex items-center gap-3 mb-4">
@@ -63,6 +66,7 @@
                             <span class="text-xs text-gray-600 font-medium">Tanggal & Jam</span>
                         </div>
                         <div class="font-bold text-gray-900">
+                            <!-- Format tanggal dengan Carbon: Menampilkan tanggal dalam format hari bulan tahun -->
                             {{ \Carbon\Carbon::parse($jadwal->tanggal)->format('d M Y') }} - {{ $jadwal->jam }}
                         </div>
                     </div>
@@ -92,11 +96,13 @@
                         </div>
                         <div
                             class="font-bold text-xl bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                            <!-- Format harga dengan number_format: Menampilkan harga dalam format Rupiah -->
                             Rp {{ number_format($jadwal->harga, 0, ',', '.') }}
                         </div>
                     </div>
                 </div>
             </div>
+            <!-- Container pemilihan kursi -->
             <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 md:p-8 fade-up animate-on-scroll">
                 <div class="text-center mb-8">
                     <div
@@ -109,6 +115,7 @@
                     </h1>
                     <p class="text-gray-600">Pilih kursi yang ingin dipesan (maksimal 7 kursi per transaksi)</p>
                 </div>
+                <!-- Legend keterangan kursi -->
                 <div class="mb-8 fade-up animate-on-scroll">
                     <div class="bg-gradient-to-r from-gray-50 to-slate-50 rounded-xl p-4 mb-6 border border-gray-200">
                         <div class="flex items-center gap-2 mb-3">
@@ -147,9 +154,11 @@
                         </div>
                     </div>
 
+                    <!-- Form pemilihan kursi -->
                     <form id="seat-form" action="{{ route('booking.step3.process') }}" method="POST"
                         data-price-per-seat="{{ $jadwal->harga }}">
                         @csrf
+                        <!-- Layout bus untuk pemilihan kursi -->
                         <div class="flex justify-center mb-6">
                             <div class="relative bg-gradient-to-b from-gray-700 to-gray-800 rounded-3xl p-12 shadow-2xl border-4 border-gray-900"
                                 style="width: 380px;">
@@ -312,6 +321,7 @@
                                 <div class="absolute -right-2 top-10 w-4 h-6 bg-gray-900 rounded-r-lg"></div>
                             </div>
                         </div>
+                        <!-- Summary kursi terpilih dan total harga -->
                         <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 mb-6 border border-blue-200">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-3">
@@ -335,6 +345,7 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- Action buttons untuk navigasi -->
                         <div class="flex flex-col sm:flex-row gap-3 pt-6 border-t border-gray-100">
                             <a href="{{ route('booking.step2') }}"
                                 class="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-all duration-300 font-semibold">

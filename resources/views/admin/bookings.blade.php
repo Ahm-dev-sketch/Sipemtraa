@@ -5,6 +5,7 @@
 @section('page-subtitle', 'Kelola dan monitor booking pelanggan')
 
 @section('content')
+    <!-- Search and Filter Form -->
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
 
         <form method="GET" action="{{ route('admin.bookings') }}" class="flex flex-col md:flex-row gap-3">
@@ -67,6 +68,7 @@
 
     </div>
 
+    <!-- Desktop Table View -->
     <div
         class="hidden lg:block bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden fade-up animate-on-scroll">
         <div class="overflow-x-auto">
@@ -225,6 +227,15 @@
             </table>
         </div>
 
+
+        <!-- Pagination (desktop) -->
+        <div class="px-6 py-4 border-t border-gray-100 hidden lg:block">
+            <div class="flex items-center justify-end">
+                {{ $bookings->links('vendor.pagination.compact') }}
+            </div>
+        </div>
+
+        <!-- Mobile Card View -->
         <div class="lg:hidden space-y-4 fade-up animate-on-scroll">
 
             @foreach ($bookings as $booking)
@@ -366,7 +377,8 @@
 
         </div>
 
-        <div class="mt-6 flex justify-end">
-            {{ $bookings->links('pagination::tailwind') }}
+        <!-- Pagination (mobile) -->
+        <div class="mt-4 flex justify-center lg:hidden">
+            {{ $bookings->links('vendor.pagination.compact') }}
         </div>
     @endsection

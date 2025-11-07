@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+    <!-- Header Section: Bagian header halaman riwayat pemesanan -->
     <div class="mb-8 fade-down animate-on-scroll">
         <div class="flex items-center gap-3 mb-2">
             <div class="w-1 h-8 bg-gradient-to-b from-blue-500 via-indigo-500 to-purple-600 rounded-full"></div>
@@ -12,6 +13,7 @@
         <p class="text-gray-600 ml-7">Kelola dan pantau semua pemesanan tiket perjalanan Anda</p>
     </div>
 
+    <!-- Search and Filter Form: Form pencarian dan filter riwayat pemesanan -->
     <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8 fade-right animate-on-scroll">
         <form method="GET" action="{{ route('riwayat') }}" class="flex flex-col gap-4">
             <div class="relative">
@@ -72,6 +74,7 @@
         </form>
     </div>
 
+    <!-- Empty State: Tampilan ketika tidak ada riwayat pemesanan -->
     @if ($bookings->isEmpty())
         <div class="fade-up animate-on-scroll">
             <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-12 text-center">
@@ -91,11 +94,14 @@
             </div>
         </div>
     @else
+        <!-- Bookings List: Daftar riwayat pemesanan -->
         <div class="space-y-6 fade-up animate-on-scroll">
             @foreach ($bookings as $booking)
+                <!-- Booking Card: Kartu informasi pemesanan -->
                 <div
                     class="group bg-white rounded-2xl shadow-lg border border-gray-100 hover:shadow-2xl transition-all duration-300 overflow-hidden hover:border-blue-200">
 
+                    <!-- Booking Header: Header kartu pemesanan dengan status -->
                     <div
                         class="px-6 py-4 border-b border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-3
                         {{ $booking->status == 'setuju' && $booking->payment_status == 'sudah_bayar' ? 'bg-gradient-to-r from-green-50 to-emerald-50' : '' }}
@@ -111,6 +117,7 @@
                             <div class="flex items-center gap-2 text-xs text-gray-600">
                                 <i class="far fa-clock"></i>
                                 <span>Dipesan
+                                    <!-- Format waktu relatif menggunakan Carbon: Menampilkan waktu relatif dalam bahasa Indonesia -->
                                     {{ \Carbon\Carbon::parse($booking->created_at)->locale('id')->diffForHumans() }}</span>
                             </div>
                         </div>
@@ -144,7 +151,9 @@
                         </div>
                     </div>
 
+                    <!-- Booking Details: Detail lengkap pemesanan -->
                     <div class="p-6 md:p-8">
+                        <!-- Route Info Section: Informasi rute perjalanan -->
                         <div class="mb-6">
                             <div class="flex items-center gap-2 mb-4">
                                 <div class="w-1 h-6 bg-gradient-to-b from-blue-500 to-indigo-600 rounded-full"></div>
@@ -224,6 +233,7 @@
                             </div>
                         </div>
 
+                        <!-- Booking Info Grid: Grid informasi pemesanan -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                             <div class="space-y-4">
                                 <div class="flex items-start gap-3">
@@ -234,6 +244,7 @@
                                     <div class="flex-1">
                                         <p class="text-xs text-gray-600 mb-0.5">Jadwal Keberangkatan</p>
                                         <p class="font-semibold text-gray-900">
+                                            <!-- Format tanggal lengkap menggunakan Carbon: Menampilkan hari, tanggal, bulan, tahun dalam bahasa Indonesia -->
                                             {{ \Carbon\Carbon::parse($booking->jadwal_tanggal)->locale('id')->isoFormat('dddd, D MMMM YYYY') }}
                                         </p>
                                         <p class="text-sm text-blue-600 font-medium">Pukul {{ $booking->jadwal_jam }} WIB
@@ -307,6 +318,7 @@
                         </div>
                     </div>
 
+                    <!-- Booking Footer: Footer kartu dengan total harga dan aksi -->
                     <div
                         class="px-6 md:px-8 py-6 bg-gray-50 border-t border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div class="flex items-center gap-3">
@@ -318,6 +330,7 @@
                                 <p class="text-xs text-gray-600 mb-0.5">Total Pembayaran</p>
                                 <p
                                     class="text-2xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                                    <!-- Format harga dengan number_format: Menampilkan harga dalam format Rupiah -->
                                     Rp {{ number_format($booking->jadwal->harga ?? 0, 0, ',', '.') }}
                                 </p>
                             </div>
@@ -348,9 +361,10 @@
             @endforeach
         </div>
 
+        <!-- Pagination: Navigasi halaman untuk riwayat pemesanan -->
         <div class="mt-8 flex justify-center fade-up animate-on-scroll">
             <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-2">
-                {{ $bookings->links('pagination::tailwind') }}
+                {{ $bookings->links('vendor.pagination.compact') }}
             </div>
         </div>
     @endif

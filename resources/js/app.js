@@ -1,3 +1,4 @@
+/* ANIMASI SCROLL - Efek muncul saat scroll */
 document.addEventListener('DOMContentLoaded', () => {
     const observer = new IntersectionObserver(entries => {
         entries.forEach(entry => {
@@ -21,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 100);
 });
 
+/* SWEET ALERT - Notifikasi sukses dan error */
 document.addEventListener('DOMContentLoaded', function () {
     const successMessage = document.querySelector('[data-success-message]');
     if (successMessage) {
@@ -47,6 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
+/* NAVIGATION & UI COMPONENTS - Menu, sidebar, navbar, dropdown */
 document.addEventListener("DOMContentLoaded", () => {
     const toggle = document.getElementById("menu-toggle");
     const menu = document.getElementById("menu");
@@ -59,13 +62,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (toggle && sidebar && sidebarOverlay) {
         toggle.addEventListener("click", () => {
+            // toggle sidebar visibility
             sidebar.classList.toggle("-translate-x-full");
-            sidebarOverlay.classList.toggle("hidden");
+            const isHidden = sidebar.classList.contains("-translate-x-full");
+            // if sidebar is hidden after toggle -> ensure overlay is hidden and page scroll enabled
+            if (isHidden) {
+                sidebarOverlay.classList.add("hidden");
+                sidebarOverlay.classList.add("pointer-events-none");
+                sidebarOverlay.setAttribute('aria-hidden', 'true');
+                toggle.setAttribute('aria-expanded', 'false');
+                document.body.style.overflow = '';
+            } else {
+                // sidebar opened -> show overlay and prevent background scroll
+                sidebarOverlay.classList.remove("hidden");
+                sidebarOverlay.classList.remove("pointer-events-none");
+                sidebarOverlay.setAttribute('aria-hidden', 'false');
+                toggle.setAttribute('aria-expanded', 'true');
+                document.body.style.overflow = 'hidden';
+            }
         });
 
         sidebarOverlay.addEventListener("click", () => {
             sidebar.classList.add("-translate-x-full");
             sidebarOverlay.classList.add("hidden");
+            sidebarOverlay.classList.add("pointer-events-none");
+            sidebarOverlay.setAttribute('aria-hidden', 'true');
+            toggle.setAttribute('aria-expanded', 'false');
+            document.body.style.overflow = '';
         });
 
         const sidebarLinks = sidebar.querySelectorAll("a");
@@ -74,6 +97,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (window.innerWidth < 768) {
                     sidebar.classList.add("-translate-x-full");
                     sidebarOverlay.classList.add("hidden");
+                    sidebarOverlay.classList.add("pointer-events-none");
+                    sidebarOverlay.setAttribute('aria-hidden', 'true');
+                    toggle.setAttribute('aria-expanded', 'false');
+                    document.body.style.overflow = '';
                 }
             });
         });
@@ -167,6 +194,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setupToggle('toggle-total-revenue-visibility', 'total-revenue-amount', 'eye-icon-total');
     setupToggle('toggle-monthly-revenue-visibility', 'monthly-revenue-amount', 'eye-icon-monthly');
 
+    /* SEAT BOOKING SYSTEM - Sistem pemesanan kursi */
     const jadwalSelect = document.getElementById('jadwal_id');
     const seatCheckboxes = document.querySelectorAll('.seat-checkbox');
     const bookingForm = document.getElementById('booking-form');
@@ -279,11 +307,14 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
+/* UTILITY FUNCTIONS - Fungsi utilitas */
 function getCurrentPage() {
     return window.location.pathname;
 }
 
+/* PAGE SPECIFIC FUNCTIONS - Fungsi khusus halaman tertentu */
 
+/* RIWAYAT PAGE - Halaman riwayat pemesanan */
 if (getCurrentPage().includes('/riwayat')) {
     const cancelForms = document.querySelectorAll('.cancel-booking-form');
     cancelForms.forEach(form => {
@@ -307,6 +338,7 @@ if (getCurrentPage().includes('/riwayat')) {
     });
 }
 
+/* BOOKING STEP1 PAGE - Halaman langkah pertama pemesanan */
 if (getCurrentPage().includes('/booking/step1')) {
     const kotaAwal = document.getElementById('kota_awal');
     const kotaTujuan = document.getElementById('kota_tujuan');
@@ -325,6 +357,7 @@ if (getCurrentPage().includes('/booking/step1')) {
 }
 
 
+/* ADMIN RUTE CREATE PAGE - Halaman admin membuat rute baru */
 if (getCurrentPage().includes('/admin/rute/create')) {
     function formatNumber(num) {
         return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -379,6 +412,7 @@ if (getCurrentPage().includes('/admin/rute/create')) {
 }
 
 
+/* ADMIN SUPIR CREATE PAGE - Halaman admin membuat supir baru */
 if (getCurrentPage().includes('/admin/supir/create')) {
     const formSupir = document.getElementById('formSupir');
     if (formSupir) {
@@ -402,7 +436,39 @@ if (getCurrentPage().includes('/admin/supir/create')) {
     }
 }
 
+/* 3D TILT EFFECT - Efek 3D tilt untuk gambar home */
+document.addEventListener('DOMContentLoaded', function () {
+    const card = document.querySelector('[data-tilt]');
+    if (!card) return;
 
+    let raf = null;
+
+    function updateTransform(x, y, rect) {
+        const cx = rect.width / 2;
+        const cy = rect.height / 2;
+        const rx = ((y - cy) / rect.height) * 10; // rotateX
+        const ry = ((x - cx) / rect.width) * -10; // rotateY
+        card.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
+    }
+
+    card.addEventListener('mousemove', function (e) {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        if (raf) cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(function () { updateTransform(x, y, rect); });
+    });
+
+    card.addEventListener('mouseleave', function () {
+        if (raf) cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(function () {
+            card.style.transform = '';
+        });
+    });
+});
+
+
+/* ADMIN MOBIL CREATE PAGE - Halaman admin membuat mobil baru */
 if (getCurrentPage().includes('/admin/mobil/create')) {
     const formMobil = document.getElementById('formMobil');
     if (formMobil) {
@@ -426,6 +492,7 @@ if (getCurrentPage().includes('/admin/mobil/create')) {
     }
 }
 
+/* ADMIN PELANGGAN CREATE PAGE - Halaman admin membuat pelanggan baru */
 if (getCurrentPage().includes('/admin/pelanggan/create')) {
     const formPelanggan = document.getElementById('formPelanggan');
     if (formPelanggan) {
@@ -449,6 +516,7 @@ if (getCurrentPage().includes('/admin/pelanggan/create')) {
     }
 }
 
+/* ADMIN JADWALS CREATE PAGE - Halaman admin membuat jadwal baru */
 if (getCurrentPage().includes('/admin/jadwals/create')) {
     const formJadwal = document.getElementById('formJadwal');
     if (formJadwal) {
@@ -472,6 +540,7 @@ if (getCurrentPage().includes('/admin/jadwals/create')) {
     }
 }
 
+/* HOME PAGE - Halaman utama dengan counter animasi */
 if (getCurrentPage() === '/' || getCurrentPage().includes('home')) {
     function animateCounter(el) {
         const target = +el.getAttribute("data-target");
@@ -505,6 +574,7 @@ if (getCurrentPage() === '/' || getCurrentPage().includes('home')) {
     }
 }
 
+/* ADMIN BOOKINGS STATUS CHANGE - Perubahan status booking admin */
 document.querySelectorAll('form[action*="bookings"] input[name="status"]').forEach(input => {
     const form = input.closest('form');
     if (form) {
@@ -514,29 +584,51 @@ document.querySelectorAll('form[action*="bookings"] input[name="status"]').forEa
             const status = e.submitter.value;
             const statusText = status === 'setuju' ? 'Setuju' : 'Batal';
 
-            const row = this.closest('tr');
-            const userName = row.querySelector('td:nth-child(1)').textContent.trim();
-            const origin = row.querySelector('td:nth-child(2)').textContent.trim();
-            const destination = row.querySelector('td:nth-child(3)').textContent.trim();
-            const date = row.querySelector('td:nth-child(4)').textContent.trim();
+            // Find a sensible container: table row (desktop) or the mobile card wrapper
+            const container = this.closest('tr') || this.closest('.bg-white') || this.closest('div');
 
-            let confirmMessage = '';
+            // helper to safely read text from selectors with fallbacks
+            const getText = (selPrimary, selFallback) => {
+                try {
+                    const el = container ? (container.querySelector(selPrimary) || (selFallback ? container.querySelector(selFallback) : null)) : null;
+                    return el ? el.textContent.trim() : '-';
+                } catch (e) {
+                    return '-';
+                }
+            };
+
+            const userName = getText('td:nth-child(1) .ml-4 .text-sm', 'td:nth-child(1)');
+            const origin = getText('td:nth-child(2) .ml-3 .font-medium', 'td:nth-child(2)');
+            const destination = getText('td:nth-child(2) .ml-3 .text-xs', 'td:nth-child(2)');
+            const date = getText('td:nth-child(3) .text-sm', 'td:nth-child(3)');
+            const time = getText('td:nth-child(3) .text-xs', null);
+            const mobilName = getText('td:nth-child(4) .text-sm', 'td:nth-child(4)');
+            const mobilNumber = getText('td:nth-child(4) .text-xs', null);
+
             let confirmTitle = '';
-
             if (status === 'setuju') {
                 confirmTitle = 'Konfirmasi Persetujuan';
-                confirmMessage = `Apakah Anda yakin ingin menyetujui pemesanan untuk:\n\nPelanggan: ${userName}\nTujuan: ${origin} - ${destination}\nTanggal: ${date}\nStatus: ${statusText}?`;
             } else if (status === 'batal') {
                 confirmTitle = 'Konfirmasi Pembatalan';
-                confirmMessage = `Apakah Anda yakin ingin membatalkan pemesanan untuk:\n\nPelanggan: ${userName}\nTujuan: ${origin} - ${destination}\nTanggal: ${date}\nStatus: ${statusText}?`;
             } else {
                 confirmTitle = 'Konfirmasi Perubahan Status';
-                confirmMessage = `Apakah Anda yakin ingin mengubah status pemesanan untuk:\n\nPelanggan: ${userName}\nTujuan: ${origin} - ${destination}\nTanggal: ${date}\nStatus: ${statusText}?`;
             }
+
+            // Build an HTML message for Swal so content is readable and labeled
+            const htmlMessage = `
+                <div style="text-align:left; line-height:1.4">
+                    <p><strong>Pelanggan:</strong> ${userName}</p>
+                    <p><strong>Rute:</strong> ${origin} → ${destination}</p>
+                    <p><strong>Tanggal:</strong> ${date}</p>
+                    <p><strong>Jam:</strong> ${time}</p>
+                    <p><strong>Mobil:</strong> ${mobilName}${mobilNumber && mobilNumber !== '-' ? ' (' + mobilNumber + ')' : ''}</p>
+                    <p><strong>Status:</strong> ${statusText}</p>
+                </div>
+            `;
 
             Swal.fire({
                 title: confirmTitle,
-                text: confirmMessage,
+                html: htmlMessage,
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
@@ -561,6 +653,7 @@ document.querySelectorAll('form[action*="bookings"] input[name="status"]').forEa
     }
 });
 
+/* DELETE CONFIRMATIONS - Konfirmasi penghapusan data */
 document.addEventListener('DOMContentLoaded', function () {
     const deleteFormsRute = document.querySelectorAll('.delete-form');
     deleteFormsRute.forEach(form => {
@@ -673,6 +766,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    /* DASHBOARD CHART LINE - Chart garis dashboard */
     const dashboardChartCanvasLine = document.getElementById('chartPendapatanLineDashboard');
     if (dashboardChartCanvasLine && dashboardChartCanvasLine.dataset.labels && dashboardChartCanvasLine.dataset.dashboard) {
         const labels = JSON.parse(dashboardChartCanvasLine.dataset.labels);
@@ -787,6 +881,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    /* REVENUE VISIBILITY TOGGLES - Toggle visibilitas pendapatan */
     const toggleRevenueBtn = document.getElementById('toggle-revenue-visibility');
     const revenueAmount = document.getElementById('revenue-amount');
     const eyeIcon = document.getElementById('eye-icon');
@@ -841,6 +936,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    /* LAPORAN CHART BAR - Chart batang laporan */
     const laporanChartCanvasBar = document.getElementById('chartPendapatanBar');
     if (laporanChartCanvasBar && laporanChartCanvasBar.dataset.labels) {
         const labels = JSON.parse(laporanChartCanvasBar.dataset.labels);
@@ -1061,6 +1157,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    /* LAPORAN CHART PIE - Chart pie laporan */
     const laporanChartCanvasPie = document.getElementById('chartPendapatanPie');
     if (laporanChartCanvasPie && laporanChartCanvasPie.dataset.labels) {
         const labels = JSON.parse(laporanChartCanvasPie.dataset.labels);

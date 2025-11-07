@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+    <!-- Reset Password Form Section: Form untuk reset password dengan verifikasi OTP dan input password baru -->
     <div
         class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-orange-50 via-red-50 to-pink-50 relative overflow-hidden">
 

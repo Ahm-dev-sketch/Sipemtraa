@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+    <!-- Register Form Section: Form pendaftaran akun baru dengan input nama, WhatsApp, password, dan konfirmasi password -->
     <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         <div class="absolute inset-0 bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 -z-10"></div>
         <div class="absolute inset-0 bg-grid-pattern opacity-5 -z-10"></div>

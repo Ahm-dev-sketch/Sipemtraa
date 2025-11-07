@@ -1,8 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
+    <!-- Container utama halaman booking step 2 -->
     <div class="min-h-screen py-8">
         <div class="max-w-6xl mx-auto px-4">
+            <!-- Progress indicator step booking -->
             <div class="mb-8 fade-down animate-on-scroll">
                 <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
                     <div class="flex items-center justify-between relative">
@@ -36,6 +38,7 @@
                     </div>
                 </div>
             </div>
+            <!-- Summary perjalanan yang dipilih -->
             <div
                 class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl shadow border border-blue-100 mb-6 p-6 fade-right animate-on-scroll">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -73,6 +76,7 @@
                     </a>
                 </div>
             </div>
+            <!-- Container daftar jadwal tersedia -->
             <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 md:p-8 fade-up animate-on-scroll">
                 <div class="text-center mb-8">
                     <div
@@ -87,6 +91,7 @@
                 </div>
 
                 @if ($jadwals->isEmpty())
+                    <!-- Empty state ketika tidak ada jadwal -->
                     <div class="text-center py-12">
                         <div class="inline-flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full mb-4">
                             <i class="fas fa-calendar-times text-4xl text-gray-400"></i>
@@ -100,9 +105,11 @@
                         </a>
                     </div>
                 @else
+                    <!-- Grid container untuk daftar jadwal -->
                     <div class="grid gap-6">
 
                         @foreach ($jadwals as $jadwal)
+                            <!-- Card jadwal individual -->
                             <div
                                 class="group border-2 border-gray-100 rounded-2xl p-6 hover:border-indigo-300 hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-white to-gray-50">
                                 <div class="flex flex-col lg:flex-row gap-6">
@@ -131,6 +138,7 @@
                                                     <span class="text-xs text-gray-600 font-medium">Tanggal</span>
                                                 </div>
                                                 <div class="font-bold text-gray-900">
+                                                    <!-- Format tanggal dengan Carbon: Menampilkan tanggal dalam format hari bulan tahun -->
                                                     {{ \Carbon\Carbon::parse($jadwal->tanggal)->format('d M Y') }}
                                                 </div>
                                             </div>
@@ -160,6 +168,7 @@
                                                 </div>
                                                 <div
                                                     class="font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                                                    <!-- Format harga dengan number_format: Menampilkan harga dalam format Rupiah -->
                                                     Rp {{ number_format($jadwal->harga, 0, ',', '.') }}
                                                 </div>
                                             </div>

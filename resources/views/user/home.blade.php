@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+    <!-- Hero Section -->
     <div class="relative w-screen -ml-[50vw] left-1/2 overflow-hidden -mt-4 md:-mt-6">
         <div class="absolute inset-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50"></div>
         <div class="absolute inset-0 overflow-hidden">
@@ -61,10 +62,15 @@
                             <div
                                 class="absolute bottom-0 left-1/2 -translate-x-1/2 w-4/5 h-8 bg-gradient-to-t from-blue-900/20 to-transparent rounded-full blur-2xl">
                             </div>
-                            <img src="{{ asset('asset/home.webp') }}" alt="PT. Pelita Tran Prima Travel Service"
-                                class="w-full drop-shadow-2xl object-contain relative z-10"
-                                style="filter: saturate(1.1) brightness(1.05);" loading="eager" fetchpriority="high"
-                                width="800" height="600">
+                            <div class="home-3d-wrapper w-full px-6">
+                                <div class="home-3d-card relative mx-auto" data-tilt>
+                                    <img src="{{ asset('asset/home.webp') }}" alt="PT. Pelita Tran Prima Travel Service"
+                                        class="home-3d-img w-full drop-shadow-2xl object-contain relative z-10 loaded"
+                                        style="filter: saturate(1.1) brightness(1.05); border-radius: 1rem;" loading="eager"
+                                        fetchpriority="high" width="800" height="600">
+                                    <div class="home-3d-glare pointer-events-none"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -72,6 +78,7 @@
         </div>
     </div>
 
+    <!-- Services Section -->
     <section class="relative w-screen -ml-[50vw] left-1/2 py-20 bg-gradient-to-b from-white to-gray-50">
         <div class="max-w-7xl mx-auto px-6 lg:px-8">
             <div class="text-center mb-16 fade-up animate-on-scroll">
@@ -88,6 +95,7 @@
                 </p>
             </div>
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Service Card 1 -->
                 <div class="group fade-up animate-on-scroll">
                     <div
                         class="relative h-full p-8 bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-blue-200 hover:-translate-y-2">
@@ -114,6 +122,7 @@
                         </div>
                     </div>
                 </div>
+                <!-- Service Card 2 -->
                 <div class="group fade-up animate-on-scroll">
                     <div
                         class="relative h-full p-8 bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-indigo-200 hover:-translate-y-2">
@@ -140,6 +149,7 @@
                         </div>
                     </div>
                 </div>
+                <!-- Service Card 3 -->
                 <div class="group fade-up animate-on-scroll">
                     <div
                         class="relative h-full p-8 bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-purple-200 hover:-translate-y-2">
@@ -166,6 +176,7 @@
                         </div>
                     </div>
                 </div>
+                <!-- Service Card 4 -->
                 <div class="group fade-up animate-on-scroll">
                     <div
                         class="relative h-full p-8 bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-blue-200 hover:-translate-y-2">
@@ -191,6 +202,7 @@
                         </div>
                     </div>
                 </div>
+                <!-- Service Card 5 -->
                 <div class="group fade-up animate-on-scroll">
                     <div
                         class="relative h-full p-8 bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-indigo-200 hover:-translate-y-2">
@@ -217,6 +229,7 @@
                         </div>
                     </div>
                 </div>
+                <!-- Service Card 6 -->
                 <div class="group fade-up animate-on-scroll">
                     <div
                         class="relative h-full p-8 bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-purple-200 hover:-translate-y-2">
@@ -247,7 +260,7 @@
         </div>
     </section>
 
-
+    <!-- Contact Section: Bagian informasi kontak perusahaan dengan alamat, telepon, email, WhatsApp, dan peta lokasi -->
     <section class="relative w-screen -ml-[50vw] left-1/2 py-20 bg-white" id="contact">
         <div class="max-w-7xl mx-auto px-6 lg:px-8">
             <div class="text-center mb-16 fade-up animate-on-scroll">
@@ -263,6 +276,7 @@
                     Tim kami siap membantu Anda 24/7. Hubungi kami untuk informasi lebih lanjut
                 </p>
             </div>
+
             <div class="grid lg:grid-cols-5 gap-12 items-start">
                 <div class="lg:col-span-2 space-y-6 fade-right animate-on-scroll">
                     <div
@@ -364,7 +378,7 @@
         </div>
     </section>
 
-
+    <!-- Stats Section: Bagian statistik perusahaan dengan counter animasi untuk perjalanan, armada, rute, dan kepuasan pelanggan -->
     <section
         class="relative w-screen -ml-[50vw] left-1/2 py-20 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 text-white overflow-hidden"
         id="stats-section">
@@ -432,8 +446,7 @@
     </section>
 @endsection
 
-
-
+<!-- Footer Section: Bagian footer dengan informasi perusahaan, link layanan, rute populer, kontak cepat, dan media sosial -->
 @section('footer')
     <footer
         class="relative bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white py-16 w-full overflow-hidden">
