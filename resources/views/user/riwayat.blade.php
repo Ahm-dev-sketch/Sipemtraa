@@ -243,11 +243,46 @@
                                     </div>
                                     <div class="flex-1">
                                         <p class="text-xs text-gray-600 mb-0.5">Jadwal Keberangkatan</p>
+                                        @php
+                                            // Determine a display date for the booking: prefer stored jadwal->tanggal, otherwise
+                                            // compute next occurrence from jadwal->getUpcomingDates(). Fallback to stored
+                                            // booking hari label if nothing available.
+                                            $displayDate = null;
+                                            if ($booking->jadwal) {
+                                                if (!empty($booking->jadwal->tanggal)) {
+                                                    try {
+                                                        $displayDate = \Carbon\Carbon::parse($booking->jadwal->tanggal);
+                                                    } catch (\Exception $e) {
+                                                        $displayDate = null;
+                                                    }
+                                                }
+
+                                                if (!$displayDate) {
+                                                    try {
+                                                        $upcoming = $booking->jadwal->getUpcomingDates(4);
+                                                        if ($upcoming && $upcoming->count() > 0) {
+                                                            $displayDate = $upcoming->first();
+                                                        }
+                                                    } catch (\Exception $e) {
+                                                        // ignore
+                                                    }
+                                                }
+                                            }
+
+                                            $time =
+                                                $booking->jadwal_jam ??
+                                                ($booking->jadwal ? $booking->jadwal->jam : null);
+                                        @endphp
+
                                         <p class="font-semibold text-gray-900">
-                                            <!-- Format tanggal lengkap menggunakan Carbon: Menampilkan hari, tanggal, bulan, tahun dalam bahasa Indonesia -->
-                                            {{ \Carbon\Carbon::parse($booking->jadwal_tanggal)->locale('id')->isoFormat('dddd, D MMMM YYYY') }}
+                                            @if ($displayDate)
+                                                {{ $displayDate->locale('id')->isoFormat('dddd, D MMMM YYYY') }}
+                                            @else
+                                                {{ $booking->jadwal_hari_keberangkatan }}
+                                            @endif
                                         </p>
-                                        <p class="text-sm text-blue-600 font-medium">Pukul {{ $booking->jadwal_jam }} WIB
+                                        <p class="text-sm text-blue-600 font-medium">Pukul
+                                            {{ $time ? \Carbon\Carbon::parse($time)->format('H:i') : '-' }} WIB
                                         </p>
                                     </div>
                                 </div>

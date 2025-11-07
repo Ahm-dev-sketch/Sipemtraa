@@ -21,7 +21,7 @@ class Booking extends Model
         'status',
         'payment_status',
         'ticket_number',
-        'jadwal_tanggal',
+        'jadwal_hari_keberangkatan',
         'jadwal_jam',
     ];
 

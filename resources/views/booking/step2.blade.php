@@ -139,7 +139,7 @@
                                                 </div>
                                                 <div class="font-bold text-gray-900">
                                                     <!-- Format tanggal dengan Carbon: Menampilkan tanggal dalam format hari bulan tahun -->
-                                                    {{ \Carbon\Carbon::parse($jadwal->tanggal)->format('d M Y') }}
+                                                    {{ \Carbon\Carbon::parse($step1Data['tanggal'])->format('d M Y') }}
                                                 </div>
                                             </div>
                                             <div class="bg-white rounded-xl p-3 shadow-sm border border-gray-100">

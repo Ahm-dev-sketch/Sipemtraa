@@ -15,18 +15,42 @@ class Jadwal extends Model
     use HasFactory, SoftDeletes;
 
     // Atribut yang dapat diisi massal untuk jadwal
-    protected $fillable = ['tujuan', 'tanggal', 'jam', 'harga', 'rute_id', 'mobil_id', 'is_active', 'day_offset', 'notes'];
+    protected $fillable = ['tujuan', 'jam', 'harga', 'rute_id', 'mobil_id', 'is_active', 'hari_keberangkatan', 'notes'];
 
     // Casting atribut untuk tipe data tertentu
     protected $casts = [
-        'tanggal' => 'date',
         'is_active' => 'boolean',
     ];
 
-    // Accessor untuk mendapatkan tanggal dinamis berdasarkan day_offset
-    public function getDynamicTanggalAttribute()
+    // Method untuk mendapatkan tanggal-tanggal mendatang berdasarkan hari_keberangkatan
+    public function getUpcomingDates($weeksAhead = 4)
     {
-        return \Carbon\Carbon::today()->addDays($this->day_offset ?? 0);
+        $dates = collect();
+        $dayMap = [
+            'Senin' => 1,
+            'Selasa' => 2,
+            'Rabu' => 3,
+            'Kamis' => 4,
+            'Jumat' => 5,
+            'Sabtu' => 6,
+            'Minggu' => 0,
+        ];
+
+        $targetDay = $dayMap[$this->hari_keberangkatan] ?? null;
+        if ($targetDay === null) return $dates;
+
+        $startDate = \Carbon\Carbon::today();
+        $endDate = $startDate->copy()->addWeeks($weeksAhead);
+
+        $currentDate = $startDate->copy();
+        while ($currentDate->lte($endDate)) {
+            if ($currentDate->dayOfWeek === $targetDay) {
+                $dates->push($currentDate->copy());
+            }
+            $currentDate->addDay();
+        }
+
+        return $dates;
     }
 
     // Relasi dengan model Rute (satu jadwal milik satu rute)
@@ -66,10 +90,10 @@ class Jadwal extends Model
         return $query->where('is_active', true);
     }
 
-    // Scope untuk filter jadwal berdasarkan tanggal tertentu
-    public function scopeForDate($query, $date)
+    // Scope untuk filter jadwal berdasarkan hari keberangkatan
+    public function scopeForDay($query, $day)
     {
-        return $query->whereDate('tanggal', $date);
+        return $query->where('hari_keberangkatan', $day);
     }
 
     // Scope untuk filter jadwal yang masih memiliki kursi tersedia

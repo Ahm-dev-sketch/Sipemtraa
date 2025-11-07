@@ -8,11 +8,7 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-// Schedule to auto-update jadwal dates every day at midnight (00:00)
-Schedule::command('jadwal:update-dates')
-    ->dailyAt('00:00') // Run at 12:00 AM (midnight) every day
-    ->withoutOverlapping()
-    ->timezone('Asia/Jakarta');
+// Schedule removed: jadwal:update-dates command no longer exists (switched to day-based system)
 
 // Schedule to cancel expired pending bookings every 30 seconds
 Schedule::command('bookings:cancel-expired')

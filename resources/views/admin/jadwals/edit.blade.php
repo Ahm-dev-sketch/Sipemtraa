@@ -88,16 +88,38 @@
                     @enderror
                 </div>
 
-                <!-- Field untuk memilih tanggal keberangkatan -->
+                <!-- Field untuk memilih hari keberangkatan -->
                 <div>
-                    <label for="tanggal" class="block text-sm font-semibold text-gray-700 mb-2">
-                        <i class="fas fa-calendar-day text-gray-400 mr-1"></i>
-                        Tanggal Keberangkatan
+                    <label for="hari_keberangkatan" class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-calendar-week text-gray-400 mr-1"></i>
+                        Hari Keberangkatan
                     </label>
-                    <input type="date" id="tanggal" name="tanggal" value="{{ old('tanggal', $jadwal->tanggal) }}"
-                        required
+                    <select id="hari_keberangkatan" name="hari_keberangkatan" required
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
-                    @error('tanggal')
+                        <option value="" disabled>-- Pilih Hari --</option>
+                        <option value="Senin"
+                            {{ old('hari_keberangkatan', $jadwal->hari_keberangkatan) == 'Senin' ? 'selected' : '' }}>Senin
+                        </option>
+                        <option value="Selasa"
+                            {{ old('hari_keberangkatan', $jadwal->hari_keberangkatan) == 'Selasa' ? 'selected' : '' }}>
+                            Selasa</option>
+                        <option value="Rabu"
+                            {{ old('hari_keberangkatan', $jadwal->hari_keberangkatan) == 'Rabu' ? 'selected' : '' }}>Rabu
+                        </option>
+                        <option value="Kamis"
+                            {{ old('hari_keberangkatan', $jadwal->hari_keberangkatan) == 'Kamis' ? 'selected' : '' }}>Kamis
+                        </option>
+                        <option value="Jumat"
+                            {{ old('hari_keberangkatan', $jadwal->hari_keberangkatan) == 'Jumat' ? 'selected' : '' }}>Jumat
+                        </option>
+                        <option value="Sabtu"
+                            {{ old('hari_keberangkatan', $jadwal->hari_keberangkatan) == 'Sabtu' ? 'selected' : '' }}>Sabtu
+                        </option>
+                        <option value="Minggu"
+                            {{ old('hari_keberangkatan', $jadwal->hari_keberangkatan) == 'Minggu' ? 'selected' : '' }}>
+                            Minggu</option>
+                    </select>
+                    @error('hari_keberangkatan')
                         <p class="mt-1 text-sm text-red-600 flex items-center gap-1">
                             <i class="fas fa-exclamation-circle"></i>
                             {{ $message }}
@@ -105,16 +127,14 @@
                     @enderror
                 </div>
 
-                <!-- Field untuk memilih waktu keberangkatan -->
+                <!-- Field untuk input waktu keberangkatan -->
                 <div>
                     <label for="jam" class="block text-sm font-semibold text-gray-700 mb-2">
                         <i class="fas fa-clock text-gray-400 mr-1"></i>
                         Waktu Keberangkatan
                     </label>
-                    <select id="jam" name="jam" required
+                    <input type="time" id="jam" name="jam" value="{{ old('jam', $jadwal->jam) }}" required
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
-                        <option value="{{ old('jam', $jadwal->jam) }}" selected>{{ old('jam', $jadwal->jam) }}</option>
-                    </select>
                     @error('jam')
                         <p class="mt-1 text-sm text-red-600 flex items-center gap-1">
                             <i class="fas fa-exclamation-circle"></i>

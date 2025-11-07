@@ -190,42 +190,30 @@ img[fetchpriority="high"] {
 }
 
 /* IMAGE OPTIMIZATION */
-img {
-    max-width: 100%;
-    height: auto;
-}
-
-img[width][height] {
-    aspect-ratio: attr(width) / attr(height);
-}
-
-img[fetchpriority="high"] {
-    content-visibility: auto;
-}
-
+/* IMAGE OPTIMIZATION (consolidated) */
+/*
+  Consolidated and deduplicated image rules.
+  Keeps progressive reveal, high-priority fetch behavior, aspect-ratio hint and
+  ensures content-visibility is enabled when supported.
+*/
 img {
     max-width: 100%;
     height: auto;
     content-visibility: auto;
+    opacity: 0;
+    transition: opacity 0.1s ease-in;
+    display: block;
 }
 
-img[width][height] {
-    aspect-ratio: attr(width) / attr(height);
-}
-
+img.loaded,
 img[fetchpriority="high"] {
     opacity: 1 !important;
     animation: none !important;
 }
 
-img {
-    opacity: 0;
-    transition: opacity 0.1s ease-in;
-}
-
-img.loaded,
-img[fetchpriority="high"] {
-    opacity: 1;
+/* Provide an author hint for aspect-ratio when width/height attrs are present */
+img[width][height] {
+    aspect-ratio: attr(width) / attr(height);
 }
 
 /* 3D HOME IMAGE STYLES */

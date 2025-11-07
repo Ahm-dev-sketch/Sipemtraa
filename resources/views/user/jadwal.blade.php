@@ -152,13 +152,34 @@
                                 class="flex items-center gap-4 p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
                                 <div
                                     class="shrink-0 w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-                                    <i class="fas fa-calendar-day text-white text-xl"></i>
+                                    <i class="fas fa-calendar-week text-white text-xl"></i>
                                 </div>
                                 <div>
-                                    <p class="text-xs text-gray-600 font-medium mb-0.5">Tanggal Berangkat</p>
-                                    <p class="font-bold text-gray-900 text-sm">
-                                        {{ \Carbon\Carbon::parse($jadwal->tanggal)->locale('id')->isoFormat('D MMMM YYYY') }}
-                                    </p>
+                                    <p class="text-xs text-gray-600 font-medium mb-0.5">Tanggal</p>
+                                    @php
+                                        // Prefer the stored `tanggal` from DB. If not present, fall back to upcoming_dates.
+                                        $displayDate = null;
+                                        if (!empty($jadwal->tanggal)) {
+                                            try {
+                                                $displayDate = \Carbon\Carbon::parse($jadwal->tanggal);
+                                            } catch (\Exception $e) {
+                                                $displayDate = null;
+                                            }
+                                        } elseif (
+                                            !empty($jadwal->upcoming_dates) &&
+                                            $jadwal->upcoming_dates->count() > 0
+                                        ) {
+                                            $displayDate = $jadwal->upcoming_dates->first();
+                                        }
+                                    @endphp
+
+                                    @if ($displayDate)
+                                        <p class="font-bold text-gray-900 text-sm">
+                                            {{ $displayDate->locale('id')->isoFormat('dddd, D MMMM YYYY') }}
+                                        </p>
+                                    @else
+                                        <p class="font-bold text-gray-900 text-sm">-</p>
+                                    @endif
                                 </div>
                             </div>
 

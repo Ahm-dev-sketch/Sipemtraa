@@ -67,7 +67,7 @@
                         <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">ID</th>
                         <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Rute
                         </th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Tanggal
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Hari
                         </th>
                         <th class="px-6 py-4 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">Waktu
                         </th>
@@ -101,8 +101,8 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center text-sm text-gray-700">
-                                    <i class="fas fa-calendar-day text-gray-400 mr-2"></i>
-                                    {{ \Carbon\Carbon::parse($jadwal->tanggal)->locale('id')->isoFormat('D MMM YYYY') }}
+                                    <i class="fas fa-calendar-week text-gray-400 mr-2"></i>
+                                    Setiap {{ $jadwal->hari_keberangkatan }}
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-center">
@@ -189,7 +189,7 @@
                                 </path>
                             </svg>
                             <span class="text-gray-700">
-                                {{ \Carbon\Carbon::parse($jadwal->tanggal)->locale('id')->isoFormat('D MMM YYYY') }}
+                                Setiap {{ $jadwal->hari_keberangkatan }}
                             </span>
                         </div>
                         <div class="flex items-center gap-2">

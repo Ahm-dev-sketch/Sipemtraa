@@ -80,22 +80,6 @@
                     @enderror
                 </div>
 
-                <!-- Field untuk memilih tanggal keberangkatan -->
-                <div>
-                    <label for="tanggal" class="block text-sm font-semibold text-gray-700 mb-2">
-                        <i class="fas fa-calendar-day text-gray-400 mr-1"></i>
-                        Tanggal Keberangkatan
-                    </label>
-                    <input type="date" id="tanggal" name="tanggal" value="{{ old('tanggal') }}" required
-                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all">
-                    @error('tanggal')
-                        <p class="mt-1 text-sm text-red-600 flex items-center gap-1">
-                            <i class="fas fa-exclamation-circle"></i>
-                            {{ $message }}
-                        </p>
-                    @enderror
-                </div>
-
                 <!-- Field untuk memilih waktu keberangkatan -->
                 <div>
                     <label for="jam" class="block text-sm font-semibold text-gray-700 mb-2">
@@ -107,6 +91,31 @@
                         <option value="" disabled selected>-- Pilih rute terlebih dahulu --</option>
                     </select>
                     @error('jam')
+                        <p class="mt-1 text-sm text-red-600 flex items-center gap-1">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {{ $message }}
+                        </p>
+                    @enderror
+                </div>
+
+                <!-- Field untuk memilih hari keberangkatan -->
+                <div class="md:col-span-2">
+                    <label for="hari_keberangkatan" class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-calendar-day text-gray-400 mr-1"></i>
+                        Hari Keberangkatan
+                    </label>
+                    <select id="hari_keberangkatan" name="hari_keberangkatan" required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all">
+                        <option value="" disabled selected>-- Pilih Hari --</option>
+                        <option value="Senin">Senin</option>
+                        <option value="Selasa">Selasa</option>
+                        <option value="Rabu">Rabu</option>
+                        <option value="Kamis">Kamis</option>
+                        <option value="Jumat">Jumat</option>
+                        <option value="Sabtu">Sabtu</option>
+                        <option value="Minggu">Minggu</option>
+                    </select>
+                    @error('hari_keberangkatan')
                         <p class="mt-1 text-sm text-red-600 flex items-center gap-1">
                             <i class="fas fa-exclamation-circle"></i>
                             {{ $message }}
