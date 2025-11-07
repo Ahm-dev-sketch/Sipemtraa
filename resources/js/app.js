@@ -207,11 +207,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 fetch(`/jadwal/${jadwalId}/seats`)
                     .then(res => res.json())
                     .then(bookedSeats => {
+                        // Reset any previous selections and update availability for the new jadwal
                         seatCheckboxes.forEach(cb => {
                             const seatDiv = cb.nextElementSibling;
+                            // Clear previous checked state for a fresh selection when date changes
+                            cb.checked = false;
+
                             if (bookedSeats.includes(cb.value)) {
                                 cb.disabled = true;
-                                cb.checked = false;
                                 seatDiv.className =
                                     "w-16 h-16 flex items-center justify-center rounded bg-red-500 text-white cursor-not-allowed";
                             } else {
@@ -220,6 +223,11 @@ document.addEventListener("DOMContentLoaded", () => {
                                     "w-16 h-16 flex items-center justify-center rounded bg-green-500 text-white hover:bg-blue-500";
                             }
                         });
+
+                        // Update the summary / total / button state after clearing selections
+                        if (typeof updateDisplay === 'function') {
+                            updateDisplay();
+                        }
                     });
             } else {
                 seatCheckboxes.forEach(cb => {
@@ -228,6 +236,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     cb.nextElementSibling.className =
                         "w-16 h-16 flex items-center justify-center rounded bg-gray-300 text-black";
                 });
+                if (typeof updateDisplay === 'function') updateDisplay();
             }
         });
     }
@@ -1393,14 +1402,43 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 document.addEventListener('DOMContentLoaded', function () {
+    // Make image "loaded" handling resilient to browser deferred load events
+    // (some browsers may defer or throttle load events under tracking protection).
     document.querySelectorAll('img').forEach(img => {
+        // If already complete, mark immediately
         if (img.complete) {
             img.classList.add('loaded');
-        } else {
-            img.addEventListener('load', function () {
-                this.classList.add('loaded');
-            });
+            return;
         }
+
+        // Prefer using the modern decode() promise when available
+        if (typeof img.decode === 'function') {
+            img.decode().then(() => {
+                img.classList.add('loaded');
+            }).catch(() => {
+                // decode() may fail or be rejected if the image is deferred; fall back
+                const onLoad = function () {
+                    img.classList.add('loaded');
+                    img.removeEventListener('load', onLoad);
+                };
+                img.addEventListener('load', onLoad);
+            });
+        } else {
+            // Older browsers: listen for the load event
+            const onLoad = function () {
+                img.classList.add('loaded');
+                img.removeEventListener('load', onLoad);
+            };
+            img.addEventListener('load', onLoad);
+        }
+
+        // Safety timeout: if neither load nor decode fires (e.g. heavy throttling),
+        // mark the image as loaded after a short delay so placeholders don't stick forever.
+        setTimeout(() => {
+            if (!img.classList.contains('loaded')) {
+                img.classList.add('loaded');
+            }
+        }, 3000);
     });
 });
 

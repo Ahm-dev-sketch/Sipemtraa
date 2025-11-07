@@ -36,9 +36,13 @@ class AdminController extends Controller
             ->whereYear('created_at', now()->year)
             ->count();
 
-        // Hitung jumlah perjalanan aktif (jadwal yang belum lewat)
-        $perjalananAktif = Jadwal::where('tanggal', '>=', now()->format('Y-m-d'))
-            ->count();
+        // Hitung jumlah perjalanan aktif (jadwal yang masih memiliki tanggal mendatang)
+        // Jadwal model tidak menyimpan kolom `tanggal`; hitung berdasarkan helper getUpcomingDates()
+        $perjalananAktif = Jadwal::where('is_active', true)
+            ->get()
+            ->filter(function ($jadwal) {
+                return $jadwal->getUpcomingDates(1)->count() > 0;
+            })->count();
 
         // Hitung total pelanggan (user dengan role 'user')
         $totalPelanggan = User::where('role', 'user')->count();
@@ -87,7 +91,7 @@ class AdminController extends Controller
                     $q->where('kota_asal', 'like', "%{$search}%")
                         ->orWhere('kota_tujuan', 'like', "%{$search}%");
                 })
-                    ->orWhere('tanggal', 'like', "%{$search}%")
+                    // jadwal.tanggal tidak ada di tabel jadwals; skip searching that column
                     ->orWhere('jam', 'like', "%{$search}%")
                     ->orWhere('harga', 'like', "%{$search}%");
             })->latest()->paginate(10);
@@ -118,16 +122,13 @@ class AdminController extends Controller
         $request->validate([
             'rute_id' => 'required|exists:rutes,id',
             'mobil_id' => 'required|exists:mobils,id',
-            'tanggal' => 'required|date|after_or_equal:today',
+            'hari_keberangkatan' => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu',
             'jam' => 'required',
             'harga' => 'required|integer|min:0',
-            'day_offset' => 'nullable|integer|min:0|max:7',
             'is_active' => 'nullable|boolean',
             'notes' => 'nullable|string|max:500',
         ], [
-            'tanggal.after_or_equal' => 'Tanggal jadwal harus hari ini atau setelahnya.',
             'harga.min' => 'Harga tidak boleh negatif.',
-            'day_offset.max' => 'Offset maksimal 7 hari ke depan.',
         ]);
 
         // Validasi status rute
@@ -142,24 +143,23 @@ class AdminController extends Controller
             return back()->withErrors(['mobil_id' => 'Mobil tidak aktif. Status saat ini: ' . $mobil->status]);
         }
 
-        // Cek konflik jadwal mobil
+        // Cek konflik jadwal mobil - cek berdasarkan hari dan jam
         $conflict = Jadwal::where('mobil_id', $request->mobil_id)
-            ->where('tanggal', $request->tanggal)
+            ->where('hari_keberangkatan', $request->hari_keberangkatan)
             ->where('jam', $request->jam)
             ->exists();
 
         if ($conflict) {
-            return back()->withErrors(['mobil_id' => 'Mobil sudah dijadwalkan di waktu yang sama.']);
+            return back()->withErrors(['mobil_id' => 'Mobil sudah dijadwalkan di hari dan waktu yang sama.']);
         }
 
         // Buat jadwal baru
         Jadwal::create([
             'rute_id' => $request->rute_id,
             'mobil_id' => $request->mobil_id,
-            'tanggal' => $request->tanggal,
+            'hari_keberangkatan' => $request->hari_keberangkatan,
             'jam' => $request->jam,
             'harga' => $request->harga,
-            'day_offset' => (string)($request->day_offset ?? 0),
             'is_active' => true,
             'notes' => $request->notes,
         ]);
@@ -190,7 +190,7 @@ class AdminController extends Controller
         $request->validate([
             'rute_id' => 'required|exists:rutes,id',
             'mobil_id' => 'required|exists:mobils,id',
-            'tanggal' => 'required|date|after_or_equal:today',
+            'hari_keberangkatan' => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu',
             'jam' => 'required',
             'harga' => 'required|numeric|min:0',
         ]);
@@ -207,21 +207,21 @@ class AdminController extends Controller
             return back()->withErrors(['mobil_id' => 'Mobil tidak aktif. Status saat ini: ' . $mobil->status]);
         }
 
-        // Cek konflik jadwal jika ada perubahan mobil/tanggal/jam
+        // Cek konflik jadwal jika ada perubahan mobil/hari/jam
         if (
             $request->mobil_id != $jadwal->mobil_id ||
-            $request->tanggal != $jadwal->tanggal ||
+            $request->hari_keberangkatan != $jadwal->hari_keberangkatan ||
             $request->jam != $jadwal->jam
         ) {
 
             $conflict = Jadwal::where('mobil_id', $request->mobil_id)
                 ->where('id', '!=', $jadwal->id)
-                ->where('tanggal', $request->tanggal)
+                ->where('hari_keberangkatan', $request->hari_keberangkatan)
                 ->where('jam', $request->jam)
                 ->exists();
 
             if ($conflict) {
-                return back()->withErrors(['mobil_id' => 'Mobil sudah dijadwalkan di waktu yang sama.']);
+                return back()->withErrors(['mobil_id' => 'Mobil sudah dijadwalkan di hari dan waktu yang sama.']);
             }
         }
 
@@ -229,10 +229,9 @@ class AdminController extends Controller
         $jadwal->update([
             'rute_id' => $request->rute_id,
             'mobil_id' => $request->mobil_id,
-            'tanggal' => $request->tanggal,
+            'hari_keberangkatan' => $request->hari_keberangkatan,
             'jam' => $request->jam,
             'harga' => $request->harga,
-            'day_offset' => (string)($request->day_offset ?? 0),
             'is_active' => $request->has('is_active') ? true : false,
             'notes' => $request->notes,
         ]);
@@ -289,7 +288,7 @@ class AdminController extends Controller
                             $subQ->where('merk', 'like', "%{$search}%")
                                 ->orWhere('nomor_polisi', 'like', "%{$search}%")
                         )
-                        ->orWhere('jadwal_tanggal', 'like', "%{$search}%")
+                        ->orWhere('jadwal_hari_keberangkatan', 'like', "%{$search}%")
                         ->orWhere('jadwal_jam', 'like', "%{$search}%")
                         ->orWhere('seat_number', 'like', "%{$search}%")
                         ->orWhere('status', 'like', "%{$search}%")
@@ -834,9 +833,8 @@ class AdminController extends Controller
                         $q->where('kota_asal', 'like', "%{$search}%")
                             ->orWhere('kota_tujuan', 'like', "%{$search}%");
                     })
-                    ->orWhereHas('jadwal', function ($q) use ($search) {
-                        $q->where('tanggal', 'like', "%{$search}%");
-                    })
+                    // booking.tanggal exists, search at booking level instead of jadwal.tanggal
+                    ->orWhere('tanggal', 'like', "%{$search}%")
                     ->orWhere('ticket_number', 'like', "%{$search}%")
                     ->orWhere('payment_status', 'like', "%{$search}%");
             })

@@ -75,9 +75,9 @@ class BookingController extends Controller
     // Menampilkan form pemesanan tiket (legacy method)
     public function create($jadwal_id = null)
     {
-        $jadwals = Jadwal::where('tanggal', '>=', Carbon::today()->format('Y-m-d'))
-            ->where('is_active', true)
-            ->orderBy('tanggal')
+        // Jadwal tidak menyimpan kolom `tanggal`; ambil semua jadwal aktif dan urutkan berdasarkan jam
+        $jadwals = Jadwal::where('is_active', true)
+            ->orderBy('jam')
             ->get();
         return view('user.pesan', compact('jadwals', 'jadwal_id'));
     }
@@ -128,12 +128,32 @@ class BookingController extends Controller
 
         // Ambil jadwal yang tersedia untuk tanggal tersebut
         $jadwals = Jadwal::whereIn('rute_id', $routes->pluck('id'))
-            ->where('tanggal', $step1Data['tanggal'])
-            ->where('tanggal', '>=', Carbon::today()->format('Y-m-d'))
             ->where('is_active', true)
             ->with('rute')
             ->orderBy('jam')
             ->get();
+
+        // Filter jadwal berdasarkan hari keberangkatan yang sesuai dengan tanggal yang dipilih
+        $selectedDate = Carbon::parse($step1Data['tanggal']);
+        $selectedDayIndex = $selectedDate->dayOfWeek; // 0 = Minggu, 1 = Senin, dst
+
+        $dayMap = [
+            1 => 'Senin',
+            2 => 'Selasa',
+            3 => 'Rabu',
+            4 => 'Kamis',
+            5 => 'Jumat',
+            6 => 'Sabtu',
+            0 => 'Minggu',
+        ];
+
+        $selectedDay = $dayMap[$selectedDayIndex] ?? null;
+
+        if ($selectedDay) {
+            $jadwals = $jadwals->filter(function ($jadwal) use ($selectedDay) {
+                return $jadwal->hari_keberangkatan === $selectedDay;
+            });
+        }
 
         return view('booking.step2', compact('jadwals', 'step1Data'));
     }
@@ -164,10 +184,28 @@ class BookingController extends Controller
         $jadwal->load(['mobil.supir', 'rute']);
 
         // Buat data step 1 dari jadwal yang dipilih
+        // Tentukan tanggal efektif: prefer the next computed occurrence based on hari_keberangkatan
+        // using the model helper getUpcomingDates(), otherwise fallback to stored `tanggal` in DB.
+        $effectiveDateValue = $jadwal->tanggal;
+        try {
+            $upcoming = $jadwal->getUpcomingDates(4); // compute next 4 weeks
+            if ($upcoming && $upcoming->count() > 0) {
+                $next = $upcoming->first();
+                if ($next instanceof \Carbon\Carbon) {
+                    $effectiveDateValue = $next->format('Y-m-d');
+                } else {
+                    $effectiveDateValue = \Carbon\Carbon::parse($next)->format('Y-m-d');
+                }
+            }
+        } catch (\Exception $e) {
+            // fallback to DB tanggal if anything goes wrong
+            $effectiveDateValue = $jadwal->tanggal;
+        }
+
         $step1Data = [
             'kota_asal' => $jadwal->rute->kota_asal,
             'kota_tujuan' => $jadwal->rute->kota_tujuan,
-            'tanggal' => $jadwal->tanggal,
+            'tanggal' => $effectiveDateValue,
         ];
 
         $step2Data = [
@@ -193,8 +231,12 @@ class BookingController extends Controller
 
         $jadwal = \App\Models\Jadwal::with('mobil.supir')->find($step2Data['jadwal']->id);
 
-        // Ambil kursi yang sudah dipesan dengan threshold 30 menit
+        // Ambil kursi yang sudah dipesan dengan threshold 30 menit untuk tanggal yang dipilih
+        $selectedDate = Carbon::parse($step1Data['tanggal']);
+        $selectedDateStr = $selectedDate->format('Y-m-d');
         $threshold = \Carbon\Carbon::now()->subMinutes(config('booking.pending_expiry_minutes', 30));
+
+        // Cari booking yang sudah ada untuk jadwal ini pada tanggal yang sama
         $bookedSeats = Booking::where('jadwal_id', $jadwal->id)
             ->where(function ($query) use ($threshold) {
                 $query->where('status', 'setuju')
@@ -203,13 +245,15 @@ class BookingController extends Controller
                             ->where('created_at', '>=', $threshold);
                     });
             })
+            ->where('tanggal', $selectedDateStr)
             ->pluck('seat_number')
             ->toArray();
 
         // Daftar kursi yang tersedia (1-14)
         $seats = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14'];
 
-        return view('booking.step3', compact('jadwal', 'seats', 'bookedSeats', 'step1Data', 'step2Data'));
+        // Pass selectedDate (Carbon) and selectedDateStr so the view can display/use them
+        return view('booking.step3', compact('jadwal', 'seats', 'bookedSeats', 'step1Data', 'step2Data', 'selectedDate', 'selectedDateStr'));
     }
 
     // Memproses booking akhir dan menyimpan ke database
@@ -229,7 +273,8 @@ class BookingController extends Controller
         $jadwal = Jadwal::with('mobil')->findOrFail($step2Data['jadwal']->id);
 
         // Cek batas waktu pemesanan (2 jam sebelum keberangkatan)
-        $waktuKeberangkatan = \Carbon\Carbon::parse($jadwal->getRawOriginal('tanggal') . ' ' . $jadwal->jam);
+        $selectedDate = Carbon::parse($step1Data['tanggal']);
+        $waktuKeberangkatan = $selectedDate->setTimeFromTimeString($jadwal->jam);
         $batasPesan = $waktuKeberangkatan->copy()->subHours(config('booking.booking_close_hours', 1));
         $waktuSekarang = \Carbon\Carbon::now();
 
@@ -240,7 +285,7 @@ class BookingController extends Controller
 
         try {
             // Proses booking dalam database transaction untuk konsistensi
-            $firstBooking = DB::transaction(function () use ($request, $jadwal) {
+            $firstBooking = DB::transaction(function () use ($request, $jadwal, $selectedDate) {
                 $jadwalLocked = Jadwal::lockForUpdate()->find($jadwal->id);
 
                 $threshold = \Carbon\Carbon::now()->subMinutes(config('booking.pending_expiry_minutes', 30));
@@ -295,11 +340,12 @@ class BookingController extends Controller
                     $booking = Booking::create([
                         'user_id' => \Illuminate\Support\Facades\Auth::id(),
                         'jadwal_id' => $jadwal->id,
+                        'tanggal' => $selectedDate->format('Y-m-d'),
                         'seat_number' => $seat,
                         'status' => 'pending',
                         'payment_status' => 'belum_bayar',
                         'ticket_number' => $this->generateTicketNumber(),
-                        'jadwal_tanggal' => $jadwal->tanggal,
+                        'jadwal_hari_keberangkatan' => $jadwal->hari_keberangkatan,
                         'jadwal_jam' => $jadwal->jam,
                     ]);
 
@@ -345,17 +391,25 @@ class BookingController extends Controller
     {
         $jadwal = Jadwal::findOrFail($jadwal_id);
 
+        // If a specific date is provided (e.g. ?date=YYYY-MM-DD), use it; otherwise, try to
+        // infer from session booking_step1. This ensures legacy routes can still work.
+        $date = request('date') ?: session('booking_step1.tanggal') ?: null;
+
         $threshold = \Carbon\Carbon::now()->subMinutes(config('booking.pending_expiry_minutes', 30));
-        $bookedSeats = Booking::where('jadwal_id', $jadwal_id)
+        $bookingsQuery = Booking::where('jadwal_id', $jadwal_id)
             ->where(function ($query) use ($threshold) {
                 $query->where('status', 'setuju')
                     ->orWhere(function ($q) use ($threshold) {
                         $q->where('status', 'pending')
                             ->where('created_at', '>=', $threshold);
                     });
-            })
-            ->pluck('seat_number')
-            ->toArray();
+            });
+
+        if ($date) {
+            $bookingsQuery->where('tanggal', Carbon::parse($date)->format('Y-m-d'));
+        }
+
+        $bookedSeats = $bookingsQuery->pluck('seat_number')->toArray();
 
         $seats = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14'];
 
@@ -383,7 +437,7 @@ class BookingController extends Controller
             'batas_pesan' => $batasPesan->format('Y-m-d H:i:s'),
             'waktu_sekarang' => $waktuSekarang->format('Y-m-d H:i:s'),
             'jadwal_id' => $jadwal->id,
-            'jadwal_tanggal' => $jadwal->tanggal,
+            'jadwal_hari_keberangkatan' => $jadwal->hari_keberangkatan,
             'jadwal_jam' => $jadwal->jam
         ]);
 
@@ -443,7 +497,7 @@ class BookingController extends Controller
                         'status'        => 'pending',
                         'payment_status' => 'belum_bayar',
                         'ticket_number' => $this->generateTicketNumber(),
-                        'jadwal_tanggal' => $jadwal->tanggal,
+                        'jadwal_hari_keberangkatan' => $jadwal->hari_keberangkatan,
                         'jadwal_jam'    => $jadwal->jam,
                     ]);
 
@@ -499,17 +553,35 @@ class BookingController extends Controller
     // API endpoint untuk mendapatkan kursi yang sudah dipesan (untuk AJAX)
     public function getSeats($id)
     {
+        // Determine which date to check availability for. Prefer explicit query param 'date',
+        // otherwise fall back to the booking_step1 session value. If none available, return empty
+        // array to avoid mistakenly blocking seats across different dates.
+        $date = request('date') ?: session('booking_step1.tanggal') ?: null;
+
         $threshold = \Carbon\Carbon::now()->subMinutes(config('booking.pending_expiry_minutes', 30));
-        $bookedSeats = Booking::where('jadwal_id', $id)
+        $bookingsQuery = Booking::where('jadwal_id', $id)
             ->where(function ($query) use ($threshold) {
                 $query->where('status', 'setuju')
                     ->orWhere(function ($q) use ($threshold) {
                         $q->where('status', 'pending')
                             ->where('created_at', '>=', $threshold);
                     });
-            })
-            ->pluck('seat_number')
-            ->toArray();
+            });
+
+        if ($date) {
+            try {
+                $dateStr = Carbon::parse($date)->format('Y-m-d');
+                $bookingsQuery->where('tanggal', $dateStr);
+            } catch (\Exception $e) {
+                // invalid date; return empty to be safe
+                return response()->json([]);
+            }
+        } else {
+            // No date known: return empty so UI doesn't block seats for the wrong date.
+            return response()->json([]);
+        }
+
+        $bookedSeats = $bookingsQuery->pluck('seat_number')->toArray();
 
         return response()->json($bookedSeats);
     }
@@ -555,7 +627,18 @@ class BookingController extends Controller
         }
 
         // Cek batas waktu pembatalan (2 jam sebelum keberangkatan)
-        $waktuKeberangkatan = \Carbon\Carbon::parse($booking->jadwal_tanggal . ' ' . $booking->jadwal_jam);
+        // Untuk sistem day-based, kita perlu mendapatkan tanggal keberangkatan dari booking
+        // Karena booking sekarang menyimpan hari keberangkatan, kita perlu mencari tanggal mendatang yang sesuai
+        $jadwal = $booking->jadwal;
+        $upcomingDates = $jadwal->getUpcomingDates();
+
+        if ($upcomingDates->isEmpty()) {
+            return back()->with('error', 'Tidak dapat membatalkan pesanan karena jadwal tidak tersedia.');
+        }
+
+        // Ambil tanggal keberangkatan terdekat
+        $tanggalKeberangkatan = $upcomingDates->first();
+        $waktuKeberangkatan = $tanggalKeberangkatan->setTimeFromTimeString($booking->jadwal_jam);
         $batasCancel = $waktuKeberangkatan->copy()->subHours(config('booking.cancel_close_hours', 2));
         $waktuSekarang = \Carbon\Carbon::now();
 

@@ -123,10 +123,52 @@
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-center">
-                                <div class="text-sm font-medium text-gray-900">{{ $booking->jadwal_tanggal }}</div>
+                                @php
+                                    // Determine a display date for the booking: prefer stored jadwal->tanggal, otherwise
+                                    // compute next occurrence from jadwal->getUpcomingDates(). Fallback to stored
+                                    // booking hari label if nothing available.
+                                    $displayDate = null;
+                                    if ($booking->jadwal) {
+                                        if (!empty($booking->jadwal->tanggal)) {
+                                            try {
+                                                $displayDate = \Carbon\Carbon::parse($booking->jadwal->tanggal);
+                                            } catch (\Exception $e) {
+                                                $displayDate = null;
+                                            }
+                                        }
+
+                                        if (!$displayDate) {
+                                            try {
+                                                $upcoming = $booking->jadwal->getUpcomingDates(4);
+                                                if ($upcoming && $upcoming->count() > 0) {
+                                                    $displayDate = $upcoming->first();
+                                                }
+                                            } catch (\Exception $e) {
+                                                // ignore
+                                            }
+                                        }
+                                    }
+                                @endphp
+
+                                <div class="text-sm font-medium text-gray-900">
+                                    @if ($displayDate)
+                                        {{ $displayDate->locale('id')->isoFormat('dddd') }}
+                                    @else
+                                        {{ $booking->jadwal_hari_keberangkatan }}
+                                    @endif
+                                </div>
                                 <div class="text-xs text-gray-500 flex items-center justify-center mt-1">
                                     <i class="fas fa-clock text-xs mr-1"></i>
-                                    {{ $booking->jadwal ? $booking->jadwal->jam : '-' }} WIB
+                                    @php
+                                        $time =
+                                            $booking->jadwal_jam ?? ($booking->jadwal ? $booking->jadwal->jam : null);
+                                    @endphp
+                                    @if (!empty($displayDate))
+                                        {{ $displayDate->locale('id')->isoFormat('D/M/Y') }}
+                                        &nbsp;•&nbsp;{{ \Carbon\Carbon::parse($time)->format('H:i') ?? '-' }} WIB
+                                    @else
+                                        {{ $time ? \Carbon\Carbon::parse($time)->format('H:i') : '-' }} WIB
+                                    @endif
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
@@ -294,15 +336,50 @@
                                 {{ $booking->jadwal->rute ? $booking->jadwal->rute->kota_tujuan : '-' }}
                             </span>
                         </div>
+                        @php
+                            // Mobile: same logic as desktop to pick a reasonable display date
+                            $mDisplayDate = null;
+                            if ($booking->jadwal) {
+                                if (!empty($booking->jadwal->tanggal)) {
+                                    try {
+                                        $mDisplayDate = \Carbon\Carbon::parse($booking->jadwal->tanggal);
+                                    } catch (\Exception $e) {
+                                        $mDisplayDate = null;
+                                    }
+                                }
+
+                                if (!$mDisplayDate) {
+                                    try {
+                                        $mUpcoming = $booking->jadwal->getUpcomingDates(4);
+                                        if ($mUpcoming && $mUpcoming->count() > 0) {
+                                            $mDisplayDate = $mUpcoming->first();
+                                        }
+                                    } catch (\Exception $e) {
+                                        // ignore
+                                    }
+                                }
+                            }
+
+                            $mTime = $booking->jadwal_jam ?? ($booking->jadwal ? $booking->jadwal->jam : null);
+                        @endphp
+
                         <div class="flex items-center gap-2 text-sm">
                             <svg class="w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
                                 </path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                             </svg>
                             <span class="text-gray-600">Tanggal:</span>
-                            <span class="font-medium text-gray-900">{{ $booking->jadwal_tanggal }}</span>
+                            <span class="font-medium text-gray-900">
+                                @if ($mDisplayDate)
+                                    {{ $mDisplayDate->locale('id')->isoFormat('dddd, D MMMM YYYY') }}
+                                @else
+                                    {{ $booking->jadwal_hari_keberangkatan }}
+                                @endif
+                            </span>
                         </div>
                         <div class="flex items-center gap-2 text-sm">
                             <svg class="w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor"
@@ -312,7 +389,8 @@
                             </svg>
                             <span class="text-gray-600">Jam:</span>
                             <span
-                                class="font-medium text-gray-900">{{ $booking->jadwal ? $booking->jadwal->jam : '-' }}</span>
+                                class="font-medium text-gray-900">{{ $mTime ? \Carbon\Carbon::parse($mTime)->format('H:i') : '-' }}
+                                WIB</span>
                         </div>
                         <div class="flex items-center gap-2 text-sm">
                             <svg class="w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor"

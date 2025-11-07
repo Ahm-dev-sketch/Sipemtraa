@@ -36,20 +36,23 @@ class JadwalController extends Controller
     {
         $search = $request->input('search');
 
-        // Query jadwal aktif dengan relasi rute, filter tanggal hari ini ke depan
+        // Query jadwal aktif dengan relasi rute
         $jadwals = Jadwal::with('rute')
             ->where('is_active', true)
-            ->where('tanggal', '>=', Carbon::today()->format('Y-m-d'))
             ->when($search, function ($query, $search) {
                 $query->whereHas('rute', function ($q) use ($search) {
                     $q->where('kota_asal', 'like', "%{$search}%")
                         ->orWhere('kota_tujuan', 'like', "%{$search}%");
                 })
-                    ->orWhere('tanggal', 'like', "%{$search}%")
                     ->orWhere('jam', 'like', "%{$search}%");
             })
-            ->orderBy('tanggal')
+            ->orderBy('jam')
             ->paginate(10);
+
+        // Untuk setiap jadwal, hitung tanggal-tanggal mendatang
+        foreach ($jadwals as $jadwal) {
+            $jadwal->upcoming_dates = $jadwal->getUpcomingDates();
+        }
 
         return view('user.jadwal', compact('jadwals', 'search'));
     }
