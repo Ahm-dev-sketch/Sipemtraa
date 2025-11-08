@@ -156,7 +156,8 @@
 
                     <!-- Form pemilihan kursi -->
                     <form id="seat-form" action="{{ route('booking.step3.process') }}" method="POST"
-                        data-price-per-seat="{{ $jadwal->harga }}">
+                        data-price-per-seat="{{ $jadwal->harga }}" data-selected-date="{{ $step1Data['tanggal'] }}"
+                        data-jadwal-id="{{ $jadwal->id }}">
                         @csrf
                         <!-- Layout bus untuk pemilihan kursi -->
                         <div class="flex justify-center mb-6">

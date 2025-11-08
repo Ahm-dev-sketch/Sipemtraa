@@ -113,27 +113,25 @@
                                     <span class="font-medium text-gray-900">{{ $booking->jadwal->rute->kota_tujuan }}</span>
                                 </div>
                                 @php
-                                    // Determine display date/time for pembayaran list: prefer jadwal->tanggal, otherwise
-                                    // compute next occurrence via getUpcomingDates(). Use booking stored jadwal_jam if present.
+                                    // Determine display date/time for pembayaran list: prefer stored booking->tanggal (actual booked date),
+                                    // otherwise compute next occurrence via getUpcomingDates(). Use booking stored jadwal_jam if present.
                                     $displayDate = null;
-                                    if ($booking->jadwal) {
-                                        if (!empty($booking->jadwal->tanggal)) {
-                                            try {
-                                                $displayDate = \Carbon\Carbon::parse($booking->jadwal->tanggal);
-                                            } catch (\Exception $e) {
-                                                $displayDate = null;
-                                            }
+                                    if (!empty($booking->tanggal)) {
+                                        try {
+                                            $displayDate = \Carbon\Carbon::parse($booking->tanggal);
+                                        } catch (\Exception $e) {
+                                            $displayDate = null;
                                         }
+                                    }
 
-                                        if (!$displayDate) {
-                                            try {
-                                                $upcoming = $booking->jadwal->getUpcomingDates(4);
-                                                if ($upcoming && $upcoming->count() > 0) {
-                                                    $displayDate = $upcoming->first();
-                                                }
-                                            } catch (\Exception $e) {
-                                                // ignore
+                                    if (!$displayDate && $booking->jadwal) {
+                                        try {
+                                            $upcoming = $booking->jadwal->getUpcomingDates(4);
+                                            if ($upcoming && $upcoming->count() > 0) {
+                                                $displayDate = $upcoming->first();
                                             }
+                                        } catch (\Exception $e) {
+                                            // ignore
                                         }
                                     }
                                     $time = $booking->jadwal_jam ?? ($booking->jadwal ? $booking->jadwal->jam : null);
@@ -312,24 +310,22 @@
                         @php
                             // Mobile pembayaran: use same displayDate/time logic as desktop
                             $mDisplayDate = null;
-                            if ($booking->jadwal) {
-                                if (!empty($booking->jadwal->tanggal)) {
-                                    try {
-                                        $mDisplayDate = \Carbon\Carbon::parse($booking->jadwal->tanggal);
-                                    } catch (\Exception $e) {
-                                        $mDisplayDate = null;
-                                    }
+                            if (!empty($booking->tanggal)) {
+                                try {
+                                    $mDisplayDate = \Carbon\Carbon::parse($booking->tanggal);
+                                } catch (\Exception $e) {
+                                    $mDisplayDate = null;
                                 }
+                            }
 
-                                if (!$mDisplayDate) {
-                                    try {
-                                        $mUpcoming = $booking->jadwal->getUpcomingDates(4);
-                                        if ($mUpcoming && $mUpcoming->count() > 0) {
-                                            $mDisplayDate = $mUpcoming->first();
-                                        }
-                                    } catch (\Exception $e) {
-                                        // ignore
+                            if (!$mDisplayDate && $booking->jadwal) {
+                                try {
+                                    $mUpcoming = $booking->jadwal->getUpcomingDates(4);
+                                    if ($mUpcoming && $mUpcoming->count() > 0) {
+                                        $mDisplayDate = $mUpcoming->first();
                                     }
+                                } catch (\Exception $e) {
+                                    // ignore
                                 }
                             }
                             $mTime = $booking->jadwal_jam ?? ($booking->jadwal ? $booking->jadwal->jam : null);
