@@ -244,28 +244,26 @@
                                     <div class="flex-1">
                                         <p class="text-xs text-gray-600 mb-0.5">Jadwal Keberangkatan</p>
                                         @php
-                                            // Determine a display date for the booking: prefer stored jadwal->tanggal, otherwise
-                                            // compute next occurrence from jadwal->getUpcomingDates(). Fallback to stored
+                                            // Determine a display date for the booking: prefer stored booking->tanggal (actual booked date),
+                                            // otherwise compute next occurrence from jadwal->getUpcomingDates(). Fallback to stored
                                             // booking hari label if nothing available.
                                             $displayDate = null;
-                                            if ($booking->jadwal) {
-                                                if (!empty($booking->jadwal->tanggal)) {
-                                                    try {
-                                                        $displayDate = \Carbon\Carbon::parse($booking->jadwal->tanggal);
-                                                    } catch (\Exception $e) {
-                                                        $displayDate = null;
-                                                    }
+                                            if (!empty($booking->tanggal)) {
+                                                try {
+                                                    $displayDate = \Carbon\Carbon::parse($booking->tanggal);
+                                                } catch (\Exception $e) {
+                                                    $displayDate = null;
                                                 }
+                                            }
 
-                                                if (!$displayDate) {
-                                                    try {
-                                                        $upcoming = $booking->jadwal->getUpcomingDates(4);
-                                                        if ($upcoming && $upcoming->count() > 0) {
-                                                            $displayDate = $upcoming->first();
-                                                        }
-                                                    } catch (\Exception $e) {
-                                                        // ignore
+                                            if (!$displayDate && $booking->jadwal) {
+                                                try {
+                                                    $upcoming = $booking->jadwal->getUpcomingDates(4);
+                                                    if ($upcoming && $upcoming->count() > 0) {
+                                                        $displayDate = $upcoming->first();
                                                     }
+                                                } catch (\Exception $e) {
+                                                    // ignore
                                                 }
                                             }
 

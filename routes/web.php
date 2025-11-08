@@ -93,6 +93,11 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 // Public pages - halaman yang dapat diakses tanpa login
 Route::get('/jadwal', [JadwalController::class, 'index'])->name('jadwal');
 
+// Lightweight API: date-aware seat availability endpoint (canonical handler)
+// This is a minimal, reversible fix so the frontend can call a guaranteed
+// date-aware endpoint without changing legacy controllers/routes.
+Route::get('/api/jadwal/{jadwal}/seats', [BookingController::class, 'getSeats']);
+
 // Authentication routes - login, register, logout
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');

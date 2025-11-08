@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class FonnteService
 {
@@ -91,6 +92,27 @@ class FonnteService
         $rute = $jadwal->rute;
         $mobil = $jadwal->mobil;
 
+        // Ambil tanggal dan hari dari booking jika tersedia, fallback ke jadwal
+        $rawTanggal = $booking->tanggal ?? $jadwal->tanggal ?? null;
+        $hari = $booking->jadwal_hari_keberangkatan ?? $jadwal->hari_keberangkatan ?? null;
+        try {
+            $tanggalFormatted = $rawTanggal ? Carbon::parse($rawTanggal)->format('d/m/Y') : '-';
+        } catch (\Exception $e) {
+            $tanggalFormatted = $rawTanggal ?? '-';
+        }
+
+        if (!$hari && $rawTanggal) {
+            try {
+                $dayIndex = Carbon::parse($rawTanggal)->dayOfWeek; // 0-6
+                $dayMap = [1 => 'Senin', 2 => 'Selasa', 3 => 'Rabu', 4 => 'Kamis', 5 => 'Jumat', 6 => 'Sabtu', 0 => 'Minggu'];
+                $hari = $dayMap[$dayIndex] ?? null;
+            } catch (\Exception $e) {
+                $hari = null;
+            }
+        }
+
+        $hariText = $hari ? $hari : '-';
+
         $message = "📢 *PEMESANAN BARU!*\n\n"
             . "━━━━━━━━━━━━━━━━━━\n"
             . "👤 *Pelanggan*\n"
@@ -98,7 +120,7 @@ class FonnteService
             . "WA: {$user->whatsapp_number}\n\n"
             . "🚗 *Detail Perjalanan*\n"
             . "Rute: {$rute->kota_asal} → {$rute->kota_tujuan}\n"
-            . "Tanggal: {$jadwal->tanggal}\n"
+            . "Hari: {$hariText}, Tanggal: {$tanggalFormatted}\n"
             . "Jam: {$jadwal->jam}\n"
             . "Kursi: {$booking->seat_number}\n"
             . "Mobil: {$mobil->merk} ({$mobil->nomor_polisi})\n"
@@ -145,8 +167,8 @@ class FonnteService
 
         if ($booking->status === 'setuju') {
             $message .= "✅ *Booking Anda telah dikonfirmasi!*\n"
-                . "Silakan datang tepat waktu.\n"
-                . "Selamat berpergian! 🚗";
+                . "Pastikan anda sudah siap ketika sudah dijemput.\n"
+                . "Selamat menimati perjalanan! 🚗";
         } elseif ($booking->status === 'batal') {
             $message .= "❌ *Booking Anda telah dibatalkan.*\n"
                 . "Silakan hubungi admin untuk informasi lebih lanjut.";
@@ -170,6 +192,25 @@ class FonnteService
         $rute = $jadwal->rute;
         $mobil = $jadwal->mobil;
 
+        // Ambil tanggal dan hari dari booking jika tersedia, fallback ke jadwal
+        $rawTanggal = $booking->tanggal ?? $jadwal->tanggal ?? null;
+        $hari = $booking->jadwal_hari_keberangkatan ?? $jadwal->hari_keberangkatan ?? null;
+        try {
+            $tanggalFormatted = $rawTanggal ? Carbon::parse($rawTanggal)->format('d/m/Y') : '-';
+        } catch (\Exception $e) {
+            $tanggalFormatted = $rawTanggal ?? '-';
+        }
+        if (!$hari && $rawTanggal) {
+            try {
+                $dayIndex = Carbon::parse($rawTanggal)->dayOfWeek;
+                $dayMap = [1 => 'Senin', 2 => 'Selasa', 3 => 'Rabu', 4 => 'Kamis', 5 => 'Jumat', 6 => 'Sabtu', 0 => 'Minggu'];
+                $hari = $dayMap[$dayIndex] ?? null;
+            } catch (\Exception $e) {
+                $hari = null;
+            }
+        }
+        $hariText = $hari ? $hari : '-';
+
         $message = "🚫 *PEMBATALAN BOOKING*\n\n"
             . "━━━━━━━━━━━━━━━━━━\n"
             . "👤 *Pelanggan*\n"
@@ -177,7 +218,7 @@ class FonnteService
             . "WA: {$user->whatsapp_number}\n\n"
             . "🚗 *Detail Perjalanan*\n"
             . "Rute: {$rute->kota_asal} → {$rute->kota_tujuan}\n"
-            . "Tanggal: {$jadwal->tanggal}\n"
+            . "Hari: {$hariText}, Tanggal: {$tanggalFormatted}\n"
             . "Jam: {$jadwal->jam}\n"
             . "Kursi: {$booking->seat_number}\n"
             . "Mobil: {$mobil->merk} ({$mobil->nomor_polisi})\n"
@@ -209,6 +250,25 @@ class FonnteService
         $expiryMinutes = config('booking.pending_expiry_minutes', 30);
         $createdAt = $booking->created_at->format('d/m/Y H:i');
 
+        // Ambil tanggal dan hari dari booking jika tersedia, fallback ke jadwal
+        $rawTanggal = $booking->tanggal ?? $jadwal->tanggal ?? null;
+        $hari = $booking->jadwal_hari_keberangkatan ?? $jadwal->hari_keberangkatan ?? null;
+        try {
+            $tanggalFormatted = $rawTanggal ? Carbon::parse($rawTanggal)->format('d/m/Y') : '-';
+        } catch (\Exception $e) {
+            $tanggalFormatted = $rawTanggal ?? '-';
+        }
+        if (!$hari && $rawTanggal) {
+            try {
+                $dayIndex = Carbon::parse($rawTanggal)->dayOfWeek;
+                $dayMap = [1 => 'Senin', 2 => 'Selasa', 3 => 'Rabu', 4 => 'Kamis', 5 => 'Jumat', 6 => 'Sabtu', 0 => 'Minggu'];
+                $hari = $dayMap[$dayIndex] ?? null;
+            } catch (\Exception $e) {
+                $hari = null;
+            }
+        }
+        $hariText = $hari ? $hari : '-';
+
         $message = "⏰ *AUTO-CANCEL: BOOKING EXPIRED*\n\n"
             . "━━━━━━━━━━━━━━━━━━\n"
             . "⚠️ Booking otomatis dibatalkan karena\n"
@@ -218,7 +278,7 @@ class FonnteService
             . "WA: {$user->whatsapp_number}\n\n"
             . "🚗 *Detail Perjalanan*\n"
             . "Rute: {$rute->kota_asal} → {$rute->kota_tujuan}\n"
-            . "Tanggal: {$jadwal->tanggal}\n"
+            . "Hari: {$hariText}, Tanggal: {$tanggalFormatted}\n"
             . "Jam: {$jadwal->jam}\n"
             . "Kursi: {$booking->seat_number}\n"
             . "Mobil: {$mobil->merk} ({$mobil->nomor_polisi})\n"

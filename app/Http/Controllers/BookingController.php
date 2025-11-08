@@ -305,6 +305,7 @@ class BookingController extends Controller
                 foreach ($request->seats as $seat) {
                     // Hitung total booking yang valid
                     $existingBookingsCount = Booking::where('jadwal_id', $jadwal->id)
+                        ->where('tanggal', $selectedDate->format('Y-m-d'))
                         ->where(function ($query) use ($threshold) {
                             $query->where('status', 'setuju')
                                 ->orWhere(function ($q) use ($threshold) {
@@ -321,6 +322,7 @@ class BookingController extends Controller
 
                     // Cek apakah kursi sudah dipesan
                     $existingBooking = Booking::where('jadwal_id', $jadwal->id)
+                        ->where('tanggal', $selectedDate->format('Y-m-d'))
                         ->where('seat_number', $seat)
                         ->where(function ($query) use ($threshold) {
                             $query->where('status', 'setuju')
@@ -426,8 +428,43 @@ class BookingController extends Controller
 
         $jadwal = Jadwal::findOrFail($request->jadwal_id);
 
-        // Cek batas waktu pemesanan
-        $waktuKeberangkatan = Carbon::parse($jadwal->getRawOriginal('tanggal') . ' ' . $jadwal->jam);
+        // Tentukan tanggal keberangkatan yang akan dipakai untuk booking.
+        // Prioritaskan nilai dari request ('tanggal' atau 'date'), kemudian session 'booking_step1.tanggal',
+        // lalu fallback ke jadwal->getUpcomingDates() jika tersedia.
+        $selectedDate = null;
+        if ($request->filled('tanggal')) {
+            $selectedDate = Carbon::parse($request->input('tanggal'));
+        } else {
+            $dateFromReq = $request->input('date') ?: session('booking_step1.tanggal') ?: null;
+            if ($dateFromReq) {
+                try {
+                    $selectedDate = Carbon::parse($dateFromReq);
+                } catch (\Exception $e) {
+                    // ignore and fallback
+                    $selectedDate = null;
+                }
+            }
+        }
+
+        if (!$selectedDate) {
+            try {
+                $upcoming = $jadwal->getUpcomingDates(4);
+                if ($upcoming && $upcoming->count() > 0) {
+                    $first = $upcoming->first();
+                    $selectedDate = ($first instanceof Carbon) ? $first : Carbon::parse($first);
+                }
+            } catch (\Exception $e) {
+                // fallback to jadwal.tanggal raw or today
+                try {
+                    $selectedDate = Carbon::parse($jadwal->tanggal);
+                } catch (\Exception $ex) {
+                    $selectedDate = Carbon::now();
+                }
+            }
+        }
+
+        // Cek batas waktu pemesanan berdasarkan tanggal yang telah ditentukan
+        $waktuKeberangkatan = $selectedDate->copy()->setTimeFromTimeString($jadwal->jam);
         $batasPesan = $waktuKeberangkatan->copy()->subHour();
         $waktuSekarang = Carbon::now();
 
@@ -452,7 +489,7 @@ class BookingController extends Controller
         }
 
         try {
-            $firstBooking = DB::transaction(function () use ($request, $jadwal) {
+            $firstBooking = DB::transaction(function () use ($request, $jadwal, $selectedDate) {
                 $jadwalLocked = Jadwal::lockForUpdate()->find($jadwal->id);
 
                 $threshold = \Carbon\Carbon::now()->subMinutes(30);
@@ -460,6 +497,7 @@ class BookingController extends Controller
 
                 foreach ($request->seats as $seat) {
                     $existingBookingsCount = Booking::where('jadwal_id', $jadwal->id)
+                        ->where('tanggal', $selectedDate->format('Y-m-d'))
                         ->where(function ($query) use ($threshold) {
                             $query->where('status', 'setuju')
                                 ->orWhere(function ($q) use ($threshold) {
@@ -475,6 +513,7 @@ class BookingController extends Controller
                     }
 
                     $existingBooking = Booking::where('jadwal_id', $jadwal->id)
+                        ->where('tanggal', $selectedDate->format('Y-m-d'))
                         ->where('seat_number', $seat)
                         ->where(function ($query) use ($threshold) {
                             $query->where('status', 'setuju')
@@ -493,6 +532,7 @@ class BookingController extends Controller
                     $booking = Booking::create([
                         'user_id'       => Auth::id(),
                         'jadwal_id'     => $jadwal->id,
+                        'tanggal'       => $selectedDate->format('Y-m-d'),
                         'seat_number'   => $seat,
                         'status'        => 'pending',
                         'payment_status' => 'belum_bayar',

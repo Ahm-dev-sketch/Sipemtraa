@@ -203,8 +203,18 @@ document.addEventListener("DOMContentLoaded", () => {
         jadwalSelect.addEventListener('change', function () {
             const jadwalId = this.value;
 
+            // Determine selected date to query availability for
+            let selectedDate = null;
+            const seatFormEl = document.getElementById('seat-form');
+            const dateInputEl = document.getElementById('tanggal');
+            if (seatFormEl && seatFormEl.dataset.selectedDate) selectedDate = seatFormEl.dataset.selectedDate;
+            else if (dateInputEl && dateInputEl.value) selectedDate = dateInputEl.value;
+
             if (jadwalId) {
-                fetch(`/jadwal/${jadwalId}/seats`)
+                let url = `/api/jadwal/${jadwalId}/seats`;
+                if (selectedDate) url += `?date=${encodeURIComponent(selectedDate)}`;
+
+                fetch(url)
                     .then(res => res.json())
                     .then(bookedSeats => {
                         // Reset any previous selections and update availability for the new jadwal
@@ -298,21 +308,104 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     if (seatForm) {
-        seatForm.addEventListener('submit', function (e) {
-            const checked = document.querySelectorAll('.seat-checkbox:checked').length;
-            if (checked === 0) {
-                e.preventDefault();
+        // Pre-submit: re-check availability to avoid race-condition double-booking
+        seatForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const selectedCheckboxes = Array.from(document.querySelectorAll('.seat-checkbox:checked'))
+                .filter(cb => !cb.disabled);
+
+            if (selectedCheckboxes.length === 0) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Peringatan',
                     text: 'Pilih minimal 1 kursi!',
                     confirmButtonText: 'OK'
                 });
+                return;
+            }
+
+            // Determine jadwal id and selected date from form dataset
+            const jadwalId = seatForm.dataset.jadwalId;
+            const selectedDate = seatForm.dataset.selectedDate || (document.getElementById('tanggal') ? document.getElementById('tanggal').value : null);
+
+            try {
+                let url = `/api/jadwal/${jadwalId}/seats`;
+                if (selectedDate) url += `?date=${encodeURIComponent(selectedDate)}`;
+
+                const res = await fetch(url);
+                const bookedSeats = await res.json();
+
+                // check intersection
+                const chosen = selectedCheckboxes.map(cb => cb.value);
+                const conflicts = chosen.filter(s => bookedSeats.includes(s));
+
+                if (conflicts.length > 0) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Kursi Terpesan',
+                        text: `Kursi ${conflicts.join(', ')} sudah dipesan oleh pengguna lain. Silakan pilih kursi lain.`,
+                        confirmButtonText: 'OK'
+                    });
+                    // Refresh UI: mark newly booked seats
+                    seatCheckboxes.forEach(cb => {
+                        const seatDiv = cb.nextElementSibling;
+                        if (bookedSeats.includes(cb.value)) {
+                            cb.disabled = true;
+                            cb.checked = false;
+                            seatDiv.className = "w-16 h-16 flex items-center justify-center rounded bg-red-500 text-white cursor-not-allowed";
+                        }
+                    });
+                    if (typeof updateDisplay === 'function') updateDisplay();
+                    return;
+                }
+
+                // No conflicts, submit form
+                e.target.submit();
+            } catch (err) {
+                console.error('Error checking seat availability before submit', err);
+                // fallback: allow submission and let server handle race (will return error)
+                e.target.submit();
             }
         });
     }
 
     updateDisplay();
+});
+
+/* After initial setup, if we're on the booking step3 page, fetch current booked seats
+   for the provided jadwal + date so the UI reflects server state even if no jadwal select
+   change event occurs. */
+document.addEventListener('DOMContentLoaded', function () {
+    const seatFormEl = document.getElementById('seat-form');
+    if (!seatFormEl) return;
+
+    const jadwalId = seatFormEl.dataset.jadwalId;
+    const selectedDate = seatFormEl.dataset.selectedDate || (document.getElementById('tanggal') ? document.getElementById('tanggal').value : null);
+    if (!jadwalId) return;
+
+    (async function () {
+        try {
+            let url = `/api/jadwal/${jadwalId}/seats`;
+            if (selectedDate) url += `?date=${encodeURIComponent(selectedDate)}`;
+            const res = await fetch(url);
+            const bookedSeats = await res.json();
+
+            // mark booked seats in the UI
+            document.querySelectorAll('.seat-checkbox').forEach(cb => {
+                const seatDiv = cb.nextElementSibling;
+                if (bookedSeats.includes(cb.value)) {
+                    cb.disabled = true;
+                    cb.checked = false;
+                    if (seatDiv) seatDiv.className = "w-16 h-16 flex items-center justify-center rounded bg-red-500 text-white cursor-not-allowed";
+                }
+            });
+
+            if (typeof updateDisplay === 'function') updateDisplay();
+        } catch (err) {
+            console.error('Failed to fetch initial booked seats:', err);
+        }
+    })();
 });
 
 
@@ -1402,7 +1495,6 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 document.addEventListener('DOMContentLoaded', function () {
-    // Make image "loaded" handling resilient to browser deferred load events
     // (some browsers may defer or throttle load events under tracking protection).
     document.querySelectorAll('img').forEach(img => {
         // If already complete, mark immediately
