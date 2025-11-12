@@ -537,7 +537,7 @@ class BookingController extends Controller
                         'status'        => 'pending',
                         'payment_status' => 'belum_bayar',
                         'ticket_number' => $this->generateTicketNumber(),
-                        'jadwal_hari_keberangkatan' => $jadwal->hari_keberangkatan,
+                         'jadwal_hari_keberangkatan' => $jadwal->hari_keberangkatan,
                         'jadwal_jam'    => $jadwal->jam,
                     ]);
 

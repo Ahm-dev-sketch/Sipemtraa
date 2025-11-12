@@ -7,6 +7,13 @@
 @section('content')
     <!-- Revenue Stats Cards Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8 fade-up animate-on-scroll">
+        <div class="col-span-full flex justify-end mb-2">
+            <a href="{{ route('admin.laporan.export') }}"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition">
+                <i class="fas fa-file-csv"></i>
+                Export CSV
+            </a>
+        </div>
         <div
             class="group bg-white rounded-2xl shadow-sm border border-slate-200 hover:shadow-xl hover:border-emerald-300 transition-all duration-300 overflow-hidden">
             <div class="p-6">
