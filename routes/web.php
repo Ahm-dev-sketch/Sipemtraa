@@ -57,6 +57,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // Laporan Pendapatan - Halaman laporan statistik pendapatan
     Route::get('/laporan', [AdminController::class, 'laporan'])->name('laporan');
+    // Export Laporan Pendapatan (CSV) - memungkinkan admin mengunduh data pendapatan
+    Route::get('/laporan/export', [AdminController::class, 'exportLaporan'])->name('laporan.export');
 
     // Data Rute - CRUD operations untuk data rute perjalanan
     Route::get('/rute', [AdminController::class, 'rute'])->name('rute');

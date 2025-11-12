@@ -472,6 +472,78 @@ class AdminController extends Controller
         ]);
     }
 
+    /**
+     * Export laporan pendapatan sebagai CSV yang bisa dibuka di Excel
+     */
+    public function exportLaporan(Request $request)
+    {
+        $fileName = 'laporan-pendapatan-' . now()->format('Ymd_His') . '.csv';
+
+        $bookings = Booking::where('status', 'setuju')
+            ->where('payment_status', 'sudah_bayar')
+            ->with(['user', 'jadwal.rute'])
+            ->get();
+
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$fileName}\"",
+        ];
+
+        $columns = [
+            'ID',
+            'Ticket Number',
+            'User Name',
+            'Whatsapp',
+            'Rute',
+            'Tanggal Booking',
+            'Jadwal Hari',
+            'Jadwal Jam',
+            'Harga',
+            'Status',
+            'Payment Status',
+            'Created At'
+        ];
+
+        $callback = function () use ($bookings, $columns) {
+            $fh = fopen('php://output', 'w');
+
+            // BOM untuk memastikan Excel membaca UTF-8 dengan benar
+            fwrite($fh, "\xEF\xBB\xBF");
+
+            fputcsv($fh, $columns);
+
+            foreach ($bookings as $b) {
+                $rute = '';
+                if ($b->jadwal && $b->jadwal->rute) {
+                    $rute = $b->jadwal->rute->kota_asal . ' - ' . $b->jadwal->rute->kota_tujuan;
+                }
+
+                $harga = $b->jadwal ? $b->jadwal->harga : '';
+
+                $row = [
+                    $b->id,
+                    $b->ticket_number,
+                    optional($b->user)->name,
+                    optional($b->user)->whatsapp_number,
+                    $rute,
+                    $b->tanggal,
+                    $b->jadwal_hari_keberangkatan,
+                    $b->jadwal_jam,
+                    $harga,
+                    $b->status,
+                    $b->payment_status,
+                    $b->created_at,
+                ];
+
+                fputcsv($fh, $row);
+            }
+
+            fclose($fh);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
     // Menampilkan daftar rute dengan fitur pencarian
     public function rute(Request $request)
     {
