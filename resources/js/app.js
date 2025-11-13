@@ -1539,7 +1539,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (placeholder && mapSrc) {
             placeholder.addEventListener('click', function () {
-                r
                 const iframe = document.createElement('iframe');
                 iframe.src = mapSrc;
                 iframe.width = '100%';
