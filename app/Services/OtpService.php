@@ -34,7 +34,7 @@ class OtpService
         OtpToken::create([
             'whatsapp_number' => $whatsappNumber,
             'otp_code'        => $otpCode,
-            'expires_at'      => now()->addMinutes(10),
+            'expires_at'      => now()->addMinutes(5),
             'used'            => false
         ]);
 

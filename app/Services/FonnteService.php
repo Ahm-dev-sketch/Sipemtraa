@@ -71,7 +71,7 @@ class FonnteService
     {
         $message = "🔐 *Kode OTP Anda*\n\n"
             . "Kode: *{$otpCode}*\n"
-            . "Berlaku selama 10 menit.\n\n"
+            . "Berlaku selama 5 menit.\n\n"
             . "⚠️ Jangan bagikan kode ini kepada siapapun!";
 
         return $this->sendMessage($target, $message);

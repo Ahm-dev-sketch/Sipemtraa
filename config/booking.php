@@ -37,8 +37,8 @@ return [
 
     /*
     * Waktu expired OTP (dalam menit)
-    * Default: 10 menit
+    * Default: 5 menit
     */
-    'otp_expiry_minutes' => env('OTP_EXPIRY_MINUTES', 10),
+    'otp_expiry_minutes' => env('OTP_EXPIRY_MINUTES', 5),
 
 ];
