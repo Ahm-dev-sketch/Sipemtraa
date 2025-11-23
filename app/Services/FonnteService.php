@@ -145,6 +145,27 @@ class FonnteService
         $rute = $jadwal->rute;
         $mobil = $jadwal->mobil;
 
+        // Ambil tanggal dan hari dari booking jika tersedia, fallback ke jadwal
+        $rawTanggal = $booking->tanggal ?? $jadwal->tanggal ?? null;
+        $hari = $booking->jadwal_hari_keberangkatan ?? $jadwal->hari_keberangkatan ?? null;
+        try {
+            $tanggalFormatted = $rawTanggal ? Carbon::parse($rawTanggal)->format('d/m/Y') : '-';
+        } catch (\Exception $e) {
+            $tanggalFormatted = $rawTanggal ?? '-';
+        }
+
+        if (!$hari && $rawTanggal) {
+            try {
+                $dayIndex = Carbon::parse($rawTanggal)->dayOfWeek; // 0-6
+                $dayMap = [1 => 'Senin', 2 => 'Selasa', 3 => 'Rabu', 4 => 'Kamis', 5 => 'Jumat', 6 => 'Sabtu', 0 => 'Minggu'];
+                $hari = $dayMap[$dayIndex] ?? null;
+            } catch (\Exception $e) {
+                $hari = null;
+            }
+        }
+
+        $hariText = $hari ? $hari : '-';
+
         $statusEmoji = [
             'pending' => '⏳',
             'setuju' => '✅',
@@ -159,7 +180,7 @@ class FonnteService
             . "Status: *{$statusText}*\n\n"
             . "📋 *Detail Booking*\n"
             . "Rute: {$rute->kota_asal} → {$rute->kota_tujuan}\n"
-            . "Tanggal: {$jadwal->tanggal}\n"
+            . "Hari: {$hariText}, Tanggal: {$tanggalFormatted}\n"
             . "Jam: {$jadwal->jam}\n"
             . "Kursi: {$booking->seat_number}\n"
             . "Mobil: {$mobil->merk} ({$mobil->nomor_polisi})\n"
