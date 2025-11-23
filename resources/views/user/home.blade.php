@@ -25,7 +25,7 @@
                                 class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                             <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
                         </span>
-                        <span class="text-sm font-semibold text-gray-700">Travel Terpercaya Sejak 2015</span>
+                        <span class="text-sm font-semibold text-gray-700">Travel Terpercaya & Berpengalaman</span>
                     </div>
                     <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
                         <span
@@ -473,7 +473,7 @@
                         </div>
                     </div>
                     <p class="text-gray-300 mb-6 leading-relaxed">
-                        Melayani perjalanan Anda dengan aman, nyaman, dan terpercaya sejak 2014.
+                        Melayani perjalanan Anda dengan aman, nyaman, dan terpercaya.
                     </p>
                     <div class="flex space-x-3">
                         <a href="#"

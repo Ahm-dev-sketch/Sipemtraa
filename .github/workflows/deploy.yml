@@ -34,7 +34,7 @@ jobs:
 
     - name: Build assets
       run: npm run build
-    
+
     - name: Build Success
       run: echo "✅ Build completed successfully!"
 
