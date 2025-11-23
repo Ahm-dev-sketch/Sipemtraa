@@ -30,7 +30,7 @@
                     <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
                         <span
                             class="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                            Travel Nyaman,<br>Aman & Terpercaya
+                            Travel Nyaman,<br>Aman & Terpercaya 2025
                         </span>
                     </h1>
                     <p class="text-lg md:text-xl text-gray-600 leading-relaxed">
@@ -473,7 +473,7 @@
                         </div>
                     </div>
                     <p class="text-gray-300 mb-6 leading-relaxed">
-                        Melayani perjalanan Anda dengan aman, nyaman, dan terpercaya untuk berbagai tujuan.
+                        Melayani perjalanan Anda dengan aman, nyaman, dan terpercaya.
                     </p>
                     <div class="flex space-x-3">
                         <a href="#"
