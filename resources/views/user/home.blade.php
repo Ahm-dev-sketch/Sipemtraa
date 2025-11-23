@@ -473,7 +473,7 @@
                         </div>
                     </div>
                     <p class="text-gray-300 mb-6 leading-relaxed">
-                        Melayani perjalanan Anda dengan aman, nyaman, dan terpercaya.
+                        Melayani perjalanan Anda dengan aman, nyaman, dan terpercaya untuk berbagai tujuan.
                     </p>
                     <div class="flex space-x-3">
                         <a href="#"
