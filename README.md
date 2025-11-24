@@ -1,3 +1,128 @@
+## Sipemtraa - Sistem Pemesanan Tiket Travel Online
+
+Sipemtraa adalah aplikasi web untuk pemesanan tiket travel, manajemen jadwal, dan notifikasi otomatis berbasis Laravel.
+
+### Fitur Utama
+
+- Pemesanan tiket travel online
+- Notifikasi WhatsApp otomatis (status booking, pemesanan baru, dsb)
+- Manajemen jadwal, rute, mobil, supir, dan pelanggan
+- Panel admin untuk konfirmasi, monitoring, dan laporan
+- Sistem booking dengan status (pending, setuju, batal)
+- Otomatisasi CI/CD: deploy ke VPS via GitHub Actions
+
+### Instalasi Lokal
+
+1. Clone repository:
+ ```bash
+ git clone https://github.com/Ahm-dev-sketch/Sipemtraa.git
+ cd Sipemtraa
+ ```
+
+2. Install dependency PHP:
+ ```bash
+ composer install
+ ```
+
+3. Install dependency frontend:
+ ```bash
+ npm install && npm run build
+ ```
+
+4. Copy file environment:
+ ```bash
+ cp .env.example .env
+ # Edit konfigurasi database, WA, dsb di .env
+ ```
+
+5. Generate key dan migrate database:
+ ```bash
+ php artisan key:generate
+ php artisan migrate --seed
+ ```
+
+6. Jalankan server lokal:
+ ```bash
+ php artisan serve
+ ```
+
+### Deployment Otomatis (CI/CD)
+
+Setiap push ke branch `main`, workflow GitHub Actions akan otomatis:
+
+- Build project (composer, npm)
+- Deploy ke VPS via SSH (pull, install, migrate, cache clear)
+
+**Pastikan VPS sudah di-setup SSH key dan secrets di GitHub sudah benar!**
+
+---
+
+# Sipemtraa
+
+Sistem Pemesanan Tiket Travel Online
+
+---
+
+Sipemtraa adalah aplikasi web untuk pemesanan tiket travel, manajemen jadwal, dan notifikasi otomatis berbasis Laravel.
+
+## Fitur Utama
+
+- Pemesanan tiket travel online
+- Notifikasi WhatsApp otomatis (status booking, pemesanan baru, dsb)
+- Manajemen jadwal, rute, mobil, supir, dan pelanggan
+- Panel admin untuk konfirmasi, monitoring, dan laporan
+- Sistem booking dengan status (pending, setuju, batal)
+- Otomatisasi CI/CD: deploy ke VPS via GitHub Actions
+
+## Instalasi Lokal
+
+1. Clone repository:
+ ```bash
+ git clone https://github.com/Ahm-dev-sketch/Sipemtraa.git
+ cd Sipemtraa
+ ```
+
+2. Install dependency PHP:
+ ```bash
+ composer install
+ ```
+
+3. Install dependency frontend:
+ ```bash
+ npm install && npm run build
+ ```
+
+4. Copy file environment:
+ ```bash
+ cp .env.example .env
+ # Edit konfigurasi database, WA, dsb di .env
+ ```
+
+5. Generate key dan migrate database:
+ ```bash
+ php artisan key:generate
+ php artisan migrate --seed
+ ```
+
+6. Jalankan server lokal:
+ ```bash
+ php artisan serve
+ ```
+
+## Deployment Otomatis (CI/CD)
+
+Setiap push ke branch `main`, workflow GitHub Actions akan otomatis:
+
+- Build project (composer, npm)
+- Deploy ke VPS via SSH (pull, install, migrate, cache clear)
+
+**Pastikan VPS sudah di-setup SSH key dan secrets di GitHub sudah benar!**
+
+## Kontribusi
+
+Pull request dan issue sangat diterima! Silakan fork dan ajukan perubahan.
+
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
